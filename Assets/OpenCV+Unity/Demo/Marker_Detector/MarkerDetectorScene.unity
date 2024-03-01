@@ -222,7 +222,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 587d00f8262258440816287152545f4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: fddc5ae669377fc43bbee4a110da2a15, type: 3}
+  rawimage: {fileID: 547918433}
+  texture: {fileID: 0}
 --- !u!1 &1233504295
 GameObject:
   m_ObjectHideFlags: 0

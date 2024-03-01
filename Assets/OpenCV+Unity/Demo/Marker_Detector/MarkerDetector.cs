@@ -1,43 +1,75 @@
-﻿namespace OpenCvSharp.Demo {
+﻿namespace OpenCvSharp.Demo 
+{
 
 	using UnityEngine;
 	using System.Collections;
 	using UnityEngine.UI;
 	using Aruco;
+	using OpenCvSharp.Util;
 
-	public class MarkerDetector : MonoBehaviour {
+	public class MarkerDetector : MonoBehaviour 
+	{
+		public RawImage rawimage;
 
 		public Texture2D texture;
 
-		void Start () {
+		private DetectorParameters detectorParameters;
+		private Dictionary dictionary;
+
+		private Point2f[][] corners;
+		private int[] ids;
+		private Point2f[][] rejectedImgPoints;
+
+		private WebCamTexture webcamTexture;
+		private Color32[] colors;
+		private Mat mat, grayMat;
+
+		private Texture2D outputTexture;
+		private void Start()
+        {
 			// Create default parameres for detection
-			DetectorParameters detectorParameters = DetectorParameters.Create();
+			detectorParameters = DetectorParameters.Create();
 
 			// Dictionary holds set of all available markers
-			Dictionary dictionary = CvAruco.GetPredefinedDictionary (PredefinedDictionaryName.Dict6X6_250);
+			dictionary = CvAruco.GetPredefinedDictionary(PredefinedDictionaryName.Dict6X6_250);
 
-			// Variables to hold results
-			Point2f[][] corners;
-			int[] ids;
-			Point2f[][] rejectedImgPoints;
+			webcamTexture = new WebCamTexture(WebCamTexture.devices[0].name, Screen.width, Screen.height);
+			webcamTexture.Play();
 
-			// Create Opencv image from unity texture
-			Mat mat = Unity.TextureToMat (this.texture);
+			rawimage.texture = webcamTexture;
+			rawimage.material.mainTexture = webcamTexture;
 
-			// Convert image to grasyscale
-			Mat grayMat = new Mat ();
-			Cv2.CvtColor (mat, grayMat, ColorConversionCodes.BGR2GRAY); 
+			texture = new Texture2D(rawimage.texture.width, rawimage.texture.height, TextureFormat.RGBA32, false);
+		}
 
-			// Detect and draw markers
-			CvAruco.DetectMarkers (grayMat, dictionary, out corners, out ids, detectorParameters, out rejectedImgPoints);
-			CvAruco.DrawDetectedMarkers (mat, corners, ids);
+        void Update () 
+		{
+			//obraz z kamery
+			if (webcamTexture.isPlaying)
+			{
+				colors = webcamTexture.GetPixels32();
+                texture.SetPixels32(colors);
+                texture.Apply();
 
-			// Create Unity output texture with detected markers
-			Texture2D outputTexture = Unity.MatToTexture (mat);
+                mat = Unity.TextureToMat(this.texture);
+				grayMat = new Mat();
+				Cv2.CvtColor(mat, grayMat, ColorConversionCodes.BGR2GRAY);
 
-			// Set texture to see the result
-			RawImage rawImage = gameObject.GetComponent<RawImage> ();
-			rawImage.texture = outputTexture;
+				CvAruco.DetectMarkers(grayMat, dictionary, out corners, out ids, detectorParameters, out rejectedImgPoints);
+				
+				//TODO: Delete
+				CvAruco.DrawDetectedMarkers(mat, corners, ids);
+
+				if(outputTexture != null)
+					Destroy(outputTexture);
+				outputTexture = Unity.MatToTexture(mat);
+                rawimage.texture = outputTexture;
+
+				grayMat.Dispose();
+				mat.Dispose();
+			}
+			else 
+				Debug.Log("Kamera nie działa poprawnie.");
 		}
 		
 	}
