@@ -14,7 +14,7 @@
     public class MarkerDetector : MonoBehaviour 
 	{
 		public RawImage rawimage;
-		public GameObject model;
+		public GameObject[] models = new GameObject[9];
 		public RectTransform rawTransform;
 
 		public Camera cam;
@@ -71,7 +71,12 @@
 				CvAruco.DetectMarkers(grayMat, dictionary, out corners, out ids, detectorParameters, out rejectedImgPoints);
 
 				for (int id = 0; id < ids.Length; id++)
-					DrawModel(id);
+					DrawModel(id, ids[id]);
+
+				for (int id = 0; id < 9; id++)
+					if (!ids.Contains(id))
+						models[id].SetActive(false);
+
 				//CvAruco.DrawDetectedMarkers(mat, corners, ids);
 
 				if(outputTexture != null)
@@ -86,9 +91,10 @@
 				Debug.Log("Kamera nie działa poprawnie.");
 		}
 
-		void DrawModel(int id)
+		void DrawModel(int foundId, int modelId)
         {
-			Point2f center = corners[id][0] + corners[id][1] + corners[id][2] + corners[id][3];
+			models[modelId].SetActive(true);
+			Point2f center = corners[foundId][0] + corners[foundId][1] + corners[foundId][2] + corners[foundId][3];
 			Point3d center3D = new Point3d(center.X / 4f, center.Y / 4f, 0);
 			
 			var rvec = new double[] { 0, 0, 0 };
@@ -111,7 +117,7 @@
 				new Point3f(1,0,0)
 			};
 
-			Cv2.SolvePnP(objPts, corners[id], cameraMatrix, dist, out rvec, out tvec);
+			Cv2.SolvePnP(objPts, corners[foundId], cameraMatrix, dist, out rvec, out tvec);
 			CvAruco.DrawAxis(mat, cameraMatrix, dist, rvec, tvec, 0.5f);
 			
 			//position
@@ -121,7 +127,7 @@
 			localpos.z = (float)tvec[2];
 			
 			Vector3 worldpos = cam.transform.TransformPoint(localpos);
-            model.transform.position = worldpos;
+            models[modelId].transform.position = worldpos;
 
 			//rotation
 			double[] flip = rvec;
@@ -149,7 +155,7 @@
 			rot *= Quaternion.Euler(0, 0, 180);
 			Quaternion worldrot = cam.transform.rotation * rot;
 
-			model.transform.rotation = worldrot;
+			models[modelId].transform.rotation = worldrot;
 		}
 	}
 }
