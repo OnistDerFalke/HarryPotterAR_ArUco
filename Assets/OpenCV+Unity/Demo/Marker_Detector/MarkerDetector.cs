@@ -23,10 +23,9 @@
 		public RectTransform rawTransform;
 		public CanvasScaler canvasScaler;
 		public Canvas canvas;
+        public float basicMaxLength = 120f;
 
-		public float basicMaxLength = 120f;
-
-		public Camera cam;
+        public Camera cam;
 
 		public Texture2D texture;
 		public Texture2D texture2;
@@ -200,6 +199,25 @@
 			models[modelId].transform.localScale = GetScale(objPts, imagePoints);
 		}
 
+		private Vector3 GetScale(Point3f[] objPts, Point2f[] imgPts)
+		{
+            var distance01 = GetDistance(imgPts[0], imgPts[1]);
+            var distance12 = GetDistance(imgPts[1], imgPts[2]);
+            var distance23 = GetDistance(imgPts[2], imgPts[3]);
+            var distance30 = GetDistance(imgPts[3], imgPts[0]);
+			var maxDistance = Mathf.Max(distance01, distance12, distance23, distance30);
+
+			var s = maxDistance / basicMaxLength;
+            Vector3 scale = new Vector3(s, s, s);
+
+            return scale;
+		}
+
+		private float GetDistance(Point2f a, Point2f b)
+		{
+			return Vector2.Distance(new Vector2(a.X, a.Y), new Vector2(b.X, b.Y));
+        }
+
 		private Vector3 GetPosition(double[] tvec, Point2f[] imagePoints, Vector3 modelScale)
 		{
             var tvecUnity = new Vector3(
@@ -273,24 +291,5 @@
 			var yScaler = rawTransform.rect.height / mat.Size().Height;
 			return new Vector3(point.X * xScaler - rawTransform.rect.width/2, -(point.Y * yScaler - rawTransform.rect.height/2), 0);
         }
-
-		private Vector3 GetScale(Point3f[] objPts, Point2f[] imgPts)
-		{
-			var distance01 = GetDistance(imgPts[0], imgPts[1]);
-			var distance12 = GetDistance(imgPts[1], imgPts[2]);
-			var distance23 = GetDistance(imgPts[2], imgPts[3]);
-			var distance30 = GetDistance(imgPts[3], imgPts[0]);
-			var maxDistance = Mathf.Max(distance01, distance12, distance23, distance30);
-
-			var s = maxDistance / basicMaxLength;
-			Vector3 scale = new Vector3(s, s, s);
-
-			return scale;
-		}
-
-		private float GetDistance(Point2f a, Point2f b)
-		{
-			return Vector2.Distance(new Vector2(a.X, a.Y), new Vector2(b.X, b.Y));
-		}
 	}
 }
