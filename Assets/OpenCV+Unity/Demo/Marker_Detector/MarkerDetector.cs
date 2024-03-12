@@ -10,6 +10,7 @@
     using System.Collections.Generic;
 	using OpenCvSharp.Aruco;
 	using OpenCvSharp;
+    using UnityEngine.Networking.Types;
 
     public class MarkerDetector : MonoBehaviour 
 	{
@@ -128,65 +129,80 @@
 			Cv2.ProjectPoints(objPts, rvec, tvec, cameraMatrix, dist, out imagePoints, out jacobian);
 			CvAruco.DrawAxis(mat, cameraMatrix, dist, rvec, tvec, marker_size/2);
 
+            //position
+            models[modelId].transform.localPosition = GetPosition(tvec, imagePoints, models[modelId].transform.localScale);
+
 			//rotation
-			double[] flip = rvec;
-			flip[1] = -flip[1];
-			double[] rvec_m = flip;
-
-			Mat rotmatrix = new Mat();
-			MatOfDouble rvecMat = new MatOfDouble(1, 3);
-			rvecMat.Set<double>(0, 0, rvec_m[0]);
-			rvecMat.Set<double>(0, 1, rvec_m[1]);
-			rvecMat.Set<double>(0, 2, rvec_m[2]);
-			Cv2.Rodrigues(rvecMat, rotmatrix);
-
-			Vector3 forward;
-			forward.x = (float)rotmatrix.At<double>(2, 0);
-			forward.y = (float)rotmatrix.At<double>(2, 1);
-			forward.z = (float)rotmatrix.At<double>(2, 2);
-
-			Vector3 up;
-			up.x = (float)rotmatrix.At<double>(1, 0);
-			up.y = (float)rotmatrix.At<double>(1, 1);
-			up.z = (float)rotmatrix.At<double>(1, 2);
-
-			Quaternion rot = Quaternion.LookRotation(forward, up);
-			rot *= Quaternion.Euler(0, 0, 180);
-			Quaternion worldrot = cam.transform.rotation * rot;
-			//Quaternion localrot = Quaternion.Inverse(models[modelId].transform.rotation) * worldrot;
-
-
-			//position
-			var tvecUnity = new Vector3(
-				 (rawTransform.rect.width / mat.Size().Width) * (float)tvec[0],
-				 (rawTransform.rect.width / mat.Size().Width) * (float)-tvec[1],
-				 (rawTransform.rect.width / mat.Size().Width) * (float)tvec[2]);
-
-			Vector3 localpos = Vector3.zero;
-			Vector3[] corn = new Vector3[4];
-			for (var i = 0; i < 4; i++)
-			{
-				testPoints[i].SetActive(true);
-				testPoints[i].transform.localPosition = Point2fToVec3Scaled(imagePoints[i]);
-				testPoints[i].transform.rotation = worldrot;
-				corn[i] = Point2fToVec3Scaled(imagePoints[i]);
-				localpos += Point2fToVec3Scaled(imagePoints[i]);
-			}
-
-			localpos /= 4f;
-			//var globalpos = models[modelId].transform.TransformPoint(localpos);
-			//localpos = models[modelId].transform.InverseTransformPoint(globalpos);
-
-			models[modelId].transform.localPosition = localpos;
-			models[modelId].SetActive(true);
-   //         var temp = models[modelId].transform.position;
-			//temp.z = tvecUnity.z;//canvas.planeDistance - models[modelId].GetComponent<Collider>().bounds.size.y;
-   //         models[modelId].transform.position = temp;
-
-            models[modelId].transform.localRotation = Quaternion.Inverse(models[modelId].transform.parent.rotation) * worldrot;
-
+            //models[modelId].transform.localRotation = Quaternion.Inverse(models[modelId].transform.parent.rotation) * GetRotation(rvec);
+            models[modelId].transform.localRotation = GetRotation(rvec);
 		}
 
+		private Vector3 GetPosition(double[] tvec, Point2f[] imagePoints, Vector3 modelScale)
+		{
+            var tvecUnity = new Vector3(
+                 (rawTransform.rect.width / mat.Size().Width) * (float)tvec[0],
+                 (rawTransform.rect.width / mat.Size().Width) * (float)-tvec[1],
+                 (rawTransform.rect.width / mat.Size().Width) * (float)tvec[2]);
+
+            Vector3 localpos = Vector3.zero;
+            Vector3[] corn = new Vector3[4];
+            for (var i = 0; i < 4; i++)
+            {
+                testPoints[i].SetActive(true);
+                testPoints[i].transform.localPosition = Point2fToVec3Scaled(imagePoints[i]);
+                //testPoints[i].transform.rotation = worldrot;
+                corn[i] = Point2fToVec3Scaled(imagePoints[i]);
+                localpos += Point2fToVec3Scaled(imagePoints[i]);
+            }
+
+            localpos /= 4f;
+
+			//localpos.z = canvas.transform.position.z - modelScale.z / 2f * canvas.transform.localScale.z;
+
+            //var globalpos = models[modelId].transform.TransformPoint(localpos);
+            //localpos = models[modelId].transform.InverseTransformPoint(globalpos);
+
+            //         var temp = models[modelId].transform.position;
+            //temp.z = tvecUnity.z;//canvas.planeDistance - models[modelId].GetComponent<Collider>().bounds.size.y;
+            //         models[modelId].transform.position = temp;
+
+            return localpos;
+        }
+		
+		private Quaternion GetRotation(double[] rvec)
+		{
+            double[] flip = rvec;
+            flip[1] = -flip[1];
+            double[] rvec_m = flip;
+
+            Mat rotmatrix = new Mat();
+            MatOfDouble rvecMat = new MatOfDouble(1, 3);
+            rvecMat.Set<double>(0, 0, rvec_m[0]);
+            rvecMat.Set<double>(0, 1, rvec_m[1]);
+            rvecMat.Set<double>(0, 2, rvec_m[2]);
+            Cv2.Rodrigues(rvecMat, rotmatrix);
+
+            Vector3 forward;
+            forward.x = (float)rotmatrix.At<double>(2, 0);
+            forward.y = (float)rotmatrix.At<double>(2, 1);
+            forward.z = (float)rotmatrix.At<double>(2, 2);
+
+            Vector3 up;
+            up.x = (float)rotmatrix.At<double>(1, 0);
+            up.y = (float)rotmatrix.At<double>(1, 1);
+            up.z = (float)rotmatrix.At<double>(1, 2);
+
+            Quaternion rot = Quaternion.LookRotation(forward, up);
+            rot *= Quaternion.Euler(0, 0, 180);
+            Quaternion worldrot = cam.transform.rotation * rot;
+			//Quaternion localrot = Quaternion.Inverse(models[modelId].transform.rotation) * worldrot;
+
+			//Vector3 rotVec = worldrot.eulerAngles;
+			//rotVec = new Vector3(rotVec.x, rotVec.y, -rotVec.z);
+			//return Quaternion.Euler(rotVec);
+
+			return worldrot;
+		}
 
         Vector3 Point2fToVec3Scaled(Point2f point)
         {
