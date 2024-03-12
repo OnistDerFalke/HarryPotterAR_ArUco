@@ -11,9 +11,12 @@
 	using OpenCvSharp.Aruco;
 	using OpenCvSharp;
     using UnityEngine.Networking.Types;
+	using TMPro;
 
     public class MarkerDetector : MonoBehaviour 
 	{
+		public TextMeshProUGUI log;
+
 		public GameObject[] testPoints;
 		public RawImage rawimage;
 		public GameObject[] models = new GameObject[9];
@@ -21,9 +24,12 @@
 		public CanvasScaler canvasScaler;
 		public Canvas canvas;
 
+		public float basicMaxLength = 120f;
+
 		public Camera cam;
 
 		public Texture2D texture;
+		public Texture2D texture2;
 
 		private DetectorParameters detectorParameters;
 		private Dictionary dictionary;
@@ -37,26 +43,36 @@
 		private Mat mat, grayMat;
 
 		private Texture2D outputTexture;
+
+		private int frameBroker = 0;
+
 		private void Start()
         {
-			var aspectRatio = Screen.height / 600f;
-
-			rawTransform.localScale =
-				new Vector3((float)Screen.height / 600f, (float)Screen.height / 600f, 1f);
-
 			// Create default parameres for detection
 			detectorParameters = DetectorParameters.Create();
 
 			// Dictionary holds set of all available markers
 			dictionary = CvAruco.GetPredefinedDictionary(PredefinedDictionaryName.Dict6X6_250);
 
-			webcamTexture = new WebCamTexture(WebCamTexture.devices[0].name, Screen.width, Screen.height);
-			webcamTexture.Play();
+            webcamTexture = new WebCamTexture(WebCamTexture.devices[0].name, Screen.width, Screen.height);
+            webcamTexture.Play();
+
+			Debug.Log($"{webcamTexture.width}, {webcamTexture.height}");
+			Vector2 defaultCameraScale = new Vector2(webcamTexture.width /1280f, webcamTexture.height/720f);
+
+			//float scale = canvas.gameObject.GetComponent<RectTransform>().rect.height / rawTransform.rect.height;
+			float scale = canvas.gameObject.GetComponent<RectTransform>().rect.height / rawTransform.rect.height;
+			float secondScale = canvas.gameObject.GetComponent<RectTransform>().rect.height / canvas.gameObject.GetComponent<RectTransform>().rect.width;
+			log.text = $"canvas: {canvas.gameObject.GetComponent<RectTransform>().rect.width} {canvas.gameObject.GetComponent<RectTransform>().rect.height} \n rawImage: {rawTransform.rect.width} {rawTransform.rect.height}";
+			rawTransform.localScale = new Vector3(scale, scale, 1f);
 
 			rawimage.texture = webcamTexture;
 			rawimage.material.mainTexture = webcamTexture;
 
+			//texture = new Texture2D((int)rawTransform.rect.width, (int)rawTransform.rect.height, TextureFormat.RGBA32, false);
 			texture = new Texture2D(rawimage.texture.width, rawimage.texture.height, TextureFormat.RGBA32, false);
+
+			transform.rotation = transform.rotation * Quaternion.AngleAxis(webcamTexture.videoRotationAngle, Vector3.back);
 		}
 
         void Update () 
@@ -67,10 +83,27 @@
 				colors = webcamTexture.GetPixels32();
                 texture.SetPixels32(colors);
                 texture.Apply();
+				
+				if(frameBroker%10 != 0)
+                {
+					frameBroker++;
+					return;
+                }
+				//Debug.Log(frameBroker);
+				frameBroker = 1;
 
-                mat = Unity.TextureToMat(this.texture);
+				//this.texture2 = CropImage(this.texture, canvas.gameObject.GetComponent<RectTransform>().rect.width, canvas.gameObject.GetComponent<RectTransform>().rect.height);
+				mat = Unity.TextureToMat(this.texture);
+
+				//Rect roi = new Rect(pixelsToCut, 0, image.Width - 2 * pixelsToCut, image.Height);
+				//Mat croppedImage = new Mat(mat, roi);
+
 				grayMat = new Mat();
 				Cv2.CvtColor(mat, grayMat, ColorConversionCodes.BGR2GRAY);
+
+				var rawScale = rawTransform.transform.localScale;
+				Debug.Log($"Mat: {mat.Size()} \tRawimage: ({rawTransform.rect.width * rawScale.x}, {rawTransform.rect.height * rawScale.y}) " +
+					$"\tCanvas: ({canvas.gameObject.GetComponent<RectTransform>().rect.width}, {canvas.gameObject.GetComponent<RectTransform>().rect.height})");
 
 				CvAruco.DetectMarkers(grayMat, dictionary, out corners, out ids, detectorParameters, out rejectedImgPoints);
 
@@ -84,16 +117,44 @@
 
 				//CvAruco.DrawDetectedMarkers(mat, corners, ids);
 
-				if(outputTexture != null)
-					Destroy(outputTexture);
-				outputTexture = Unity.MatToTexture(mat);
-                rawimage.texture = outputTexture;
+				//if(outputTexture != null)
+				//	Destroy(outputTexture);
+				//outputTexture = Unity.MatToTexture(mat);
+    //            rawimage.texture = outputTexture;
 
-				grayMat.Dispose();
+                grayMat.Dispose();
 				mat.Dispose();
 			}
 			else 
 				Debug.Log("Kamera nie działa poprawnie.");
+		}
+
+		private Texture2D CropImage(Texture2D source, float width, float height)
+        {
+			var rawScale = rawTransform.transform.localScale;
+			Debug.Log($"Canvas: {width}, {height}\trawImage: {source.width}, {source.height}\tScale: {rawScale}");
+			width = width / rawScale.x;
+			height = height / rawScale.y;
+			int x = (int)(source.width - width) / 2;
+			int y = 0;
+
+			// Sprawdź czy wartości nie wychodzą poza granice obrazka
+			if (x < 0 || y < 0 || width + x > source.width || height + y > source.height)
+			{
+				Debug.Log($"{x}, {y}, {width+x} > {source.width}, {height + y} > {source.height}");
+				Debug.LogError("Próba obcięcia poza granicami obrazka!");
+				return null;
+			}
+
+			// Tworzenie nowego obrazka z obciętą częścią
+			Texture2D croppedImage = new Texture2D((int)width, (int)height);
+			Color[] pixels = source.GetPixels(x, y, (int)width, (int)height);
+			croppedImage.SetPixels(pixels);
+			croppedImage.Apply();
+
+			Debug.Log(croppedImage);
+
+			return croppedImage;
 		}
 
 		void DrawModel(int foundId, int modelId)
@@ -135,6 +196,8 @@
 			//rotation
             //models[modelId].transform.localRotation = Quaternion.Inverse(models[modelId].transform.parent.rotation) * GetRotation(rvec);
             models[modelId].transform.localRotation = GetRotation(rvec);
+
+			models[modelId].transform.localScale = GetScale(objPts, imagePoints);
 		}
 
 		private Vector3 GetPosition(double[] tvec, Point2f[] imagePoints, Vector3 modelScale)
@@ -210,5 +273,24 @@
 			var yScaler = rawTransform.rect.height / mat.Size().Height;
 			return new Vector3(point.X * xScaler - rawTransform.rect.width/2, -(point.Y * yScaler - rawTransform.rect.height/2), 0);
         }
+
+		private Vector3 GetScale(Point3f[] objPts, Point2f[] imgPts)
+		{
+			var distance01 = GetDistance(imgPts[0], imgPts[1]);
+			var distance12 = GetDistance(imgPts[1], imgPts[2]);
+			var distance23 = GetDistance(imgPts[2], imgPts[3]);
+			var distance30 = GetDistance(imgPts[3], imgPts[0]);
+			var maxDistance = Mathf.Max(distance01, distance12, distance23, distance30);
+
+			var s = maxDistance / basicMaxLength;
+			Vector3 scale = new Vector3(s, s, s);
+
+			return scale;
+		}
+
+		private float GetDistance(Point2f a, Point2f b)
+		{
+			return Vector2.Distance(new Vector2(a.X, a.Y), new Vector2(b.X, b.Y));
+		}
 	}
 }
