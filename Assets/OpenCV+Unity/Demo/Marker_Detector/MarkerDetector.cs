@@ -13,9 +13,12 @@
 
     public class MarkerDetector : MonoBehaviour 
 	{
+		public GameObject[] testPoints;
 		public RawImage rawimage;
 		public GameObject[] models = new GameObject[9];
 		public RectTransform rawTransform;
+		public CanvasScaler canvasScaler;
+		public Canvas canvas;
 
 		public Camera cam;
 
@@ -36,8 +39,8 @@
 		private void Start()
         {
 			var aspectRatio = Screen.height / 600f;
-			
-			rawTransform.localScale = 
+
+			rawTransform.localScale =
 				new Vector3((float)Screen.height / 600f, (float)Screen.height / 600f, 1f);
 
 			// Create default parameres for detection
@@ -71,7 +74,8 @@
 				CvAruco.DetectMarkers(grayMat, dictionary, out corners, out ids, detectorParameters, out rejectedImgPoints);
 
 				for (int id = 0; id < ids.Length; id++)
-					DrawModel(id, ids[id]);
+					if(ids[id] < 9)
+						DrawModel(id, ids[id]);
 
 				for (int id = 0; id < 9; id++)
 					if (!ids.Contains(id))
@@ -92,60 +96,55 @@
 		}
 
 		void DrawModel(int foundId, int modelId)
-        {
+		{
 			models[modelId].SetActive(true);
-			Point2f center = corners[foundId][0] + corners[foundId][1] + corners[foundId][2] + corners[foundId][3];
-			Point3d center3D = new Point3d(center.X / 4f, center.Y / 4f, 0);
-			
+
 			var rvec = new double[] { 0, 0, 0 };
 			var tvec = new double[] { 0, 0, 0 };
 
-            var cameraMatrix = new double[3, 3]
-            {
-                { 1.6794270741269229e+03, 0.0f, 9.5502638499315810e+02 },
-                { 0.0f, 1.6771700842601067e+03, 5.5015085362115587e+02 },
-                { 0.0f, 0.0f, 1.0f }
-            };
-            var dist = new double[] { 1.9683061388899192e-01, -7.3624850611674697e-01,
-                1.4290920850579334e-04, 7.8329305994069088e-04, 5.4742631511243833e-01 };
+			var cameraMatrix = new double[3, 3]
+			{
+				{ 1.6794270741269229e+03, 0.0f, 9.5502638499315810e+02 },
+				{ 0.0f, 1.6771700842601067e+03, 5.5015085362115587e+02 },
+				{ 0.0f, 0.0f, 1.0f }
+			};
 
+			var dist = new double[] { 1.9683061388899192e-01, -7.3624850611674697e-01,
+				1.4290920850579334e-04, 7.8329305994069088e-04, 5.4742631511243833e-01 };
+
+			float marker_size = 0.03f;
+			
 			var objPts = new Point3f[]
 			{
-				new Point3f(0,0,0),
-				new Point3f(0,1,0),
-				new Point3f(1,1,0),
-				new Point3f(1,0,0)
+				new Point3f(-marker_size / 2, marker_size / 2, 0),
+				new Point3f(marker_size / 2, marker_size / 2, 0),
+				new Point3f(marker_size / 2, -marker_size / 2, 0),
+				new Point3f(-marker_size / 2, -marker_size / 2, 0)
 			};
 
 			Cv2.SolvePnP(objPts, corners[foundId], cameraMatrix, dist, out rvec, out tvec);
-			CvAruco.DrawAxis(mat, cameraMatrix, dist, rvec, tvec, 0.5f);
-			
-			//position
-			Vector3 localpos;
-			localpos.x = (float)tvec[0];
-			localpos.y = -(float)tvec[1];
-			localpos.z = (float)tvec[2];
-			
-			Vector3 worldpos = cam.transform.TransformPoint(localpos);
-            models[modelId].transform.position = worldpos;
+			Point2f[] imagePoints;
+			double[,] jacobian;
+			Cv2.ProjectPoints(objPts, rvec, tvec, cameraMatrix, dist, out imagePoints, out jacobian);
+			CvAruco.DrawAxis(mat, cameraMatrix, dist, rvec, tvec, marker_size/2);
 
 			//rotation
 			double[] flip = rvec;
 			flip[1] = -flip[1];
-			rvec = flip;
-			
-			Mat rotmatrix = new Mat();			
+			double[] rvec_m = flip;
+
+			Mat rotmatrix = new Mat();
 			MatOfDouble rvecMat = new MatOfDouble(1, 3);
-			rvecMat.Set<double>(0, 0, rvec[0]);
-			rvecMat.Set<double>(0, 1, rvec[1]);
-			rvecMat.Set<double>(0, 2, rvec[2]);
+			rvecMat.Set<double>(0, 0, rvec_m[0]);
+			rvecMat.Set<double>(0, 1, rvec_m[1]);
+			rvecMat.Set<double>(0, 2, rvec_m[2]);
 			Cv2.Rodrigues(rvecMat, rotmatrix);
 
 			Vector3 forward;
 			forward.x = (float)rotmatrix.At<double>(2, 0);
 			forward.y = (float)rotmatrix.At<double>(2, 1);
 			forward.z = (float)rotmatrix.At<double>(2, 2);
-			
+
 			Vector3 up;
 			up.x = (float)rotmatrix.At<double>(1, 0);
 			up.y = (float)rotmatrix.At<double>(1, 1);
@@ -154,8 +153,46 @@
 			Quaternion rot = Quaternion.LookRotation(forward, up);
 			rot *= Quaternion.Euler(0, 0, 180);
 			Quaternion worldrot = cam.transform.rotation * rot;
+			//Quaternion localrot = Quaternion.Inverse(models[modelId].transform.rotation) * worldrot;
 
-			models[modelId].transform.rotation = worldrot;
+
+			//position
+			var tvecUnity = new Vector3(
+				 (rawTransform.rect.width / mat.Size().Width) * (float)tvec[0],
+				 (rawTransform.rect.width / mat.Size().Width) * (float)-tvec[1],
+				 (rawTransform.rect.width / mat.Size().Width) * (float)tvec[2]);
+
+			Vector3 localpos = Vector3.zero;
+			Vector3[] corn = new Vector3[4];
+			for (var i = 0; i < 4; i++)
+			{
+				testPoints[i].SetActive(true);
+				testPoints[i].transform.localPosition = Point2fToVec3Scaled(imagePoints[i]);
+				testPoints[i].transform.rotation = worldrot;
+				corn[i] = Point2fToVec3Scaled(imagePoints[i]);
+				localpos += Point2fToVec3Scaled(imagePoints[i]);
+			}
+
+			localpos /= 4f;
+			//var globalpos = models[modelId].transform.TransformPoint(localpos);
+			//localpos = models[modelId].transform.InverseTransformPoint(globalpos);
+
+			models[modelId].transform.localPosition = localpos;
+			models[modelId].SetActive(true);
+   //         var temp = models[modelId].transform.position;
+			//temp.z = tvecUnity.z;//canvas.planeDistance - models[modelId].GetComponent<Collider>().bounds.size.y;
+   //         models[modelId].transform.position = temp;
+
+            models[modelId].transform.localRotation = Quaternion.Inverse(models[modelId].transform.parent.rotation) * worldrot;
+
 		}
+
+
+        Vector3 Point2fToVec3Scaled(Point2f point)
+        {
+			var xScaler = rawTransform.rect.width / mat.Size().Width;
+			var yScaler = rawTransform.rect.height / mat.Size().Height;
+			return new Vector3(point.X * xScaler - rawTransform.rect.width/2, -(point.Y * yScaler - rawTransform.rect.height/2), 0);
+        }
 	}
 }
