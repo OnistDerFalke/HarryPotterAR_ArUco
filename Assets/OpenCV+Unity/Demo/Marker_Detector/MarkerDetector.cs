@@ -37,8 +37,8 @@
 		private WebCamTexture webcamTexture;
 
 		//OpenCV textures and mats
-		public Texture2D texture;
-		public Texture2D texture2;
+		private Texture2D texture;
+		private Texture2D texture2;
 		private Texture2D outputTexture;
 		private Mat mat;
 		private Mat grayMat;
@@ -62,15 +62,34 @@
 			// Dictionary holds set of all available markers
 			dictionary = CvAruco.GetPredefinedDictionary(PredefinedDictionaryName.Dict6X6_250);
 
+			var res = WebCamTexture.devices[0].availableResolutions;
+			int bestRatioIndex = -1;
+			float bestDistance = 100;
+			var wantedAspect = Screen.width / Screen.height;
+			log.text += $"{Screen.width} {Screen.height}\n";
+			if (res != null) 
+			{
+				for(var i=res.Length-1; i>=0; i--)
+				{
+					var ar = res[i].width / res[i].height;
+					if(Mathf.Abs(wantedAspect-ar)<= bestDistance)
+                    {
+						bestDistance = Mathf.Abs(wantedAspect - ar);
+						bestRatioIndex = i;
+					}
+				}
+				log.text += $"{res[bestRatioIndex]} \n";
+				webcamTexture = new WebCamTexture(WebCamTexture.devices[0].name, res[bestRatioIndex].width, res[bestRatioIndex].height);
+			}
+			else
+            {
+				webcamTexture = new WebCamTexture(WebCamTexture.devices[0].name, Screen.width, Screen.height);
+			}
+
 			// New webcamtexture
-			webcamTexture = new WebCamTexture(WebCamTexture.devices[0].name, Screen.width, Screen.height);
+			
 			webcamTexture.Play();
 
-			// Available cameras
-			log.text += "Available cameras: \n";
-			for (var i = 0; i < WebCamTexture.devices.Length; i++)
-				log.text += $"-> [{i}] " + WebCamTexture.devices[i].name + "\n";
-			
 			// Scaling whole image with webcamtexture size
 			float scale = canvas.gameObject.GetComponent<RectTransform>().rect.height / webcamTexture.height;
 			rawTransform.localScale = new Vector3(webcamTexture.width * scale / rawTransform.rect.width, webcamTexture.height * scale / rawTransform.rect.height, 1f);
@@ -82,6 +101,9 @@
 
 			//Fixes camera rotate by 90deg on mobile device 
 			transform.rotation = transform.rotation * Quaternion.AngleAxis(webcamTexture.videoRotationAngle, Vector3.back);
+
+			//log.text += $"Canvas: {canvas.gameObject.GetComponent<RectTransform>().rect.width}, {canvas.gameObject.GetComponent<RectTransform>().rect.height}\n";
+			//log.text += $"RawTransform: {rawTransform.rect.width},  {rawTransform.rect.}\n";
 		}
 
 		void Update()
