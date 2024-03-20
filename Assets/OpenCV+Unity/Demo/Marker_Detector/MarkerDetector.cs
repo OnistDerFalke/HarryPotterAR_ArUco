@@ -13,7 +13,7 @@
 	using UnityEngine.Networking.Types;
 	using TMPro;
 
-	public class MarkerDetector : MonoBehaviour
+	public class MarkerDetector2 : MonoBehaviour
 	{
 		//Debugging
 		public bool debugMode;
