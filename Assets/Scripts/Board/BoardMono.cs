@@ -1,5 +1,6 @@
 using Assets.Scripts;
 using Game;
+using OpenCvSharp.Demo;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,8 +9,8 @@ public class BoardMono : MonoBehaviour
 {
     public CoordinatesConverter coordinatesConverter;
     public BoardVisulalizer boardVisualiser;
-    //TODO: change to ArUco
-    //public MultiVuMarkHandler charactersHandler;
+    //TODO2: change to ArUco
+    public MarkerDetector charactersHandler;
     public int id;
 
     public Board Board { get;  set; }
@@ -106,28 +107,28 @@ public class BoardMono : MonoBehaviour
     private void PlacePlayers()
     {
         managedCharacters.Clear();
-        //TODO: change to ArUco
-        //foreach (var vumark in GameManager.CurrentTrackedObjects)
-        //{
-        //    Character character = Player.CharacterFromString(vumark.Key);
-        //    if (character != Character.None && !managedCharacters.Contains(character))
-        //    {
-        //        managedCharacters.Add(character);
-        //        Vector3 characterPos = charactersHandler.models[charactersHandler.availableIds.IndexOf(vumark.Key)].transform.position;
-        //        Vector3 offset = charactersHandler.transform.position - vumark.Value.transform.position;
+        //TODO2: change to ArUco
+        foreach (var marker in GameManager.CurrentTrackedObjects)
+        {
+            Character character = Player.CharacterFromInt(marker.Key);
+            if (character != Character.None && !managedCharacters.Contains(character))
+            {
+                managedCharacters.Add(character);
+                Vector3 characterPos = charactersHandler.FindModelById(marker.Key).transform.position;
+                //Vector3 offset = charactersHandler.transform.position - marker.Value;
 
-
-        //        Field f = GetOccupiedField(characterPos + offset);
-        //        Player player = GameManager.Players.Find((e) => e.Character == character);
-        //        if (f != null && player != null)
-        //        {
-        //            if (!player.IsDuringMove && player.LastFieldId != f.Index)
-        //            {
-        //                player.LastFieldId = f.Index;
-        //            }
-        //        }
-        //    }
-        //}
+                //Field f = GetOccupiedField(characterPos + offset);
+                Field f = GetOccupiedField(characterPos);
+                Player player = GameManager.Players.Find((e) => e.Character == character);
+                if (f != null && player != null)
+                {
+                    if (!player.IsDuringMove && player.LastFieldId != f.Index)
+                    {
+                        player.LastFieldId = f.Index;
+                    }
+                }
+            }
+        }
     }
 
     void Update()

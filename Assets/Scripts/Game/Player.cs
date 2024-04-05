@@ -78,6 +78,33 @@ namespace Game
             }
         }
 
+        public static Character CharacterFromInt(int id)
+        {
+            switch (id)
+            {
+                case 0:
+                    return Character.Harry;
+                case 1:
+                    return Character.Hermiona;
+                case 2:
+                    return Character.Luna;
+                case 3:
+                    return Character.Peter;
+                case 4:
+                    return Character.Draco;
+                case 5:
+                    return Character.Ron;
+                case 6:
+                    return Character.Cedrik;
+                case 7:
+                    return Character.Neville;
+                case 8:
+                    return Character.Ginny;
+                default:
+                    return Character.None;
+            }
+        }
+
         private SpecialPower GetSpecialPower()
         {
             switch (this.character)

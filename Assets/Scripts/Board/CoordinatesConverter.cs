@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using OpenCvSharp.Demo;
 
 namespace Assets.Scripts
 {
@@ -10,8 +11,8 @@ namespace Assets.Scripts
         [SerializeField] private List<Vector2> boardMarkPositions;
         [SerializeField] private int boardMarkStartId;
         private List<int> boardMarkIds;
-        //TODO: change to ArUco
-        //[SerializeField] private MultiVuMarkHandler vuMarkHandler;
+        //TODO2: change to ArUco
+        [SerializeField] private MarkerDetector arucoMarkHandler;
 
         [SerializeField] private float scale = 1/1.75f;
 
@@ -21,13 +22,6 @@ namespace Assets.Scripts
         private Dictionary<int, Vector2> boardMarks;
         private (int id, GameObject marker) referenceMarker;
         private BoardMono board;
-
-        private void Start()
-        {
-            boardMarkIds = new List<int>();
-            for (int i = 0; i < boardMarkPositions.Count; i++)
-                boardMarkIds.Add(boardMarkStartId + i);
-        }
 
         /// <summary>
         /// Use this method to make sure that the result of converting coordinates is valid
@@ -47,15 +41,15 @@ namespace Assets.Scripts
         {
             if (IsTrackingBoard())
             {
-                var vuMarkBehaviourPosiiton = new Vector3(0, 0, 0);
-                //TODO: change to ArUco
-                //if (GameManager.CurrentTrackedObjects.ContainsKey(referenceMarker.id))
-                //{
-                //    var vuMarkBehaviour = GameManager.CurrentTrackedObjects[referenceMarker.id];
-                //    vuMarkBehaviourPosiiton = vuMarkBehaviour.transform.position - vuMarkHandler.transform.position;
-                //}
+                var newPosiiton = new Vector3(0, 0, 0);
+                //TODO3: change to ArUco
+                if (GameManager.CurrentTrackedObjects.ContainsKey(referenceMarker.id))
+                {
+                    var position = GameManager.CurrentTrackedObjects[referenceMarker.id];
+                    newPosiiton = position - arucoMarkHandler.transform.position;
+                }
 
-                return vuMarkBehaviourPosiiton + referenceMarker.marker.transform.position +
+                return newPosiiton + referenceMarker.marker.transform.position +
                     (boardCoordinates.x - boardMarks[referenceMarker.id].x) * referenceMarker.marker.transform.right.normalized * scale +
                     (boardCoordinates.y - boardMarks[referenceMarker.id].y) * referenceMarker.marker.transform.forward.normalized * scale;
             }
@@ -67,15 +61,14 @@ namespace Assets.Scripts
 
         public Vector3 ConvertCoordinates(Vector2 boardCoordinates, int referenceMarkerId)
         {
-            //TODO: change to ArUco
-            //GameObject marker = vuMarkHandler.FindModelById(referenceMarkerId);
-            //(string id, GameObject marker) referenceMarker = (referenceMarkerId, marker);
+            //TODO2: change to ArUco
+            Debug.Log("ConvertCoordinates - FindModelById: " + referenceMarkerId);
+            GameObject marker = arucoMarkHandler.FindModelById(referenceMarkerId);
+            (int id, GameObject marker) referenceMarker = (referenceMarkerId, marker);
 
-            //return referenceMarker.marker.transform.position +
-            //        (boardCoordinates.x - boardMarks[referenceMarker.id].x) * referenceMarker.marker.transform.right.normalized * scale +
-            //        (boardCoordinates.y - boardMarks[referenceMarker.id].y) * referenceMarker.marker.transform.forward.normalized * scale;
-
-            return new Vector3();
+            return referenceMarker.marker.transform.position +
+                    (boardCoordinates.x - boardMarks[referenceMarker.id].x) * referenceMarker.marker.transform.right.normalized * scale +
+                    (boardCoordinates.y - boardMarks[referenceMarker.id].y) * referenceMarker.marker.transform.forward.normalized * scale;
         }
 
         public Quaternion ReferenceRotation()
@@ -97,15 +90,17 @@ namespace Assets.Scripts
                 return Vector2.one * -1;
             }
 
-            var vuMarkBehaviourPosiiton = new Vector3(0, 0, 0);
-            //TODO: change to ArUco
-            //if (GameManager.CurrentTrackedObjects.ContainsKey(referenceMarker.id))
-            //{
-            //    var vuMarkBehaviour = GameManager.CurrentTrackedObjects[referenceMarker.id];
-            //    vuMarkBehaviourPosiiton = vuMarkBehaviour.transform.position - vuMarkHandler.transform.position;
-            //}
+            //var newPosition = new Vector3(0, 0, 0);
+            var position = new Vector3(0, 0, 0);
+            //TODO2: change to ArUco
+            if (GameManager.CurrentTrackedObjects.ContainsKey(referenceMarker.id))
+            {
+                position = GameManager.CurrentTrackedObjects[referenceMarker.id];
+                //newPosition = position - arucoMarkHandler.transform.position;
+            }
 
-            Vector3 referencePosition = referenceMarker.marker.transform.position - vuMarkBehaviourPosiiton;
+            //Vector3 referencePosition = referenceMarker.marker.transform.position - newPosition;
+            Vector3 referencePosition = referenceMarker.marker.transform.position - position;
 
             // direction down the pawn
             Vector3 normalizedDirection = -1 * referenceMarker.marker.transform.up.normalized;
@@ -141,9 +136,9 @@ namespace Assets.Scripts
                     continue;
                 }
                 Vector3 expectedPosition = ConvertCoordinates(boardMarks[otherId], markerId);
-                //TODO: change to ArUco
-                //Vector3 actualPosition = vuMarkHandler.FindModelById(otherId).transform.position;
-                //err += Vector3.SqrMagnitude(expectedPosition - actualPosition);
+                //TODO2: change to ArUco
+                Vector3 actualPosition = arucoMarkHandler.FindModelById(otherId).transform.position;
+                err += Vector3.SqrMagnitude(expectedPosition - actualPosition);
             }
             return err;
         }
@@ -168,16 +163,21 @@ namespace Assets.Scripts
         private void Awake()
         {
             boardMarks = new Dictionary<int, Vector2>();
+            boardMarkIds = new List<int>();
+
             for (int i = 0; i < boardMarkPositions.Count; i++)
             {
+                boardMarkIds.Add(boardMarkStartId + i);
                 boardMarks[boardMarkIds[i]] = boardMarkPositions[i];
             }
+
             board = GetComponentInParent<BoardMono>();
         }
 
         private void Update()
         {
             var bestMarker = ChooseReferenceMarker();
+            Debug.Log("BestMarker: " + bestMarker.Item1);
             if (bestMarker.Item1 != referenceMarker.id)
             {
                 if (referenceMarker.marker != null && board.CurrentTrackedBoardMarks.Contains(referenceMarker.id))
@@ -188,12 +188,12 @@ namespace Assets.Scripts
                 }
 
                 Debug.Log("Podmianka");
-                //TODO: change to ArUco
-                //GameObject marker = vuMarkHandler.FindModelById(bestMarker.Item1);
-                //if (marker != null)
-                //{
-                //    referenceMarker = (bestMarker.Item1, marker);
-                //}
+                //TODO2: change to ArUco
+                GameObject marker = arucoMarkHandler.FindModelById(bestMarker.Item1);
+                if (marker != null)
+                {
+                    referenceMarker = (bestMarker.Item1, marker);
+                }
             }
         }
     }

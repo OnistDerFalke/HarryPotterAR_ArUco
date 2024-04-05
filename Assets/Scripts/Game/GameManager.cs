@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Game;
+using UnityEngine;
 
 namespace Assets.Scripts
 {
@@ -11,8 +12,8 @@ namespace Assets.Scripts
         public static int PlayerNumber;
         public static List<Player> Players;
         public static List<string> DebugLogs;
-        //TODO: change to ArUco
-        //public static Dictionary<string, VuMarkBehaviour> CurrentTrackedObjects;
+        //TODO2: change to ArUco
+        public static Dictionary<int, Vector3> CurrentTrackedObjects;
         public static bool setup = false;
 
         public static void Setup()
@@ -22,8 +23,8 @@ namespace Assets.Scripts
             DebugLogs = new();
             CurrentDiceThrownNumber = -1;
             PlayerNumber = 0;
-            //TODO: change to ArUco
-            //CurrentTrackedObjects = new();
+            //TODO2: change to ArUco
+            CurrentTrackedObjects = new();
             setup = true;
         }
 

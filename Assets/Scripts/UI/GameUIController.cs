@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts;
+using Game;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -68,6 +69,7 @@ namespace Scripts
 
         void Start()
         {
+            TempSetup();
             currentFieldShow = true;
             actionInfoShow = false;
             fieldInfoShow = false;
@@ -75,6 +77,14 @@ namespace Scripts
             specialPowerUsed = false;
             baseInstruction = new();
             UpdateContent();
+        }
+
+        //TODO: to delete
+        private void TempSetup()
+        {
+            GameManager.Setup();
+            GameManager.PlayerNumber = 1;
+            GameManager.Players.Add(new Player(0, Character.Harry));
         }
 
         void Update()

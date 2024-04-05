@@ -1,19 +1,15 @@
 ﻿namespace OpenCvSharp.Demo
 {
-
+    using System.Collections.Generic;
     using UnityEngine;
-    using System.Collections;
     using UnityEngine.UI;
     using Aruco;
-    using OpenCvSharp.Util;
     using System.Linq;
-    using System.Collections.Generic;
-    using OpenCvSharp.Aruco;
     using OpenCvSharp;
-    using UnityEngine.Networking.Types;
     using TMPro;
-    using static global::Unity.VisualScripting.Member;
-    using UnityEngine.Video;
+    using Assets.Scripts;
+    using System;
+    using UnityEngine.TextCore.Text;
 
     public class MarkerDetector : MonoBehaviour
     {
@@ -26,7 +22,8 @@
         public Camera cam;
 
         //3D models
-        public GameObject[] models = new GameObject[9];
+        //TODO: add other models to board markers
+        [SerializeField] public GameObject[] models = new GameObject[90];       //9 characters, 81 to board
         public float basicMaxLength = 120f;
         private int[] ids;
 
@@ -55,67 +52,12 @@
 
         private int frameBroker = 0;
 
-        private void DoStartThings(int index)
-        {
-            // Create default parameres for detection
-            detectorParameters = DetectorParameters.Create();
-
-            // Dictionary holds set of all available markers
-            dictionary = CvAruco.GetPredefinedDictionary(PredefinedDictionaryName.Dict6X6_250);
-
-            var res = WebCamTexture.devices[0].availableResolutions;
-            if (res != null)
-            {
-                webcamTexture = new WebCamTexture(WebCamTexture.devices[0].name, res[index].width, res[index].height);
-            }
-            else
-            {
-                webcamTexture = new WebCamTexture(WebCamTexture.devices[0].name, Screen.width, Screen.height);
-            }
-
-            // New webcamtexture
-
-            webcamTexture.Play();
-
-            // Scaling whole image with webcamtexture size
-            //float scaleX = webcamTexture.width * rawTransform.rect.height / (rawTransform.rect.width * webcamTexture.height);
-            //float scaleY = webcamTexture.height / rawTransform.rect.height;
-            //rawTransform.localScale = new Vector3(scaleX, scaleY, 1f);
-            //rawTransform.sizeDelta = new Vector2(webcamTexture.width, webcamTexture.height);
-            //float scale = canvas.gameObject.GetComponent<RectTransform>().rect.height / webcamTexture.height;
-            //scale = 1f / scale;
-            //rawTransform.sizeDelta = new Vector2(canvas.gameObject.GetComponent<RectTransform>().rect.width * scale, canvas.gameObject.GetComponent<RectTransform>().rect.height * scale);
-            //float scale = canvas.gameObject.GetComponent<RectTransform>().rect.height / webcamTexture.height;
-            //scale = 1f / scale;
-            //rawTransform.localScale = new Vector3(webcamTexture.width * scale / rawTransform.rect.width, webcamTexture.height * scale / rawTransform.rect.height, 1f);
-
-            rawTransform.sizeDelta = new Vector3(webcamTexture.width, webcamTexture.height);
-
-            canvas.gameObject.GetComponent<CanvasScaler>().referenceResolution = new Vector2(webcamTexture.width, webcamTexture.height);
-            var s = rawTransform.localScale;
-            s.x *= webcamTexture.width / webcamTexture.height;
-            rawTransform.localScale = s;
-
-            //Setting texture for raw image and new texture for processed image for CV
-            rawimage.texture = webcamTexture;
-            rawimage.material.mainTexture = webcamTexture;
-            texture = new Texture2D(rawimage.texture.width, rawimage.texture.height, TextureFormat.RGBA32, false);
-
-            log.text += $"TEX: {rawimage.texture.width} {rawimage.texture.height}";
-
-
-
-            //Fixes camera rotate by 90deg on mobile device 
-            //transform.rotation = transform.rotation * Quaternion.AngleAxis(webcamTexture.videoRotationAngle, Vector3.back);
-            //log.text += $"Angle: {webcamTexture.videoRotationAngle}\n";
-            //var locScale = transform.localScale;
-            //locScale.y *= webcamTexture.videoVerticallyMirrored ? -1f : 1f;
-            //transform.localScale = locScale;
-        }
-
 
         private void Start()
         {
+            foreach (var model in models)
+                model.SetActive(false);
+
             // Create default parameres for detection
             detectorParameters = DetectorParameters.Create();
 
@@ -125,8 +67,13 @@
             var res = WebCamTexture.devices[0].availableResolutions;
             int bestRatioIndex = -1;
             float bestDistance = -1;
-            var wantedAspect = Screen.width / Screen.height;
             log.text += $"{Screen.width} {Screen.height}\n";
+
+            float minMultiply = float.MaxValue;
+            List<Resolution> bestResolutions = new();
+            float minDistanceHeight = Screen.height;
+            Resolution theBestRes = new Resolution();
+
             if (res != null)
             {
                 for (var i = res.Length - 1; i >= 0; i--)
@@ -137,15 +84,42 @@
                         bestRatioIndex = i;
                     }
                 }
-                log.text += $"{res[bestRatioIndex]} \n";
-                webcamTexture = new WebCamTexture(WebCamTexture.devices[0].name, res[bestRatioIndex].width, res[bestRatioIndex].height);
+
+                for (var i = res.Length - 1; i >= 0; i--)
+                {
+                    if (res[i].height / res[i].width == bestDistance)
+                        bestResolutions.Add(res[i]);
+                }
+                
+                foreach (var bestRes in bestResolutions)
+                {
+                    if (Math.Abs(Screen.height - bestRes.height) < minDistanceHeight)
+                    {
+                        minDistanceHeight = Math.Abs(Screen.height - bestRes.height);
+                        theBestRes = bestRes;
+                    }
+                }
+
+                //for (var i = res.Length - 1; i >= 0; i--)
+                //{
+                //    if (res[i].height / res[i].width == bestDistance)
+                //    {
+                //        if (res[i].height * res[i].width < minMultiply)
+                //        {
+                //            minMultiply = res[i].height * res[i].width;
+                //            bestRatioIndex = i;
+                //        }
+                //    }
+                //}
+
+                log.text += $"{theBestRes} \n";
+                //webcamTexture = new WebCamTexture(WebCamTexture.devices[0].name, res[bestRatioIndex].width, res[bestRatioIndex].height);
+                webcamTexture = new WebCamTexture(WebCamTexture.devices[0].name, theBestRes.width, theBestRes.height);
             }
             else
             {
                 webcamTexture = new WebCamTexture(WebCamTexture.devices[0].name, Screen.width, Screen.height);
             }
-
-            // New webcamtexture
 
             webcamTexture.Play();
 
@@ -166,16 +140,6 @@
             transform.localScale = locScale;
         }
 
-        private IEnumerator ChangeResolution(Resolution[] res)
-        {
-            for (var i = 0; i < res.Length; i++)
-            {
-                log.text += $"Applying res[{i}]: {res[i].width} {res[i].height} \n";
-                DoStartThings(i);
-                yield return new WaitForSeconds(5);
-            }
-        }
-
         void Update()
         {
             //Debug
@@ -188,22 +152,20 @@
                 texture.SetPixels32(colors);
                 texture.Apply();
 
+
                 //TODO: Do we really need broker to optimize - it reduces the quality
-                //if (frameBroker % (int)((1 / Time.deltaTime) / 12) != 0)
-                if (frameBroker % 10 != 0)
+                //if (frameBroker % (int)((1 / Time.deltaTime) / 15) != 0)
+                if (frameBroker % (int)((1 / Time.deltaTime) / 12) != 0)
+                //if (frameBroker % 10 != 0)
                 {
                     frameBroker++;
                     return;
                 }
                 frameBroker = 1;
 
-                //TODO: Would be nice to optimize by cropping unused image
-                //TODO: May not be so important if we find another phone camera with better FOV
+
                 this.texture2 = CropImage(this.texture, (int)canvas.gameObject.GetComponent<RectTransform>().rect.width, (int)canvas.gameObject.GetComponent<RectTransform>().rect.height);
                 mat = Unity.TextureToMat(this.texture2);
-
-                //Rect roi = new Rect(pixelsToCut, 0, image.Width - 2 * pixelsToCut, image.Height);
-                //Mat croppedImage = new Mat(mat, roi);
 
                 grayMat = new Mat();
                 Cv2.CvtColor(mat, grayMat, ColorConversionCodes.BGR2GRAY);
@@ -219,20 +181,22 @@
                 //    point.SetActive(false);
 
                 for (int id = 0; id < ids.Length; id++)
-                    if (ids[id] < 9)
-                        DrawModel(id, ids[id]);
+                    DrawModel(id, ids[id]);
 
-                for (int id = 0; id < 9; id++)
+                for (int id = 0; id < ids.Length; id++)
                     if (!ids.Contains(id))
-                        models[id].SetActive(false);
+                        UntrackModel(id);
+
+                Debug.Log("Wykrytych markerow: " + ids.Count());
 
                 //To draw RGB lines on axes
                 //CvAruco.DrawDetectedMarkers(mat, corners, ids);
 
-                //if(outputTexture != null)
-                //	Destroy(outputTexture);
+                //if (outputTexture != null)
+                //    Destroy(outputTexture);
                 //outputTexture = Unity.MatToTexture(mat);
-                //            rawimage.texture = outputTexture;
+                //rawimage.texture = outputTexture;
+                //end drawing
 
                 grayMat.Dispose();
                 mat.Dispose();
@@ -246,7 +210,7 @@
             var rawImageX = rawTransform.sizeDelta.x;
             var rawImageY = rawTransform.sizeDelta.y;
 
-            Debug.Log($"Canvas: {width}, {height}\trawImage: {rawImageX}, {rawImageY}\tsource: {source.width}, {source.height}");
+            //Debug.Log($"Canvas: {width}, {height}\trawImage: {rawImageX}, {rawImageY}\tsource: {source.width}, {source.height}");
             int x = (int)(rawImageX - width) / 2;
             int y = 0;
 
@@ -269,15 +233,45 @@
             croppedImage.SetPixels(pixels);
             croppedImage.Apply();
 
-            Debug.Log(croppedImage);
-
             return croppedImage;
+        }
+
+        public GameObject FindModelById(int id)
+        {
+            if (id >= models.Count() || id < 0)
+                return null;
+            return models[id];
+        }
+
+        private void UntrackModel(int id)
+        {
+            if (GameManager.CurrentTrackedObjects.ContainsKey(id))
+            {
+                models[id].SetActive(false);
+                GameManager.CurrentTrackedObjects.Remove(id);
+                EventBroadcaster.InvokeOnMarkerLost(id);
+            }
+        }
+
+        private void TrackModel(int id, Vector3 markerPos)
+        {
+            var isCharacter = id < 9 && id >= 0;
+
+            if (!GameManager.CurrentTrackedObjects.ContainsKey(id))
+            {
+                models[id].SetActive(isCharacter);
+                GameManager.CurrentTrackedObjects.Add(id, markerPos);
+                EventBroadcaster.InvokeOnMarkerDetected(id);
+            }
+            else
+            {
+                //TODO: zrobić to też w Vuforii - bo tak powinno być dokładniejsze wykrywanie pól
+                GameManager.CurrentTrackedObjects[id] = markerPos;
+            }
         }
 
         void DrawModel(int foundId, int modelId)
         {
-            models[modelId].SetActive(true);
-
             var rvec = new double[] { 0, 0, 0 };
             var tvec = new double[] { 0, 0, 0 };
 
@@ -313,6 +307,8 @@
             models[modelId].transform.localPosition = GetPosition(tvec, imagePoints, models[modelId].transform.localScale, true);
             models[modelId].transform.localRotation = GetRotation(rvec);
             models[modelId].transform.localScale = GetScale(objPts, imagePoints);
+
+            TrackModel(modelId, models[modelId].transform.position);
         }
 
         private Vector3 GetScale(Point3f[] objPts, Point2f[] imgPts)
@@ -397,5 +393,74 @@
             var yScaler = rawTransform.rect.height / mat.Size().Height;
             return new Vector3(point.X * xScaler - rawTransform.rect.width / 2, -(point.Y * yScaler - rawTransform.rect.height / 2), 0);
         }
+
+
+        //private void DoStartThings(int index)
+        //{
+        //    // Create default parameres for detection
+        //    detectorParameters = DetectorParameters.Create();
+
+        //    // Dictionary holds set of all available markers
+        //    dictionary = CvAruco.GetPredefinedDictionary(PredefinedDictionaryName.Dict6X6_250);
+
+        //    var res = WebCamTexture.devices[0].availableResolutions;
+        //    if (res != null)
+        //    {
+        //        webcamTexture = new WebCamTexture(WebCamTexture.devices[0].name, res[index].width, res[index].height);
+        //    }
+        //    else
+        //    {
+        //        webcamTexture = new WebCamTexture(WebCamTexture.devices[0].name, Screen.width, Screen.height);
+        //    }
+
+        //    // New webcamtexture
+
+        //    webcamTexture.Play();
+
+        //    // Scaling whole image with webcamtexture size
+        //    //float scaleX = webcamTexture.width * rawTransform.rect.height / (rawTransform.rect.width * webcamTexture.height);
+        //    //float scaleY = webcamTexture.height / rawTransform.rect.height;
+        //    //rawTransform.localScale = new Vector3(scaleX, scaleY, 1f);
+        //    //rawTransform.sizeDelta = new Vector2(webcamTexture.width, webcamTexture.height);
+        //    //float scale = canvas.gameObject.GetComponent<RectTransform>().rect.height / webcamTexture.height;
+        //    //scale = 1f / scale;
+        //    //rawTransform.sizeDelta = new Vector2(canvas.gameObject.GetComponent<RectTransform>().rect.width * scale, canvas.gameObject.GetComponent<RectTransform>().rect.height * scale);
+        //    //float scale = canvas.gameObject.GetComponent<RectTransform>().rect.height / webcamTexture.height;
+        //    //scale = 1f / scale;
+        //    //rawTransform.localScale = new Vector3(webcamTexture.width * scale / rawTransform.rect.width, webcamTexture.height * scale / rawTransform.rect.height, 1f);
+
+        //    rawTransform.sizeDelta = new Vector3(webcamTexture.width, webcamTexture.height);
+
+        //    canvas.gameObject.GetComponent<CanvasScaler>().referenceResolution = new Vector2(webcamTexture.width, webcamTexture.height);
+        //    var s = rawTransform.localScale;
+        //    s.x *= webcamTexture.width / webcamTexture.height;
+        //    rawTransform.localScale = s;
+
+        //    //Setting texture for raw image and new texture for processed image for CV
+        //    rawimage.texture = webcamTexture;
+        //    rawimage.material.mainTexture = webcamTexture;
+        //    texture = new Texture2D(rawimage.texture.width, rawimage.texture.height, TextureFormat.RGBA32, false);
+
+        //    log.text += $"TEX: {rawimage.texture.width} {rawimage.texture.height}";
+
+
+
+        //    //Fixes camera rotate by 90deg on mobile device 
+        //    //transform.rotation = transform.rotation * Quaternion.AngleAxis(webcamTexture.videoRotationAngle, Vector3.back);
+        //    //log.text += $"Angle: {webcamTexture.videoRotationAngle}\n";
+        //    //var locScale = transform.localScale;
+        //    //locScale.y *= webcamTexture.videoVerticallyMirrored ? -1f : 1f;
+        //    //transform.localScale = locScale;
+        //}
+
+        //private IEnumerator ChangeResolution(Resolution[] res)
+        //{
+        //    for (var i = 0; i < res.Length; i++)
+        //    {
+        //        log.text += $"Applying res[{i}]: {res[i].width} {res[i].height} \n";
+        //        DoStartThings(i);
+        //        yield return new WaitForSeconds(5);
+        //    }
+        //}
     }
 }
