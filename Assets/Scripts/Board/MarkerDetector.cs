@@ -12,6 +12,8 @@
     using OpenCvSharp;
     using UnityEngine.Networking.Types;
     using TMPro;
+    using static global::Unity.VisualScripting.Member;
+    using UnityEngine.Video;
 
     public class MarkerDetector : MonoBehaviour
     {
@@ -187,6 +189,7 @@
                 texture.Apply();
 
                 //TODO: Do we really need broker to optimize - it reduces the quality
+                //if (frameBroker % (int)((1 / Time.deltaTime) / 12) != 0)
                 if (frameBroker % 10 != 0)
                 {
                     frameBroker++;
@@ -196,8 +199,8 @@
 
                 //TODO: Would be nice to optimize by cropping unused image
                 //TODO: May not be so important if we find another phone camera with better FOV
-                //this.texture2 = CropImage(this.texture, canvas.gameObject.GetComponent<RectTransform>().rect.width, canvas.gameObject.GetComponent<RectTransform>().rect.height);
-                mat = Unity.TextureToMat(this.texture);
+                this.texture2 = CropImage(this.texture, (int)canvas.gameObject.GetComponent<RectTransform>().rect.width, (int)canvas.gameObject.GetComponent<RectTransform>().rect.height);
+                mat = Unity.TextureToMat(this.texture2);
 
                 //Rect roi = new Rect(pixelsToCut, 0, image.Width - 2 * pixelsToCut, image.Height);
                 //Mat croppedImage = new Mat(mat, roi);
@@ -238,14 +241,19 @@
                 Debug.Log("Kamera nie działa poprawnie.");
         }
 
-        private Texture2D CropImage(Texture2D source, float width, float height)
+        private Texture2D CropImage(Texture2D source, int width, int height)
         {
-            var rawScale = rawTransform.transform.localScale;
-            Debug.Log($"Canvas: {width}, {height}\trawImage: {source.width}, {source.height}\tScale: {rawScale}");
-            width = width / rawScale.x;
-            height = height / rawScale.y;
-            int x = (int)(source.width - width) / 2;
+            var rawImageX = rawTransform.sizeDelta.x;
+            var rawImageY = rawTransform.sizeDelta.y;
+
+            Debug.Log($"Canvas: {width}, {height}\trawImage: {rawImageX}, {rawImageY}\tsource: {source.width}, {source.height}");
+            int x = (int)(rawImageX - width) / 2;
             int y = 0;
+
+            x = (int)(x / rawImageX * source.width);
+            y = (int)(y / rawImageY * source.height);
+            width = (int)(width / rawImageX * source.width);
+            height = (int)(height / rawImageY * source.height);
 
             // Sprawdź czy wartości nie wychodzą poza granice obrazka
             if (x < 0 || y < 0 || width + x > source.width || height + y > source.height)
@@ -257,7 +265,7 @@
 
             // Tworzenie nowego obrazka z obciętą częścią
             Texture2D croppedImage = new Texture2D((int)width, (int)height);
-            Color[] pixels = source.GetPixels(x, y, (int)width, (int)height);
+            Color[] pixels = source.GetPixels(x, y, width, height);
             croppedImage.SetPixels(pixels);
             croppedImage.Apply();
 

@@ -8,18 +8,26 @@ namespace Assets.Scripts
     {
         // marks that identify the position and orientation of a board, sticked to the board
         [SerializeField] private List<Vector2> boardMarkPositions;
-        [SerializeField] private List<string> boardMarkIds;
+        [SerializeField] private int boardMarkStartId;
+        private List<int> boardMarkIds;
         //TODO: change to ArUco
         //[SerializeField] private MultiVuMarkHandler vuMarkHandler;
 
         [SerializeField] private float scale = 1/1.75f;
 
-        public List<string> BoardMarkIds => boardMarkIds;
+        public List<int> BoardMarkIds => boardMarkIds;
         public float Scale => scale;
 
-        private Dictionary<string, Vector2> boardMarks;
-        private (string id, GameObject marker) referenceMarker;
+        private Dictionary<int, Vector2> boardMarks;
+        private (int id, GameObject marker) referenceMarker;
         private BoardMono board;
+
+        private void Start()
+        {
+            boardMarkIds = new List<int>();
+            for (int i = 0; i < boardMarkPositions.Count; i++)
+                boardMarkIds.Add(boardMarkStartId + i);
+        }
 
         /// <summary>
         /// Use this method to make sure that the result of converting coordinates is valid
@@ -57,7 +65,7 @@ namespace Assets.Scripts
             }
         }
 
-        public Vector3 ConvertCoordinates(Vector2 boardCoordinates, string referenceMarkerId)
+        public Vector3 ConvertCoordinates(Vector2 boardCoordinates, int referenceMarkerId)
         {
             //TODO: change to ArUco
             //GameObject marker = vuMarkHandler.FindModelById(referenceMarkerId);
@@ -123,10 +131,10 @@ namespace Assets.Scripts
             return boardPos;
         }
 
-        private float CalculateErrorRate(string markerId)
+        private float CalculateErrorRate(int markerId)
         {
             float err = 0f;
-            foreach(string otherId in board.CurrentTrackedBoardMarks)
+            foreach(var otherId in board.CurrentTrackedBoardMarks)
             {
                 if(otherId == markerId)
                 {
@@ -140,12 +148,12 @@ namespace Assets.Scripts
             return err;
         }
 
-        private (string, float) ChooseReferenceMarker()
+        private (int, float) ChooseReferenceMarker()
         {
-            string bestId = null;
+            int bestId = -1;
             float minErrorRate = float.MaxValue;
 
-            foreach (string markerId in board.CurrentTrackedBoardMarks)
+            foreach (var markerId in board.CurrentTrackedBoardMarks)
             {
                 float err = CalculateErrorRate(markerId);
                 if (err < minErrorRate)
@@ -159,7 +167,7 @@ namespace Assets.Scripts
 
         private void Awake()
         {
-            boardMarks = new Dictionary<string, Vector2>();
+            boardMarks = new Dictionary<int, Vector2>();
             for (int i = 0; i < boardMarkPositions.Count; i++)
             {
                 boardMarks[boardMarkIds[i]] = boardMarkPositions[i];

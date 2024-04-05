@@ -17,14 +17,14 @@ public static class EventBroadcaster
         OnBoardLost?.Invoke(id);
     }
 
-    public static event Action<string> OnMarkDetected;
-    public static void InvokeOnMarkerDetected(string id)
+    public static event Action<int> OnMarkDetected;
+    public static void InvokeOnMarkerDetected(int id)
     {
         OnMarkDetected?.Invoke(id);
     }
 
-    public static event Action<string> OnMarkLost;
-    public static void InvokeOnMarkerLost(string id)
+    public static event Action<int> OnMarkLost;
+    public static void InvokeOnMarkerLost(int id)
     {
         OnMarkLost?.Invoke(id);
     }

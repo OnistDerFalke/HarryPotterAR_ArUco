@@ -14,10 +14,10 @@ public class BoardMono : MonoBehaviour
 
     public Board Board { get;  set; }
     public bool IsTracked => isTracked;
-    public List<string> CurrentTrackedBoardMarks => currentTrackedBoardMarks;
+    public List<int> CurrentTrackedBoardMarks => currentTrackedBoardMarks;
 
     public bool isTracked = false;
-    private List<string> currentTrackedBoardMarks = new();
+    private List<int> currentTrackedBoardMarks = new();
     private List<Character> managedCharacters = new();
 
 
@@ -36,7 +36,7 @@ public class BoardMono : MonoBehaviour
         return null;
     }
 
-    private void OnMarkerDetected(string id)
+    private void OnMarkerDetected(int id)
     {
         if (coordinatesConverter.BoardMarkIds.Contains(id))
         {
@@ -48,7 +48,7 @@ public class BoardMono : MonoBehaviour
         }
     }
 
-    private void OnMarkerLost(string id)
+    private void OnMarkerLost(int id)
     {
         if (currentTrackedBoardMarks.Contains(id))
         {
