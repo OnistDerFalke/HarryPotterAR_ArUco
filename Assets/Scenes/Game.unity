@@ -2168,7 +2168,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugMode: 1
   log: {fileID: 791387258}
-  cam: {fileID: 1640802956}
+  cam: {fileID: 1414906869}
   models:
   - {fileID: 1756962960}
   - {fileID: 1541480154}
@@ -5063,7 +5063,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 1
-  m_Camera: {fileID: 1640802956}
+  m_Camera: {fileID: 1414906869}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -6053,7 +6053,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1414906865}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!20 &1414906869
 Camera:
   m_ObjectHideFlags: 0
@@ -6061,7 +6061,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1414906865}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
@@ -6079,7 +6079,7 @@ Camera:
     height: 1
   near clip plane: 0.05
   far clip plane: 2000
-  field of view: 60
+  field of view: 26.991467
   orthographic: 0
   orthographic size: 5
   m_Depth: 1
@@ -7125,7 +7125,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!81 &1640802953
 AudioListener:
   m_ObjectHideFlags: 0
@@ -7133,7 +7133,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1640802952}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!124 &1640802954
 Behaviour:
   m_ObjectHideFlags: 0
@@ -7141,7 +7141,7 @@ Behaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1640802952}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &1640802956
 Camera:
   m_ObjectHideFlags: 0
@@ -7149,7 +7149,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1640802952}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_ClearFlags: 2
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}

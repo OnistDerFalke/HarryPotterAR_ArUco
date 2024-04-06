@@ -44,6 +44,7 @@ namespace OpenCvSharp
 #endif
         public Mat()
         {
+
             ptr = NativeMethods.core_Mat_new1();
         }
 

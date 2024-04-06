@@ -33,9 +33,6 @@
         public CanvasScaler canvasScaler;
         public Canvas canvas;
 
-        //Physical camera
-  
-
         //OpenCV textures and mats
         private Texture2D texture;
         private Texture2D texture2;
@@ -53,69 +50,59 @@
         private int frameBroker = 0;
         bool mFormatRegistered;
 
-        private void OnVuforiaStarted()
+        private IEnumerator FeedARCamera()
         {
-           
-            texture = new Texture2D(0, 0, TextureFormat.RGB24, false);
-            var success = VuforiaBehaviour.Instance.CameraDevice.SetFrameFormat(PixelFormat.RGB888, true);
-            if (success)
+            while (true)
             {
-                log.text += "Successfully registered pixel format " + PixelFormat.RGB888;
-                mFormatRegistered = true;
-            }
-            else
-            {
-                log.text += "Failed to register pixel format " + PixelFormat.RGB888 +
-                               "\n the format may be unsupported by your device;" +
-                               "\n consider using a different pixel format.";
-                mFormatRegistered = false;
-            }
-        }
+                yield return new WaitForEndOfFrame();
+                texture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+              
+                //cam.targetTexture = RenderTexture.GetTemporary(Screen.width, Screen.height, 24);
+                //cam.Render();
+                //RenderTexture.active = cam.targetTexture;
+                //texture.ReadPixels(new UnityEngine.Rect(0, 0, Screen.width, Screen.height), 0, 0);
+                //texture.Apply();
+                MeshRenderer mr = cam.gameObject.GetComponentInChildren<MeshRenderer>();
+             
+                if (mr == null)
+                {
+                    Debug.Log("Renderer not found");
+                  
+                    continue;
+                }
+              
 
-        private void OnVuforiaStopped()
-        {
-            log.text += "Unregistering camera pixel format " + PixelFormat.RGB888;
-            VuforiaBehaviour.Instance.CameraDevice.SetFrameFormat(PixelFormat.RGB888, false);
-            mFormatRegistered = false;
-            if (texture != null)
                 Destroy(texture);
-        }
-
-        private void OnVuforiaUpdated()
-        {
-        
-            var image = VuforiaBehaviour.Instance.CameraDevice.GetCameraImage(PixelFormat.RGB888);
-
-            // There can be a delay of several frames until the camera image becomes available
-            if (Image.IsNullOrEmpty(image))
-                return;
-
-            image.CopyToTexture(texture, true);
-
-            if (texture.width == 0 || texture.height == 0)
-                return;
             
-            rawimage.texture = texture;
-            rawimage.material.mainTexture = texture;
+                texture = (mr.material.mainTexture as Texture2D);
+              
+                rawimage.texture = texture;
+                
+                rawimage.material.mainTexture = texture;
+                
+                rawimage.SetNativeSize();
+               
+               
+                mat = new Mat();
+                Unity.TextureConversionParams par = new Unity.TextureConversionParams();
+                par.FlipVertically = true;
+                mat = Unity.TextureToMat(texture, par);
 
-            if (texture != null && mFormatRegistered)
-            {
-                //this.texture2 = CropImage(this.texture, (int)canvas.gameObject.GetComponent<RectTransform>().rect.width, (int)canvas.gameObject.GetComponent<RectTransform>().rect.height);
-                Unity.TextureConversionParams parameters = new Unity.TextureConversionParams();
-                parameters.RotationAngle = 180;
-
-                Color32[] col32 = texture.GetPixels32();
-                // mat = Unity.TextureToMat(texture, parameters);
-                mat = Unity.PixelsToMat(col32, texture.width, texture.height, parameters.FlipVertically, parameters.FlipHorizontally, parameters.RotationAngle);
+                //Cv2.ImShow("T", mat);
+                //RenderTexture.active = null;
+                //cam.targetTexture = null;
 
                 grayMat = new Mat();
                 Cv2.CvtColor(mat, grayMat, ColorConversionCodes.BGR2GRAY);
-
+               
                 CvAruco.DetectMarkers(grayMat, dictionary, out corners, out ids, detectorParameters, out rejectedImgPoints);
 
-
                 for (int id = 0; id < ids.Length; id++)
+                {
+                    log.text += "Znaleziono znacznik " + ids[0] +  " \n";
+
                     DrawModel(id, ids[id]);
+                }
 
                 for (int id = 0; id < ids.Length; id++)
                     if (!ids.Contains(id))
@@ -123,51 +110,18 @@
 
                 grayMat.Dispose();
                 mat.Dispose();
+                //Destroy(texture);
             }
-
-            float scale = canvas.gameObject.GetComponent<RectTransform>().rect.height / texture.height;
-            rawTransform.sizeDelta = new Vector3(texture.width * scale, texture.height * scale);
         }
 
-        void OnDestroy()
-        {
-            // Unregister Vuforia Engine life-cycle callbacks:
-            if (VuforiaBehaviour.Instance != null)
-                VuforiaBehaviour.Instance.World.OnStateUpdated -= OnVuforiaUpdated;
-
-            VuforiaApplication.Instance.OnVuforiaStarted -= OnVuforiaStarted;
-            VuforiaApplication.Instance.OnVuforiaStopped -= OnVuforiaStopped;
-
-            if (VuforiaApplication.Instance.IsRunning)
-            {
-                // If Vuforia Engine is still running, unregister the camera pixel format to avoid unnecessary overhead
-                // Formats can only be registered and unregistered while Vuforia Engine is running
-                log.text += "Unregistering camera pixel format " + PixelFormat.RGB888;
-                VuforiaBehaviour.Instance.CameraDevice.SetFrameFormat(PixelFormat.RGB888, false);
-                mFormatRegistered = false;
-            }
-
-            if (texture != null)
-                Destroy(texture);
-        }
-
-        void Awake()
-        {
-           
-        }
 
         void Start()
         {
-            
+
             foreach (var model in models)
                 model.SetActive(false);
 
-            VuforiaApplication.Instance.OnVuforiaStarted += OnVuforiaStarted;
-            VuforiaApplication.Instance.OnVuforiaStopped += OnVuforiaStopped;
-           
-
-            if (VuforiaBehaviour.Instance != null)
-                VuforiaBehaviour.Instance.World.OnStateUpdated += OnVuforiaUpdated;
+            StartCoroutine(FeedARCamera());
         }
 
         void Update()
@@ -180,6 +134,7 @@
 
             // Dictionary holds set of all available markers
             dictionary = CvAruco.GetPredefinedDictionary(PredefinedDictionaryName.Dict6X6_250);
+
         }
 
         private Texture2D CropImage(Texture2D source, int width, int height)
@@ -346,6 +301,8 @@
             rvecMat.Set<double>(0, 1, rvec_m[1]);
             rvecMat.Set<double>(0, 2, rvec_m[2]);
             Cv2.Rodrigues(rvecMat, rotmatrix);
+
+            
 
             Vector3 forward;
             forward.x = (float)rotmatrix.At<double>(2, 0);
