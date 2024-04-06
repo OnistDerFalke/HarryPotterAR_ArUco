@@ -45,7 +45,7 @@ namespace OpenCvSharp
                 using (ArrayAddress1<T> aa = new ArrayAddress1<T>(array))
                 {
                     int elemSize = Marshal.SizeOf(typeof(T));
-                    Utility.CopyMemory(aa.Pointer, mat.Data, size * elemSize);
+                    //Utility.CopyMemory(aa.Pointer, mat.Data, size * elemSize);
                 }
                 // リストにコピー
                 list.Clear();
