@@ -117,11 +117,19 @@
             foreach (var model in models)
                 model.SetActive(false);
 
+           
+            Debug.Log("TEST: " + cam.gameObject.GetComponentInChildren<MeshRenderer>());
             StartCoroutine(FeedARCamera());
         }
 
         void Update()
         {
+            var mr = cam.gameObject.GetComponentInChildren<MeshRenderer>();
+            if (mr != null)
+            {
+                canvas.planeDistance = mr.gameObject.transform.position.z;
+            }
+
             //Debug
             log.gameObject.SetActive(debugMode);
 
@@ -138,7 +146,6 @@
             var rawImageX = rawTransform.sizeDelta.x;
             var rawImageY = rawTransform.sizeDelta.y;
 
-            //Debug.Log($"Canvas: {width}, {height}\trawImage: {rawImageX}, {rawImageY}\tsource: {source.width}, {source.height}");
             int x = (int)(rawImageX - width) / 2;
             int y = 0;
 
@@ -298,8 +305,6 @@
             rvecMat.Set<double>(0, 2, rvec_m[2]);
             Cv2.Rodrigues(rvecMat, rotmatrix);
 
-            
-
             Vector3 forward;
             forward.x = (float)rotmatrix.At<double>(2, 0);
             forward.y = (float)rotmatrix.At<double>(2, 1);
@@ -323,74 +328,5 @@
             var yScaler = rawTransform.rect.height / mat.Size().Height;
             return new Vector3(point.X * xScaler - rawTransform.rect.width / 2, -(point.Y * yScaler - rawTransform.rect.height / 2), 0);
         }
-
-
-        //private void DoStartThings(int index)
-        //{
-        //    // Create default parameres for detection
-        //    detectorParameters = DetectorParameters.Create();
-
-        //    // Dictionary holds set of all available markers
-        //    dictionary = CvAruco.GetPredefinedDictionary(PredefinedDictionaryName.Dict6X6_250);
-
-        //    var res = WebCamTexture.devices[0].availableResolutions;
-        //    if (res != null)
-        //    {
-        //        webcamTexture = new WebCamTexture(WebCamTexture.devices[0].name, res[index].width, res[index].height);
-        //    }
-        //    else
-        //    {
-        //        webcamTexture = new WebCamTexture(WebCamTexture.devices[0].name, Screen.width, Screen.height);
-        //    }
-
-        //    // New webcamtexture
-
-        //    webcamTexture.Play();
-
-        //    // Scaling whole image with webcamtexture size
-        //    //float scaleX = webcamTexture.width * rawTransform.rect.height / (rawTransform.rect.width * webcamTexture.height);
-        //    //float scaleY = webcamTexture.height / rawTransform.rect.height;
-        //    //rawTransform.localScale = new Vector3(scaleX, scaleY, 1f);
-        //    //rawTransform.sizeDelta = new Vector2(webcamTexture.width, webcamTexture.height);
-        //    //float scale = canvas.gameObject.GetComponent<RectTransform>().rect.height / webcamTexture.height;
-        //    //scale = 1f / scale;
-        //    //rawTransform.sizeDelta = new Vector2(canvas.gameObject.GetComponent<RectTransform>().rect.width * scale, canvas.gameObject.GetComponent<RectTransform>().rect.height * scale);
-        //    //float scale = canvas.gameObject.GetComponent<RectTransform>().rect.height / webcamTexture.height;
-        //    //scale = 1f / scale;
-        //    //rawTransform.localScale = new Vector3(webcamTexture.width * scale / rawTransform.rect.width, webcamTexture.height * scale / rawTransform.rect.height, 1f);
-
-        //    rawTransform.sizeDelta = new Vector3(webcamTexture.width, webcamTexture.height);
-
-        //    canvas.gameObject.GetComponent<CanvasScaler>().referenceResolution = new Vector2(webcamTexture.width, webcamTexture.height);
-        //    var s = rawTransform.localScale;
-        //    s.x *= webcamTexture.width / webcamTexture.height;
-        //    rawTransform.localScale = s;
-
-        //    //Setting texture for raw image and new texture for processed image for CV
-        //    rawimage.texture = webcamTexture;
-        //    rawimage.material.mainTexture = webcamTexture;
-        //    texture = new Texture2D(rawimage.texture.width, rawimage.texture.height, TextureFormat.RGBA32, false);
-
-        //    log.text += $"TEX: {rawimage.texture.width} {rawimage.texture.height}";
-
-
-
-        //    //Fixes camera rotate by 90deg on mobile device 
-        //    //transform.rotation = transform.rotation * Quaternion.AngleAxis(webcamTexture.videoRotationAngle, Vector3.back);
-        //    //log.text += $"Angle: {webcamTexture.videoRotationAngle}\n";
-        //    //var locScale = transform.localScale;
-        //    //locScale.y *= webcamTexture.videoVerticallyMirrored ? -1f : 1f;
-        //    //transform.localScale = locScale;
-        //}
-
-        //private IEnumerator ChangeResolution(Resolution[] res)
-        //{
-        //    for (var i = 0; i < res.Length; i++)
-        //    {
-        //        log.text += $"Applying res[{i}]: {res[i].width} {res[i].height} \n";
-        //        DoStartThings(i);
-        //        yield return new WaitForSeconds(5);
-        //    }
-        //}
     }
 }

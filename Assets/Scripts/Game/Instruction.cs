@@ -41,7 +41,7 @@ namespace Scripts
                 case InstructionInfo.PlayerMove:
                     return "Ruch gracza";
                 case InstructionInfo.MissionCompleting:
-                    return "Wype³nianie misji";
+                    return "WypeÅ‚nianie misji";
                 case InstructionInfo.SpecialItems:
                     return "Przedmioty specjalne";
                 case InstructionInfo.FightWithPlayer:
@@ -70,109 +70,109 @@ namespace Scripts
             instructions = new();
 
             instructions[InstructionInfo.GameDuration] = 
-                "Gracz ma mo¿liwoœæ wybrania warunków zwyciêstwa:\n\n" +
-                "1. szybka rozgrywka: wykonanie 1 misji i zdobycie 210 punktów\n\n" +
-                "2. klasyczna rozgrywka: wykonanie 2 misji i zdobycie 260 punktów\n\n" +
-                "3. d³uga rozgrywka: wykonanie 3 misji i zdobycie 320 punktów";
+                "Gracz ma moÅ¼liwoÅ›Ä‡ wybrania warunkÃ³w zwyciÄ™stwa:\n\n" +
+                "1. szybka rozgrywka: wykonanie 1 misji i zdobycie 210 punktÃ³w\n\n" +
+                "2. klasyczna rozgrywka: wykonanie 2 misji i zdobycie 260 punktÃ³w\n\n" +
+                "3. dÅ‚uga rozgrywka: wykonanie 3 misji i zdobycie 320 punktÃ³w";
 
             instructions[InstructionInfo.GamePreparation] =
-                "1. Umieszczenie przedmiotów (³¹cznie 30) na polach z gwiazdk¹.\n\n" +
-                "2. Ka¿dy gracz wybiera 1 z 9 planszetek z dostêpnymi postaciami.\n\n" +
-                "3. Ka¿dy gracz dostaje 2 ¿etony proszka fiuu, 1 œwistoklik, odpowiedni¹ liczbê ¿yæ oraz karty okreœlone na planszetce.\n\n" +
-                "4. Ka¿dy losuje 5 kart misji (je¿eli w grze bierze udzia³ wiêcej ni¿ 6 graczy, losuj¹ po 3).\n\n" +
-                "5. Wszyscy gracze zaczynaj¹ na polu \"Start\".";
+                "1. Umieszczenie przedmiotÃ³w (Å‚Ä…cznie 30) na polach z gwiazdkÄ….\n\n" +
+                "2. KaÅ¼dy gracz wybiera 1 z 9 planszetek z dostÄ™pnymi postaciami.\n\n" +
+                "3. KaÅ¼dy gracz dostaje 2 Å¼etony proszka fiuu, 1 Å›wistoklik, odpowiedniÄ… liczbÄ™ Å¼yÄ‡ oraz karty okreÅ›lone na planszetce.\n\n" +
+                "4. KaÅ¼dy losuje 5 kart misji (jeÅ¼eli w grze bierze udziaÅ‚ wiÄ™cej niÅ¼ 6 graczy, losujÄ… po 3).\n\n" +
+                "5. Wszyscy gracze zaczynajÄ… na polu \"Start\".";
 
             instructions[InstructionInfo.PlayerMove] =
-                "Gracz, przed ka¿dym rzutem koœæmi, powinien zczytaæ pozycjê gracza, " +
-                "a nastêpnie wybraæ jedno z podœwietlonych pól planszy i przesun¹æ na nie znacznik. \n\n" + 
-                "Dodatkowo gracz powinien zatrzymaæ siê na polu, na którym stoi inny gracz, " +
-                "gdy mija go w swoim ruchu (nie obowi¹zuje go wtedy akcja powi¹zana z danym polem).\n\n" + 
-                "Ka¿de pole powi¹zane jest z pewn¹ akcj¹, któr¹ gracz powinien wykonaæ. " + 
-                "Niezbêdne informacje o polach bêd¹ dostêpne po naklikniêciu na podœwietlenia. " + 
-                "Dodatkowo wyœwietlana bêdzie informacja o aktualnym polu, na którym znajduje siê gracz.";
+                "Gracz, przed kaÅ¼dym rzutem koÅ›Ä‡mi, powinien zczytaÄ‡ pozycjÄ™ gracza, " +
+                "a nastÄ™pnie wybraÄ‡ jedno z podÅ›wietlonych pÃ³l planszy i przesunÄ…Ä‡ na nie znacznik. \n\n" + 
+                "Dodatkowo gracz powinien zatrzymaÄ‡ siÄ™ na polu, na ktÃ³rym stoi inny gracz, " +
+                "gdy mija go w swoim ruchu (nie obowiÄ…zuje go wtedy akcja powiÄ…zana z danym polem).\n\n" + 
+                "KaÅ¼de pole powiÄ…zane jest z pewnÄ… akcjÄ…, ktÃ³rÄ… gracz powinien wykonaÄ‡. " + 
+                "NiezbÄ™dne informacje o polach bÄ™dÄ… dostÄ™pne po naklikniÄ™ciu na podÅ›wietlenia. " + 
+                "Dodatkowo wyÅ›wietlana bÄ™dzie informacja o aktualnym polu, na ktÃ³rym znajduje siÄ™ gracz.";
 
             instructions[InstructionInfo.MissionCompleting] =
-                "Gracz mo¿e spróbowaæ wykonaæ misjê, tylko gdy spe³nia warunki widoczne na karcie misji:\n" +
-                "1) znajduje siê w odpowiednim miejscu na planszy\n" + 
-                "2) posiada odpowiednie ¿etony lub karty (okreœlone dla wariantu “Niepe³noletni czarodziej”)\n\n" +
-                "Punkty przypisane do misji otrzymuje dopiero wtedy, gdy pokona przeciwnika okreœlonego na karcie misji. " + 
-                "Po wykorzystaniu przedmiotów przy misji, nale¿y umieœciæ je na dowolnym polu z gwiazdk¹ na planszy 2 " + 
-                "(z niezapomnianymi miejscami ze œwiata HP).";
+                "Gracz moÅ¼e sprÃ³bowaÄ‡ wykonaÄ‡ misjÄ™, tylko gdy speÅ‚nia warunki widoczne na karcie misji:\n" +
+                "1) znajduje siÄ™ w odpowiednim miejscu na planszy\n" + 
+                "2) posiada odpowiednie Å¼etony lub karty (okreÅ›lone dla wariantu â€œNiepeÅ‚noletni czarodziejâ€)\n\n" +
+                "Punkty przypisane do misji otrzymuje dopiero wtedy, gdy pokona przeciwnika okreÅ›lonego na karcie misji. " + 
+                "Po wykorzystaniu przedmiotÃ³w przy misji, naleÅ¼y umieÅ›ciÄ‡ je na dowolnym polu z gwiazdkÄ… na planszy 2 " + 
+                "(z niezapomnianymi miejscami ze Å›wiata HP).";
 
             instructions[InstructionInfo.SpecialItems] =
-                "Po ich wykorzystaniu po³ó¿ je na 1 z 3 gwiazdek na ulicy Pok¹tnej. S¹ to\n\n" +
-                "1) Czarna ró¿d¿ka: +1 koœæ ataku w czasie walki\n\n" +
-                "2) Kamieñ wskrzeszenia: +6P¯ podczas walki\n\n" +
-                "3) Peleryna niewidka: ucieknij z miejsca walki na odleg³oœæ 5 pól\n\n" +
-                "4) Miecz Gryffindora: +1 koœæ ataku w czasie walki\n\n" +
-                "5) Zmieniacz czasu: rozegraj dodatkow¹ turê\n\n" +
-                "6) Hardodziób: udaj siê na dowolne pole na planszy 1 albo 2, a nastêpnie wróæ";
+                "Po ich wykorzystaniu poÅ‚Ã³Å¼ je na 1 z 3 gwiazdek na ulicy PokÄ…tnej. SÄ… to\n\n" +
+                "1) Czarna rÃ³Å¼dÅ¼ka: +1 koÅ›Ä‡ ataku w czasie walki\n\n" +
+                "2) KamieÅ„ wskrzeszenia: +6PÅ» podczas walki\n\n" +
+                "3) Peleryna niewidka: ucieknij z miejsca walki na odlegÅ‚oÅ›Ä‡ 5 pÃ³l\n\n" +
+                "4) Miecz Gryffindora: +1 koÅ›Ä‡ ataku w czasie walki\n\n" +
+                "5) Zmieniacz czasu: rozegraj dodatkowÄ… turÄ™\n\n" +
+                "6) HardodziÃ³b: udaj siÄ™ na dowolne pole na planszy 1 albo 2, a nastÄ™pnie wrÃ³Ä‡";
 
             instructions[InstructionInfo.FightWithPlayer] =
-                "Ka¿dy gracz rzuca 1 koœci¹ - ten kto ma mniejsza liczbê oczek, traci 1 P¯.\n" +
-                "Podczas pojedynku nie mo¿na u¿yæ ani zaklêcia ani eliksiru.\n" +
-                "\nPrzegrana: utrata 2 P¯\n" +
-                "Wygrana: zabranie przegranemu ¿etonu przedmiotu, œwistoklika, proszka Fiuu lub zakrytej karty";
+                "KaÅ¼dy gracz rzuca 1 koÅ›ciÄ… - ten kto ma mniejsza liczbÄ™ oczek, traci 1 PÅ».\n" +
+                "Podczas pojedynku nie moÅ¼na uÅ¼yÄ‡ ani zaklÄ™cia ani eliksiru.\n" +
+                "\nPrzegrana: utrata 2 PÅ»\n" +
+                "Wygrana: zabranie przegranemu Å¼etonu przedmiotu, Å›wistoklika, proszka Fiuu lub zakrytej karty";
 
             instructions[InstructionInfo.FightOnFightField] =
-                "Gracz nie mo¿e graæ z postaci¹, któr¹ sam jest - powinien wybraæ inn¹ kartê. " +
-                "Na karcie pojedynku okreœlona jest liczba ¿yæ przeciwnika oraz jego sposób obrony.\n" +
-                "\nWalczyæ mo¿na na 2 sposoby:\n" +
-                "1) koœæmi ataku (ich liczba widnieje na planszetce gracza): " + 
-                "ka¿da koœæ z wynikiem wiêkszym lub równym odpornoœci przeciwnika, zabiera mu 1 P¯\n" +
-                "2) kartami zaklêæ i eliksirów (mo¿na wykorzystaæ w dowolnym momencie ruchu): u¿ycie karty obrony pozbawia przeciwnika ruchu\n" +
-                "\nPrzegrana (pozosta³ 1 P¯): gracz odrzuca 3 dowolne karty\n" +
-                "Wygrana: gracz dobiera 1 zaklêcie, 1 eliksir i 1 ksiêgê";
+                "Gracz nie moÅ¼e graÄ‡ z postaciÄ…, ktÃ³rÄ… sam jest - powinien wybraÄ‡ innÄ… kartÄ™. " +
+                "Na karcie pojedynku okreÅ›lona jest liczba Å¼yÄ‡ przeciwnika oraz jego sposÃ³b obrony.\n" +
+                "\nWalczyÄ‡ moÅ¼na na 2 sposoby:\n" +
+                "1) koÅ›Ä‡mi ataku (ich liczba widnieje na planszetce gracza): " + 
+                "kaÅ¼da koÅ›Ä‡ z wynikiem wiÄ™kszym lub rÃ³wnym odpornoÅ›ci przeciwnika, zabiera mu 1 PÅ»\n" +
+                "2) kartami zaklÄ™Ä‡ i eliksirÃ³w (moÅ¼na wykorzystaÄ‡ w dowolnym momencie ruchu): uÅ¼ycie karty obrony pozbawia przeciwnika ruchu\n" +
+                "\nPrzegrana (pozostaÅ‚ 1 PÅ»): gracz odrzuca 3 dowolne karty\n" +
+                "Wygrana: gracz dobiera 1 zaklÄ™cie, 1 eliksir i 1 ksiÄ™gÄ™";
 
             instructions[InstructionInfo.MissionFight] =
-                "Ka¿da karta misji wskazuje postaæ, z któr¹ nale¿y stoczyæ pojedynek. Karta przeciwnika posiada informacje o nim.\n" +
-                "\nGracz ma mo¿liwoœæ wykorzystania:\n" +
+                "KaÅ¼da karta misji wskazuje postaÄ‡, z ktÃ³rÄ… naleÅ¼y stoczyÄ‡ pojedynek. Karta przeciwnika posiada informacje o nim.\n" +
+                "\nGracz ma moÅ¼liwoÅ›Ä‡ wykorzystania:\n" +
                 " - karty obrony (powoduje brak kontrataku)\n" + 
                 " - karty ataku\n" +
-                " - koœci ataku: liczba oczek nie mniejsza od odpornoœci przeciwnika, odbiera mu 1 P¯\n" + 
-                "Gracz podczas jednej walki mo¿e wykorzystaæ maksymalnie 5 kart zaklêæ i eliksirów\n" +
-                "Po œmierci przeciwnika, atakuje on gracza jeszcze raz swoj¹ zdolnoœci¹ specjaln¹\n" +
-                "\nWygrana (przeciwnik nie ma ¿yæ): misja wype³niona, zdobycie okreœlonej na karcie misji liczby punktów domu\n" +
-                "Przegrana (gracz ma 1 P): gracz idzie do \"Dziurawego Kot³a\", zdobywa 6P i odk³ada wszystkie karty eliksirów i zaklêæ.";
+                " - koÅ›ci ataku: liczba oczek nie mniejsza od odpornoÅ›ci przeciwnika, odbiera mu 1 PÅ»\n" + 
+                "Gracz podczas jednej walki moÅ¼e wykorzystaÄ‡ maksymalnie 5 kart zaklÄ™Ä‡ i eliksirÃ³w\n" +
+                "Po Å›mierci przeciwnika, atakuje on gracza jeszcze raz swojÄ… zdolnoÅ›ciÄ… specjalnÄ…\n" +
+                "\nWygrana (przeciwnik nie ma Å¼yÄ‡): misja wypeÅ‚niona, zdobycie okreÅ›lonej na karcie misji liczby punktÃ³w domu\n" +
+                "Przegrana (gracz ma 1 PÅ¹): gracz idzie do \"Dziurawego KotÅ‚a\", zdobywa 6PÅ¹ i odkÅ‚ada wszystkie karty eliksirÃ³w i zaklÄ™Ä‡.";
 
             instructions[InstructionInfo.QuidditchPreparation] =
-                "Na pocz¹tku nale¿y wybraæ dru¿ynê oraz rozstawiæ graczy:\n" + 
-                "- 1 szukaj¹cy na linii startowej (wokó³ boiska)\n" + 
-                "- 1 obroñca na 1 z 3 pól pola bramkowego\n" + 
-                "- 2 pa³karzy na 2 z 5 pól linii wokó³ pola bramkowego\n" + 
-                "- 3 œcigaj¹cych na 3 z 10 pól dwóch kolejnych linii\n" + 
-                "\nKafel umieszcza siê na œrodku boiska, a t³uczki po jednym na ka¿dej po³owie\n" + 
-                "Mecz rozpoczyna gracz z wiêksz¹ liczb¹ oczek po rzucie 2 koœæmi\n" + 
-                "Sk³ada siê on z dwóch rund: uzyskania 2 goli oraz zdobycia z³otego znicza\n\n" + 
-                "Wygrana: 40 punktów domu";
+                "Na poczÄ…tku naleÅ¼y wybraÄ‡ druÅ¼ynÄ™ oraz rozstawiÄ‡ graczy:\n" + 
+                "- 1 szukajÄ…cy na linii startowej (wokÃ³Å‚ boiska)\n" + 
+                "- 1 obroÅ„ca na 1 z 3 pÃ³l pola bramkowego\n" + 
+                "- 2 paÅ‚karzy na 2 z 5 pÃ³l linii wokÃ³Å‚ pola bramkowego\n" + 
+                "- 3 Å›cigajÄ…cych na 3 z 10 pÃ³l dwÃ³ch kolejnych linii\n" + 
+                "\nKafel umieszcza siÄ™ na Å›rodku boiska, a tÅ‚uczki po jednym na kaÅ¼dej poÅ‚owie\n" + 
+                "Mecz rozpoczyna gracz z wiÄ™kszÄ… liczbÄ… oczek po rzucie 2 koÅ›Ä‡mi\n" + 
+                "SkÅ‚ada siÄ™ on z dwÃ³ch rund: uzyskania 2 goli oraz zdobycia zÅ‚otego znicza\n\n" + 
+                "Wygrana: 40 punktÃ³w domu";
 
             instructions[InstructionInfo.QuidditchRound1] =
-                "Gdy wszyscy œcigaj¹cy danego gracza s¹ wyeliminowani, przegrywa on automatycznie rundê 1.\n\n" + 
-                "Gracze nie mog¹ wchodziæ na to samo pole co inni gracze, z wyj¹tkiem sytuacji z przejêciem kafla.\n\n" + 
-                "Obroñcy nie mog¹ opuœciæ pól bramkowych.\n\n" +
-                "Ka¿dy gracz na pocz¹tku ruchu rzuca 2 koœæmi, które okreœlaj¹ liczbê akcji.";
+                "Gdy wszyscy Å›cigajÄ…cy danego gracza sÄ… wyeliminowani, przegrywa on automatycznie rundÄ™ 1.\n\n" + 
+                "Gracze nie mogÄ… wchodziÄ‡ na to samo pole co inni gracze, z wyjÄ…tkiem sytuacji z przejÄ™ciem kafla.\n\n" + 
+                "ObroÅ„cy nie mogÄ… opuÅ›ciÄ‡ pÃ³l bramkowych.\n\n" +
+                "KaÅ¼dy gracz na poczÄ…tku ruchu rzuca 2 koÅ›Ä‡mi, ktÃ³re okreÅ›lajÄ… liczbÄ™ akcji.";
 
             instructions[InstructionInfo.QuidditchRound1_Actions1] =
-                "Ruchy kosztuj¹ce 1 akcjê:\n" +
-                "\n1) Ruch wzd³u¿ bia³ych kropkowanych linii.\n" +
+                "Ruchy kosztujÄ…ce 1 akcjÄ™:\n" +
+                "\n1) Ruch wzdÅ‚uÅ¼ biaÅ‚ych kropkowanych linii.\n" +
                 "\n2) Rzut trzymanym kaflem o 1 pole.\n" +
-                "\n3) Przejêcie kafla (œcigaj¹cy oraz kafel musz¹ byæ na tym samym polu).\n" +
-                "\n4) strzelenie gola przez œcigaj¹cego znajduj¹cego siê na linii wokó³ pola bramkowego. " +
-                "Strza³ odbywa siê za pomoc¹ rzutu koœci¹ - jeœli rzucaj¹cy ma wiêcej oczek ni¿ obroñca, " +
-                "nastêpuje gol i zdobycie 1 karty quidditcha. Kafel trafia do obroñcy zarówno po próbie, " +
-                "jak i po golu. Jeœli obroñca zosta³ wyeliminowany, kafel zostaje na losowym polu na linii wokó³ pola bramkowego.";
+                "\n3) PrzejÄ™cie kafla (Å›cigajÄ…cy oraz kafel muszÄ… byÄ‡ na tym samym polu).\n" +
+                "\n4) strzelenie gola przez Å›cigajÄ…cego znajdujÄ…cego siÄ™ na linii wokÃ³Å‚ pola bramkowego. " +
+                "StrzaÅ‚ odbywa siÄ™ za pomocÄ… rzutu koÅ›ciÄ… - jeÅ›li rzucajÄ…cy ma wiÄ™cej oczek niÅ¼ obroÅ„ca, " +
+                "nastÄ™puje gol i zdobycie 1 karty quidditcha. Kafel trafia do obroÅ„cy zarÃ³wno po prÃ³bie, " +
+                "jak i po golu. JeÅ›li obroÅ„ca zostaÅ‚ wyeliminowany, kafel zostaje na losowym polu na linii wokÃ³Å‚ pola bramkowego.";
 
             instructions[InstructionInfo.QuidditchRound1_Actions2] =
-                "Ruchy bez ¿adnego kosztu:\n" +
-                "\n1) Podniesienie kafla/t³uczka odpowiednio przez œciagaj¹cego/pa³karza, bêd¹cego na tym samym polu, co pi³ka.\n" +
-                "\n2) Rzut trzymanym t³uczkiem przez pa³karza na odleg³oœæ okreœlon¹ przez dodatkowy rzut koœci¹ " +
-                "- mo¿na zrobiæ unik, ale jeœli wyrzucona liczba oczek przez przeciwnika wynosi mniej ni¿ 4, postaæ zostaje wyeliminowana.";
+                "Ruchy bez Å¼adnego kosztu:\n" +
+                "\n1) Podniesienie kafla/tÅ‚uczka odpowiednio przez Å›ciagajÄ…cego/paÅ‚karza, bÄ™dÄ…cego na tym samym polu, co piÅ‚ka.\n" +
+                "\n2) Rzut trzymanym tÅ‚uczkiem przez paÅ‚karza na odlegÅ‚oÅ›Ä‡ okreÅ›lonÄ… przez dodatkowy rzut koÅ›ciÄ… " +
+                "- moÅ¼na zrobiÄ‡ unik, ale jeÅ›li wyrzucona liczba oczek przez przeciwnika wynosi mniej niÅ¼ 4, postaÄ‡ zostaje wyeliminowana.";
 
             instructions[InstructionInfo.QuidditchRound2] =
-                "Wygrywa ten, kto pierwszy okr¹¿y boisko.\n\n" +
-                "Szukaj¹cy rozpoczynaj¹ na polu startowym linii wokó³ boiska.\n\n" +
-                "Rozpoczyna gracz, który wygra³ rundê 1.\n\n" +
-                "Ka¿dy gracz rzuca w swojej turze 2 koœæmi oraz mo¿e u¿yæ maksymalnie 1 karty quidditcha.";
+                "Wygrywa ten, kto pierwszy okrÄ…Å¼y boisko.\n\n" +
+                "SzukajÄ…cy rozpoczynajÄ… na polu startowym linii wokÃ³Å‚ boiska.\n\n" +
+                "Rozpoczyna gracz, ktÃ³ry wygraÅ‚ rundÄ™ 1.\n\n" +
+                "KaÅ¼dy gracz rzuca w swojej turze 2 koÅ›Ä‡mi oraz moÅ¼e uÅ¼yÄ‡ maksymalnie 1 karty quidditcha.";
         }
     }
 }
