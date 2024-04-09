@@ -636,7 +636,19 @@ namespace OpenCvSharp
                     imagePointsM.CvPtr, jacobianM.CvPtr, aspectRatio);
 
                 imagePoints = imagePointsM.ToArray();
-                jacobian = jacobianM.ToRectangularArray();
+            
+
+                //int numPoints = imagePointsM.Rows;
+                //imagePoints = new Point2f[numPoints];
+                //for (int i = 0; i < numPoints; i++)
+                //{
+                    
+                //    Point2f point = imagePointsM.At<Point2f>(i);
+                //    imagePoints[i] = point;
+                //}
+
+                //jacobian = jacobianM.ToRectangularArray();
+                jacobian = null;
             }
         }
         #endregion

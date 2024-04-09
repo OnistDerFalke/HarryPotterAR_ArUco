@@ -47,70 +47,66 @@
         private Point2f[][] rejectedImgPoints;
         private Color32[] colors;
 
-        private int frameBroker = 0;
-        bool mFormatRegistered;
-
         private IEnumerator FeedARCamera()
         {
             while (true)
             {
                 yield return new WaitForEndOfFrame();
-                texture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-              
-                //cam.targetTexture = RenderTexture.GetTemporary(Screen.width, Screen.height, 24);
-                //cam.Render();
-                //RenderTexture.active = cam.targetTexture;
-                //texture.ReadPixels(new UnityEngine.Rect(0, 0, Screen.width, Screen.height), 0, 0);
-                //texture.Apply();
-                MeshRenderer mr = cam.gameObject.GetComponentInChildren<MeshRenderer>();
-             
-                if (mr == null)
-                {
-                    Debug.Log("Renderer not found");
-                  
-                    continue;
-                }
-              
-
-                Destroy(texture);
-            
-                texture = (mr.material.mainTexture as Texture2D);
-              
-                rawimage.texture = texture;
-                
-                rawimage.material.mainTexture = texture;
-                
-                rawimage.SetNativeSize();
                
-               
-                mat = new Mat();
-                Unity.TextureConversionParams par = new Unity.TextureConversionParams();
-                par.FlipVertically = true;
-                mat = Unity.TextureToMat(texture, par);
+                    texture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGBA32, false);
 
-                //Cv2.ImShow("T", mat);
-                //RenderTexture.active = null;
-                //cam.targetTexture = null;
+                    MeshRenderer mr = cam.gameObject.GetComponentInChildren<MeshRenderer>();
 
-                grayMat = new Mat();
-                Cv2.CvtColor(mat, grayMat, ColorConversionCodes.BGR2GRAY);
-               
-                CvAruco.DetectMarkers(grayMat, dictionary, out corners, out ids, detectorParameters, out rejectedImgPoints);
+                    if (mr == null)
+                    {
+                        Debug.Log("Renderer not found");
 
-                for (int id = 0; id < ids.Length; id++)
-                {
-                    log.text += "Znaleziono znacznik " + ids[0] +  " \n";
+                        continue;
+                    }
 
-                    DrawModel(id, ids[id]);
-                }
 
-                for (int id = 0; id < ids.Length; id++)
-                    if (!ids.Contains(id))
-                        UntrackModel(id);
+                    Destroy(texture);
+                    texture = (mr.material.mainTexture as Texture2D);
+                //rawimage.texture = texture;
+                //rawimage.material.mainTexture = texture;
+                //rawimage.SetNativeSize();
 
+
+                    try
+                    {
+                        mat = new Mat();
+                        Unity.TextureConversionParams par = new Unity.TextureConversionParams();
+                        par.FlipVertically = true;
+                        //par.RotationAngle = 90;
+                        mat = Unity.TextureToMat(texture, par);
+                        Cv2.Rotate(mat, mat, RotateFlags.Rotate90Clockwise);
+
+                        grayMat = new Mat();
+                        Cv2.CvtColor(mat, grayMat, ColorConversionCodes.BGR2GRAY);
+
+                    
+                        CvAruco.DetectMarkers(grayMat, dictionary, out corners, out ids, detectorParameters, out rejectedImgPoints);
+                    
+
+                    for (int id = 0; id < ids.Length; id++)
+                    {
+                        log.text += "Znaleziono znacznik " + ids[0] + " \n";
+                        DrawModel(id, ids[id]);
+                        
+                    }
+                    for (int id = 0; id < ids.Length; id++)
+                        if (!ids.Contains(id))
+                            UntrackModel(id);
+
+                    }
+                    catch (System.Exception e)
+                    {
+                        log.text += e.StackTrace + '\n';
+                        log.text += e.Message + '\n';
+                    }
                 grayMat.Dispose();
-                mat.Dispose();
-                //Destroy(texture);
+                    mat.Dispose();
+               
             }
         }
 
