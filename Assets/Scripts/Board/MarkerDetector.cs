@@ -46,6 +46,7 @@
         private Point2f[][] corners;
         private Point2f[][] rejectedImgPoints;
         private Color32[] colors;
+        private MeshRenderer mr;
 
         private IEnumerator FeedARCamera()
         {
@@ -55,7 +56,7 @@
                
                     texture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGBA32, false);
 
-                    MeshRenderer mr = cam.gameObject.GetComponentInChildren<MeshRenderer>();
+                    mr = cam.gameObject.GetComponentInChildren<MeshRenderer>();
 
                     if (mr == null)
                     {
@@ -79,13 +80,13 @@
                         par.FlipVertically = true;
                         //par.RotationAngle = 90;
                         mat = Unity.TextureToMat(texture, par);
-                        Cv2.Rotate(mat, mat, RotateFlags.Rotate90Clockwise);
-
+                        //Cv2.Rotate(mat, mat, RotateFlags.Rotate90Clockwise);
+                    
                         grayMat = new Mat();
                         Cv2.CvtColor(mat, grayMat, ColorConversionCodes.BGR2GRAY);
+                    //Cv2.ImShow("window", grayMat);
 
-                    
-                        CvAruco.DetectMarkers(grayMat, dictionary, out corners, out ids, detectorParameters, out rejectedImgPoints);
+                    CvAruco.DetectMarkers(grayMat, dictionary, out corners, out ids, detectorParameters, out rejectedImgPoints);
                     
 
                     for (int id = 0; id < ids.Length; id++)
@@ -233,6 +234,15 @@
             Cv2.SolvePnP(objPts, corners[foundId], cameraMatrix, dist, out rvec, out tvec);
             Point2f[] imagePoints;
             double[,] jacobian;
+
+            rvec[0] = -rvec[0];
+            rvec[1] = rvec[1];
+            rvec[2] = -rvec[2];
+
+            //tvec[0] = -tvec[0];
+            //tvec[1] = tvec[1];
+            //tvec[2] = -tvec[2];
+
             Cv2.ProjectPoints(objPts, rvec, tvec, cameraMatrix, dist, out imagePoints, out jacobian);
 
             //Needs refreshing mat in update (need to uncomment it to have it working)
@@ -267,11 +277,6 @@
 
         private Vector3 GetPosition(double[] tvec, Point2f[] imagePoints, Vector3 modelScale, bool debug = false)
         {
-            var tvecUnity = new Vector3(
-                 (rawTransform.rect.width / mat.Size().Width) * (float)tvec[0],
-                 (rawTransform.rect.width / mat.Size().Width) * (float)-tvec[1],
-                 (rawTransform.rect.width / mat.Size().Width) * (float)tvec[2]);
-
             Vector3 localpos = Vector3.zero;
             Vector3[] corn = new Vector3[4];
 
@@ -283,7 +288,7 @@
                 //    debugPoints[i].transform.localPosition = Point2fToVec3Scaled(imagePoints[i]);
                 //}
 
-                corn[i] = Point2fToVec3Scaled(imagePoints[i]);
+                //corn[i] = Point2fToVec3Scaled(imagePoints[i]);
                 localpos += Point2fToVec3Scaled(imagePoints[i]);
             }
 
@@ -295,7 +300,9 @@
         private Quaternion GetRotation(double[] rvec)
         {
             double[] flip = rvec;
+            flip[0] = flip[0];
             flip[1] = -flip[1];
+            flip[2] = flip[2];
             double[] rvec_m = flip;
 
             Mat rotmatrix = new Mat();
@@ -324,9 +331,18 @@
 
         Vector3 Point2fToVec3Scaled(Point2f point)
         {
-            var xScaler = rawTransform.rect.width / mat.Size().Width;
-            var yScaler = rawTransform.rect.height / mat.Size().Height;
-            return new Vector3(point.X * xScaler - rawTransform.rect.width / 2, -(point.Y * yScaler - rawTransform.rect.height / 2), 0);
+           
+            if (mr == null)
+            {
+                Debug.Log("Renderer not found");
+                return new Vector3(point.X, -point.Y, 0);
+            }
+            Vector2 mrsize = new Vector2(mr.gameObject.transform.localScale.x, mr.gameObject.transform.localScale.z);
+            var xScaler = mrsize.x / mat.Size().Width;
+            var yScaler = mrsize.y / mat.Size().Height;
+            Debug.Log($"X point: {point.X}, {xScaler}, {mrsize.x}");
+            Debug.Log($"Y point: {point.Y}, {yScaler}, {mrsize.y}");
+            return new Vector3(point.X * xScaler - mrsize.x / 2, point.Y * yScaler - mrsize.y / 2, 0);
         }
     }
 }
