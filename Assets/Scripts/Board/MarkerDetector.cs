@@ -24,7 +24,7 @@
         //3D models
         //TODO: add other models to board markers
         [SerializeField] public GameObject[] models = new GameObject[90];       //9 characters, 81 to board
-        public float basicMaxLength = 120f;
+        public float basicMaxLength = 20f;
         private int[] ids;
 
         //Canvas objects
@@ -91,9 +91,7 @@
 
                     for (int id = 0; id < ids.Length; id++)
                     {
-                        log.text += "Znaleziono znacznik " + ids[0] + " \n";
-                        DrawModel(id, ids[id]);
-                        
+                        DrawModel(id, ids[id]);  
                     }
                     for (int id = 0; id < ids.Length; id++)
                         if (!ids.Contains(id))
@@ -292,8 +290,9 @@
                 localpos += Point2fToVec3Scaled(imagePoints[i]);
             }
 
+           
             localpos /= 4f;
-
+            //Debug.Log($"X point: {localpos}");
             return localpos;
         }
 
@@ -340,9 +339,24 @@
             Vector2 mrsize = new Vector2(mr.gameObject.transform.localScale.x, mr.gameObject.transform.localScale.z);
             var xScaler = mrsize.x / mat.Size().Width;
             var yScaler = mrsize.y / mat.Size().Height;
-            Debug.Log($"X point: {point.X}, {xScaler}, {mrsize.x}");
-            Debug.Log($"Y point: {point.Y}, {yScaler}, {mrsize.y}");
-            return new Vector3(point.X * xScaler - mrsize.x / 2, point.Y * yScaler - mrsize.y / 2, 0);
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+             log.text += "MrSize: " + mrsize.x + " " + mrsize.y + "\n";
+             log.text += "Canvas: " + canvas.GetComponent<RectTransform>().rect.width + " " + canvas.GetComponent<RectTransform>().rect.height + "\n";
+              log.text += "Scale: " + canvas.GetComponent<RectTransform>().localScale;
+             var scalerCanvas = canvas.GetComponent<RectTransform>().rect.height / mrsize.x;
+             return new Vector3((point.X * xScaler - mrsize.y / 2) * scalerCanvas, (point.Y * yScaler - mrsize.x / 2)*scalerCanvas, 0);
         }
+#endif
+
+#if UNITY_EDITOR
+            log.text += "MrSize: " + mrsize.x + " " + mrsize.y + "\n";
+            log.text += "Canvas: " + canvas.GetComponent<RectTransform>().rect.width + " " + canvas.GetComponent<RectTransform>().rect.height + "\n";
+            log.text += "Scale: " + canvas.GetComponent<RectTransform>().localScale;
+            var scalerCanvas = canvas.GetComponent<RectTransform>().rect.height * canvas.GetComponent<RectTransform>().localScale.x / mrsize.y;
+            return new Vector3((point.X * xScaler - mrsize.x / 2) * scalerCanvas, (point.Y * yScaler - mrsize.y / 2) * scalerCanvas, 0);
+        }
+#endif
+
     }
 }
