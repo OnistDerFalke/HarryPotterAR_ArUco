@@ -890,7 +890,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &272305662
 GameObject:
@@ -1305,7 +1305,7 @@ Transform:
   - {fileID: 1227193031}
   - {fileID: 1238487155}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &484698425
 GameObject:
@@ -1913,7 +1913,7 @@ RectTransform:
   - {fileID: 640828689}
   - {fileID: 674321960}
   m_Father: {fileID: 1233504299}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1930,7 +1930,6 @@ GameObject:
   m_Component:
   - component: {fileID: 547918431}
   - component: {fileID: 547918434}
-  - component: {fileID: 547918433}
   - component: {fileID: 547918435}
   m_Layer: 5
   m_Name: CameraImage
@@ -1948,7 +1947,7 @@ RectTransform:
   m_GameObject: {fileID: 547918430}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: -1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1756962961}
@@ -2042,41 +2041,14 @@ RectTransform:
   - {fileID: 1167890135}
   - {fileID: 1772597648}
   - {fileID: 1026828484}
-  m_Father: {fileID: 1233504299}
-  m_RootOrder: 0
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 800, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &547918433
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 547918430}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Texture: {fileID: 0}
-  m_UVRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
 --- !u!222 &547918434
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2097,7 +2069,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8e7e82a23465f64695410d429b8b9cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugMode: 1
+  debugMode: 0
   log: {fileID: 791387258}
   cam: {fileID: 1414906869}
   models:
@@ -2191,8 +2163,8 @@ MonoBehaviour:
   - {fileID: 1167890134}
   - {fileID: 1772597647}
   - {fileID: 1026828483}
-  basicMaxLength: 20
-  rawimage: {fileID: 547918433}
+  basicMaxLength: 60
+  rawimage: {fileID: 0}
   rawTransform: {fileID: 547918431}
   canvasScaler: {fileID: 1233504297}
   canvas: {fileID: 1233504298}
@@ -3419,7 +3391,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1233504299}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -5017,7 +4989,6 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 547918431}
   - {fileID: 791387257}
   - {fileID: 528538064}
   m_Father: {fileID: 2090268466}
@@ -5762,7 +5733,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1385099772
 GameObject:
@@ -7445,7 +7416,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &1690720996
 GameObject:
@@ -9344,7 +9315,7 @@ Transform:
   m_Children:
   - {fileID: 1233504299}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2090268467
 MonoBehaviour:

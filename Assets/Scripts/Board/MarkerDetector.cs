@@ -127,6 +127,7 @@
             if (mr != null)
             {
                 canvas.planeDistance = mr.gameObject.transform.position.z;
+                gameObject.transform.position = mr.gameObject.transform.position;
             }
 
             //Debug
@@ -233,13 +234,9 @@
             Point2f[] imagePoints;
             double[,] jacobian;
 
-            rvec[0] = -rvec[0];
-            rvec[1] = rvec[1];
-            rvec[2] = -rvec[2];
-
-            //tvec[0] = -tvec[0];
-            //tvec[1] = tvec[1];
-            //tvec[2] = -tvec[2];
+            //rvec[0] = -rvec[0];
+            //rvec[1] = rvec[1];
+            //rvec[2] = -rvec[2];
 
             Cv2.ProjectPoints(objPts, rvec, tvec, cameraMatrix, dist, out imagePoints, out jacobian);
 
@@ -290,8 +287,10 @@
                 localpos += Point2fToVec3Scaled(imagePoints[i]);
             }
 
-           
             localpos /= 4f;
+#if !UNITY_EDITOR && UNITY_ANDROID
+            localpos = new Vector3(localpos.y, -localpos.x, localpos.z);
+#endif
             //Debug.Log($"X point: {localpos}");
             return localpos;
         }
@@ -299,9 +298,15 @@
         private Quaternion GetRotation(double[] rvec)
         {
             double[] flip = rvec;
+#if !UNITY_EDITOR && UNITY_ANDROID
             flip[0] = flip[0];
             flip[1] = -flip[1];
             flip[2] = flip[2];
+#else
+            flip[0] = flip[0];
+            flip[1] = -flip[1];
+            flip[2] = flip[2];
+#endif
             double[] rvec_m = flip;
 
             Mat rotmatrix = new Mat();
@@ -325,6 +330,14 @@
             rot *= Quaternion.Euler(0, 0, 180);
             Quaternion worldrot = cam.transform.rotation * rot;
 
+#if !UNITY_EDITOR && UNITY_ANDROID
+            
+            Vector3 rotVec = worldrot.eulerAngles;
+            rotVec.x = worldrot.eulerAngles.y;
+            rotVec.y = worldrot.eulerAngles.x;
+            rotVec.z = worldrot.eulerAngles.z - 90;
+            worldrot = Quaternion.Euler(rotVec);
+#endif
             return worldrot;
         }
 
@@ -336,27 +349,17 @@
                 Debug.Log("Renderer not found");
                 return new Vector3(point.X, -point.Y, 0);
             }
-            Vector2 mrsize = new Vector2(mr.gameObject.transform.localScale.x, mr.gameObject.transform.localScale.z);
+            Vector2 mrsize = new Vector2(2 * mr.gameObject.transform.localScale.x, 2 * mr.gameObject.transform.localScale.z);
             var xScaler = mrsize.x / mat.Size().Width;
             var yScaler = mrsize.y / mat.Size().Height;
 
-#if UNITY_ANDROID && !UNITY_EDITOR
-             log.text += "MrSize: " + mrsize.x + " " + mrsize.y + "\n";
-             log.text += "Canvas: " + canvas.GetComponent<RectTransform>().rect.width + " " + canvas.GetComponent<RectTransform>().rect.height + "\n";
-              log.text += "Scale: " + canvas.GetComponent<RectTransform>().localScale;
-             var scalerCanvas = canvas.GetComponent<RectTransform>().rect.height / mrsize.x;
-             return new Vector3((point.X * xScaler - mrsize.y / 2) * scalerCanvas, (point.Y * yScaler - mrsize.x / 2)*scalerCanvas, 0);
-        }
-#endif
 
-#if UNITY_EDITOR
-            log.text += "MrSize: " + mrsize.x + " " + mrsize.y + "\n";
-            log.text += "Canvas: " + canvas.GetComponent<RectTransform>().rect.width + " " + canvas.GetComponent<RectTransform>().rect.height + "\n";
-            log.text += "Scale: " + canvas.GetComponent<RectTransform>().localScale;
-            var scalerCanvas = canvas.GetComponent<RectTransform>().rect.height * canvas.GetComponent<RectTransform>().localScale.x / mrsize.y;
-            return new Vector3((point.X * xScaler - mrsize.x / 2) * scalerCanvas, (point.Y * yScaler - mrsize.y / 2) * scalerCanvas, 0);
+            //log.text += "MrSize: " + mrsize.x + " " + mrsize.y + "\n";
+            //log.text += "Canvas: " + canvas.GetComponent<RectTransform>().rect.width + " " + canvas.GetComponent<RectTransform>().rect.height + "\n";
+            //log.text += "Scale: " + canvas.GetComponent<RectTransform>().localScale;
+            //var scalerCanvas = canvas.GetComponent<RectTransform>().rect.height * canvas.GetComponent<RectTransform>().localScale.x / mrsize.y;
+            return new Vector3((point.X * xScaler - mrsize.x / 2), -(point.Y * yScaler - mrsize.y / 2), 0);
         }
-#endif
 
     }
 }
