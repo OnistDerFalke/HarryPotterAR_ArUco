@@ -436,7 +436,7 @@ namespace Assets.Scripts
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Circle(new Vector2(19.3f, 14.6f), 2.0f), 102,
                 "Dziurawy Kocioł", new List<Action>() { Action.ADD_TWO_LIVES }));
             // Sklep z kotłami Madame Potage
-            GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Circle(new Vector2(12.9f, 8.4f), 1.5f), 103,
+            GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Circle(new Vector2(12.9f, 16.5f), 1.5f), 103,
                 "Sklep z kotłami Madame Potage", new List<Action>() { Action.GET_TWO_SPELLS }));
             // Markowy sprzęt do quidditcha
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Circle(new Vector2(17.5f, 18.0f), 1.6f), 104,

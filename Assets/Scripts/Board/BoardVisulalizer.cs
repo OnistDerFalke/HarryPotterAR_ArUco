@@ -19,6 +19,7 @@ namespace Assets.Scripts
         private List<(Field, GameObject)> fieldHighlights = new();
 
         private Quaternion referenceRotation = Quaternion.identity;
+        private Vector3 referenceScale = new Vector3(10f, 10f, 10f);
 
         //private void TrackCorners()
         //{
@@ -37,17 +38,20 @@ namespace Assets.Scripts
             foreach ((Field f, GameObject g) highlight in fieldHighlights)
             {
                 highlight.g.transform.position = converter.ConvertCoordinates(highlight.f.Figure.CenterPosition);
+
                 highlight.g.transform.rotation = referenceRotation;
+
+                highlight.g.transform.localScale = referenceScale;
             }
         }
 
         private void MakeQuadrangle(MeshFilter meshFilter, Quadrangle q, Vector2 center)
         {
             Vector3[] vertices = new Vector3[4];
-            vertices[0] = new Vector3(q.leftBottom.x - center.x, 0f, q.leftBottom.y - center.y) * converter.Scale;
-            vertices[1] = new Vector3(q.leftUpper.x - center.x, 0f, q.leftUpper.y - center.y) * converter.Scale;
-            vertices[2] = new Vector3(q.rightUpper.x - center.x, 0f, q.rightUpper.y - center.y) * converter.Scale;
-            vertices[3] = new Vector3(q.rightBottom.x - center.x, 0f, q.rightBottom.y - center.y) * converter.Scale;
+            vertices[0] = new Vector3(q.leftBottom.x - center.x, q.leftBottom.y - center.y, 0f) * converter.Scale;
+            vertices[1] = new Vector3(q.leftUpper.x - center.x, q.leftUpper.y - center.y, 0f) * converter.Scale;
+            vertices[2] = new Vector3(q.rightUpper.x - center.x, q.rightUpper.y - center.y, 0f) * converter.Scale;
+            vertices[3] = new Vector3(q.rightBottom.x - center.x, q.rightBottom.y - center.y, 0f) * converter.Scale;
             int[] triangles = new int[6] { 0, 1, 2, 0, 2, 3 };
             Mesh mesh = new Mesh();
             meshFilter.mesh = mesh;
@@ -81,9 +85,9 @@ namespace Assets.Scripts
             float angleStep = 360.0f / (float)numOfPoints;
             List<Vector3> vertexList = new List<Vector3>();
             List<int> triangleList = new List<int>();
-            Quaternion quaternion = Quaternion.Euler(0.0f, angleStep, 0.0f);
+            Quaternion quaternion = Quaternion.Euler(0.0f, 0.0f, angleStep);
             vertexList.Add(new Vector3(0.0f, 0.0f, 0.0f));
-            vertexList.Add(new Vector3(0.0f, 0.0f, c.Radius * converter.Scale));
+            vertexList.Add(new Vector3(0.0f, c.Radius * converter.Scale, 0.0f));
             vertexList.Add(quaternion * vertexList[1]);
 
             triangleList.Add(0);
@@ -200,6 +204,7 @@ namespace Assets.Scripts
         private void Update()
         {
             referenceRotation = converter.ReferenceRotation();
+            referenceScale = converter.GetReferenceMarkerScale();
             //TrackCorners();
             TrackHighlights();
         }

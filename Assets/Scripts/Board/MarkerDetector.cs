@@ -90,10 +90,9 @@
                     
 
                     for (int id = 0; id < ids.Length; id++)
-                    {
                         DrawModel(id, ids[id]);  
-                    }
-                    for (int id = 0; id < ids.Length; id++)
+
+                    for (int id = 0; id < models.Length; id++)
                         if (!ids.Contains(id))
                             UntrackModel(id);
 
@@ -139,36 +138,6 @@
             // Dictionary holds set of all available markers
             dictionary = CvAruco.GetPredefinedDictionary(PredefinedDictionaryName.Dict6X6_250);
 
-        }
-
-        private Texture2D CropImage(Texture2D source, int width, int height)
-        {
-            var rawImageX = rawTransform.sizeDelta.x;
-            var rawImageY = rawTransform.sizeDelta.y;
-
-            int x = (int)(rawImageX - width) / 2;
-            int y = 0;
-
-            x = (int)(x / rawImageX * source.width);
-            y = (int)(y / rawImageY * source.height);
-            width = (int)(width / rawImageX * source.width);
-            height = (int)(height / rawImageY * source.height);
-
-            // Sprawdź czy wartości nie wychodzą poza granice obrazka
-            if (x < 0 || y < 0 || width + x > source.width || height + y > source.height)
-            {
-                Debug.Log($"{x}, {y}, {width + x} > {source.width}, {height + y} > {source.height}");
-                Debug.LogError("Próba obcięcia poza granicami obrazka!");
-                return null;
-            }
-
-            // Tworzenie nowego obrazka z obciętą częścią
-            Texture2D croppedImage = new Texture2D((int)width, (int)height);
-            Color[] pixels = source.GetPixels(x, y, width, height);
-            croppedImage.SetPixels(pixels);
-            croppedImage.Apply();
-
-            return croppedImage;
         }
 
         public GameObject FindModelById(int id)
@@ -352,7 +321,6 @@
             Vector2 mrsize = new Vector2(2 * mr.gameObject.transform.localScale.x, 2 * mr.gameObject.transform.localScale.z);
             var xScaler = mrsize.x / mat.Size().Width;
             var yScaler = mrsize.y / mat.Size().Height;
-
 
             //log.text += "MrSize: " + mrsize.x + " " + mrsize.y + "\n";
             //log.text += "Canvas: " + canvas.GetComponent<RectTransform>().rect.width + " " + canvas.GetComponent<RectTransform>().rect.height + "\n";

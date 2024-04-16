@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using OpenCvSharp.Demo;
+using UnityEngine.UIElements;
+using System.Runtime.InteropServices;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Assets.Scripts
 {
@@ -14,7 +17,7 @@ namespace Assets.Scripts
         //TODO2: change to ArUco
         [SerializeField] private MarkerDetector arucoMarkHandler;
 
-        [SerializeField] private float scale = 1/1.75f;
+        [SerializeField] private float scale = 1.2f;
 
         public List<int> BoardMarkIds => boardMarkIds;
         public float Scale => scale;
@@ -22,6 +25,9 @@ namespace Assets.Scripts
         private Dictionary<int, Vector2> boardMarks;
         private (int id, GameObject marker) referenceMarker;
         private BoardMono board;
+        private float conversionScale;
+        [SerializeField] private Camera camera;
+        private Vector3 imgPos = Vector3.zero;
 
         /// <summary>
         /// Use this method to make sure that the result of converting coordinates is valid
@@ -41,28 +47,53 @@ namespace Assets.Scripts
         {
             if (IsTrackingBoard())
             {
-                var newPosiiton = new Vector3(0, 0, 0);
-                //TODO3: change to ArUco
-                if (GameManager.CurrentTrackedObjects.ContainsKey(referenceMarker.id))
-                {
-                    var position = GameManager.CurrentTrackedObjects[referenceMarker.id];
-                    newPosiiton = position - arucoMarkHandler.transform.position;
-                }
+                ////TODO3: change to ArUco
+                SetConversionScale();
+                var refPos = referenceMarker.marker.transform.position;
+                var xOffset = (boardCoordinates.x - boardMarks[referenceMarker.id].x) * referenceMarker.marker.transform.right.normalized * conversionScale;
+                var yOffset = (boardCoordinates.y - boardMarks[referenceMarker.id].y) * referenceMarker.marker.transform.up.normalized * conversionScale;
 
-                return newPosiiton + referenceMarker.marker.transform.position +
-                    (boardCoordinates.x - boardMarks[referenceMarker.id].x) * referenceMarker.marker.transform.right.normalized * scale +
-                    (boardCoordinates.y - boardMarks[referenceMarker.id].y) * referenceMarker.marker.transform.forward.normalized * scale;
+                var temp = refPos - xOffset + yOffset;
+
+                //Put result closer to avoid crossing fields across the board
+                var delta = camera.transform.position - temp;
+                var z = imgPos.z - conversionScale;
+                //Debug.Log("Obraz: " + imgPos.z + " Skala konwersji: " + conversionScale);
+                var closer = new Vector3(delta.x / delta.z, - delta.y / delta.z, 1f/scale) * (z - temp.z) * scale;
+                var result = temp + closer;
+
+                //Debug.Log("Value: " + result + "\tCloser: " + closer + "\tFinal value: " + result2);
+                //Debug.Log("Board coordinates: " + boardCoordinates + "\tRef marker id: " + referenceMarker.id +
+                //    "\nRef pos: " + refPos + "\tOffset: " + (closer - xOffset + yOffset) + "\tFinal value: " + result);
+
+                return result;
             }
             else
             {
-                return Vector3.zero;
+                return -Vector3.one;
             }
+        }
+
+        public Vector3 GetReferenceMarkerScale()
+        {
+            if (IsTrackingBoard())
+            {
+#if !UNITY_EDITOR && UNITY_ANDROID
+                float s = 100f;
+#else
+                float s = 100f * 1.14f;
+#endif
+                //Debug.Log("Field scale: " + referenceMarker.marker.transform.localScale * s);
+                return referenceMarker.marker.transform.localScale * s;
+            }
+            else
+                return Vector3.one;
         }
 
         public Vector3 ConvertCoordinates(Vector2 boardCoordinates, int referenceMarkerId)
         {
             //TODO2: change to ArUco
-            Debug.Log("ConvertCoordinates - FindModelById: " + referenceMarkerId);
+            //Debug.Log("ConvertCoordinates - FindModelById: " + referenceMarkerId);
             GameObject marker = arucoMarkHandler.FindModelById(referenceMarkerId);
             (int id, GameObject marker) referenceMarker = (referenceMarkerId, marker);
 
@@ -75,60 +106,57 @@ namespace Assets.Scripts
         {
             if(IsTrackingBoard())
             {
-                return referenceMarker.marker.transform.rotation;
+                var rot = referenceMarker.marker.transform.rotation.eulerAngles;
+                rot.y += 180;
+                rot.z = -rot.z;
+
+                //Debug.Log("Rotacja: " + rot);
+                return Quaternion.Euler(rot);
             }
             else
-            {
                 return Quaternion.identity;
-            }
         }
 
         public Vector2 WorldToBoard(Vector3 worldPos)
         {
             if(referenceMarker.marker == null)
-            {
-                return Vector2.one * -1;
-            }
+                return -Vector2.one;
 
-            //var newPosition = new Vector3(0, 0, 0);
-            var position = new Vector3(0, 0, 0);
             //TODO2: change to ArUco
-            if (GameManager.CurrentTrackedObjects.ContainsKey(referenceMarker.id))
-            {
-                position = GameManager.CurrentTrackedObjects[referenceMarker.id];
-                //newPosition = position - arucoMarkHandler.transform.position;
-            }
-
-            //Vector3 referencePosition = referenceMarker.marker.transform.position - newPosition;
-            Vector3 referencePosition = referenceMarker.marker.transform.position - position;
+            Vector3 referencePosition = referenceMarker.marker.transform.position;
 
             // direction down the pawn
-            Vector3 normalizedDirection = -1 * referenceMarker.marker.transform.up.normalized;
+            Vector3 normalizedDirection = -1 * referenceMarker.marker.transform.forward.normalized;
 
             // line from given position to reference marker in 3d space
             Vector3 lineToBoard = referencePosition - worldPos;
 
             // distance of the pawn from the board
+            SetConversionScale();
             float projection = Vector3.Dot(lineToBoard, normalizedDirection);
-            projection /= scale;
+            projection /= conversionScale;
 
             // pawn projected onto the board
             Vector3 intersection = worldPos + projection * normalizedDirection;
 
             // offset from reference transform to projected pawn position
             Vector3 offset = intersection - referencePosition;
-            float y_dist_board = Vector3.Dot(offset, referenceMarker.marker.transform.forward);
+            float y_dist_board = Vector3.Dot(offset, referenceMarker.marker.transform.up);
             float x_dist_board = Vector3.Dot(offset, referenceMarker.marker.transform.right);
-            Vector2 boardPos = boardMarks[referenceMarker.id]
-                - Vector2.right * x_dist_board / scale
-                - Vector2.up * y_dist_board / scale;
+            Vector2 x_offset = Vector2.right * x_dist_board / conversionScale;
+            Vector2 y_offset = Vector2.up * y_dist_board / conversionScale;
+            Vector2 boardPos = boardMarks[referenceMarker.id] - x_offset + y_offset;
+
+            //Debug.Log("Pozycja markera referencyjnego na planszy: " + boardMarks[referenceMarker.id] + 
+            //    "\nOffset x: " + -x_offset + "\tOffset y: " + y_offset + 
+            //    "\nFinal value: " + boardPos);
 
             return boardPos;
         }
 
-        private float CalculateErrorRate(int markerId)
+        private double CalculateErrorRate(int markerId)
         {
-            float err = 0f;
+            double err = 0f;
             foreach(var otherId in board.CurrentTrackedBoardMarks)
             {
                 if(otherId == markerId)
@@ -143,14 +171,14 @@ namespace Assets.Scripts
             return err;
         }
 
-        private (int, float) ChooseReferenceMarker()
+        private (int, double) ChooseReferenceMarker()
         {
             int bestId = -1;
-            float minErrorRate = float.MaxValue;
+            double minErrorRate = double.MaxValue;
 
             foreach (var markerId in board.CurrentTrackedBoardMarks)
             {
-                float err = CalculateErrorRate(markerId);
+                double err = CalculateErrorRate(markerId);
                 if (err < minErrorRate)
                 {
                     minErrorRate = err;
@@ -162,6 +190,9 @@ namespace Assets.Scripts
 
         private void Awake()
         {
+#if !UNITY_EDITOR && UNITY_ANDROID
+            scale = 0.75f;
+#endif
             boardMarks = new Dictionary<int, Vector2>();
             boardMarkIds = new List<int>();
 
@@ -174,25 +205,49 @@ namespace Assets.Scripts
             board = GetComponentInParent<BoardMono>();
         }
 
+        private void SetConversionScale()
+        {
+            if (IsTrackingBoard())
+                conversionScale = referenceMarker.marker.transform.localScale.x * 100f * scale;
+            else
+                conversionScale = scale;
+        }
+
+        private void SetImgPos()
+        {
+            imgPos = camera.gameObject.GetComponentInChildren<MeshRenderer>().gameObject.transform.position;
+            Debug.Log("Obraz first: " + imgPos);
+        }
+
         private void Update()
         {
+            SetConversionScale();
+            if (imgPos == Vector3.zero)
+                SetImgPos();
+
             var bestMarker = ChooseReferenceMarker();
-            Debug.Log("BestMarker: " + bestMarker.Item1);
+            //Debug.Log("BestMarker: " + bestMarker.Item1);
             if (bestMarker.Item1 != referenceMarker.id)
             {
-                if (referenceMarker.marker != null && board.CurrentTrackedBoardMarks.Contains(referenceMarker.id))
-                {
-                    float referenceError = CalculateErrorRate(referenceMarker.id);
-                    if (Math.Abs(bestMarker.Item2 - referenceError) < 0.00005f)
-                        return;
-                }
-
-                Debug.Log("Podmianka");
                 //TODO2: change to ArUco
                 GameObject marker = arucoMarkHandler.FindModelById(bestMarker.Item1);
                 if (marker != null)
                 {
-                    referenceMarker = (bestMarker.Item1, marker);
+                    if (referenceMarker.marker != null && board.CurrentTrackedBoardMarks.Contains(referenceMarker.id))
+                    {
+                        double referenceError = CalculateErrorRate(referenceMarker.id);
+                        double bestMarkerError = CalculateErrorRate(bestMarker.Item1);
+                        if (Math.Abs(bestMarkerError - referenceError) > 1e6)
+                        {
+                            referenceMarker = (bestMarker.Item1, marker);
+                            //Debug.Log("ReferenceMarker (better one found): " + referenceMarker.id);
+                        }
+                    }
+                    else
+                    {
+                        referenceMarker = (bestMarker.Item1, marker);
+                        //Debug.Log("ReferenceMarker (last one lost): " + referenceMarker.id);
+                    }
                 }
             }
         }

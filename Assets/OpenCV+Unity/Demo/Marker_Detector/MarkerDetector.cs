@@ -170,34 +170,6 @@
 				Debug.Log("Kamera nie działa poprawnie.");
 		}
 
-		private Texture2D CropImage(Texture2D source, float width, float height)
-		{
-			var rawScale = rawTransform.transform.localScale;
-			Debug.Log($"Canvas: {width}, {height}\trawImage: {source.width}, {source.height}\tScale: {rawScale}");
-			width = width / rawScale.x;
-			height = height / rawScale.y;
-			int x = (int)(source.width - width) / 2;
-			int y = 0;
-
-			// Sprawdź czy wartości nie wychodzą poza granice obrazka
-			if (x < 0 || y < 0 || width + x > source.width || height + y > source.height)
-			{
-				Debug.Log($"{x}, {y}, {width + x} > {source.width}, {height + y} > {source.height}");
-				Debug.LogError("Próba obcięcia poza granicami obrazka!");
-				return null;
-			}
-
-			// Tworzenie nowego obrazka z obciętą częścią
-			Texture2D croppedImage = new Texture2D((int)width, (int)height);
-			Color[] pixels = source.GetPixels(x, y, (int)width, (int)height);
-			croppedImage.SetPixels(pixels);
-			croppedImage.Apply();
-
-			Debug.Log(croppedImage);
-
-			return croppedImage;
-		}
-
 		void DrawModel(int foundId, int modelId)
 		{
 			models[modelId].SetActive(true);

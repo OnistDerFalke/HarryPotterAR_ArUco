@@ -1648,7 +1648,8 @@ MonoBehaviour:
   - {x: 48.8, y: 48.7}
   boardMarkStartId: 9
   arucoMarkHandler: {fileID: 547918435}
-  scale: 0.5714286
+  scale: 1.2
+  camera: {fileID: 1414906869}
 --- !u!1 &501482050
 GameObject:
   m_ObjectHideFlags: 0
@@ -1856,14 +1857,14 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 1408dc07389c94f439692f470db6cf9e, type: 3}
     m_FontSize: 60
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 0
-    m_MaxSize: 300
+    m_MaxSize: 80
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
-    m_VerticalOverflow: 1
+    m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Aktualne pole gracza
 --- !u!222 &525665120
@@ -2800,7 +2801,8 @@ MonoBehaviour:
   - {x: 23.5, y: 23.5}
   boardMarkStartId: 58
   arucoMarkHandler: {fileID: 547918435}
-  scale: 0.5714286
+  scale: 1.2
+  camera: {fileID: 1414906869}
 --- !u!1 &716907215
 GameObject:
   m_ObjectHideFlags: 0
@@ -4894,7 +4896,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   coordinatesConverter: {fileID: 710563759}
   boardVisualiser: {fileID: 1734552797}
-  charactersHandler: {fileID: 0}
+  charactersHandler: {fileID: 547918435}
   id: 1
   isTracked: 0
 --- !u!1 &1233504295
@@ -5047,7 +5049,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   coordinatesConverter: {fileID: 1520332391}
   boardVisualiser: {fileID: 1385099774}
-  charactersHandler: {fileID: 0}
+  charactersHandler: {fileID: 547918435}
   id: 2
   isTracked: 0
 --- !u!1 &1266244378
@@ -6098,7 +6100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   coordinatesConverter: {fileID: 498170097}
   boardVisualiser: {fileID: 755960703}
-  charactersHandler: {fileID: 0}
+  charactersHandler: {fileID: 547918435}
   id: 0
   isTracked: 0
 --- !u!1 &1438131679
@@ -6659,7 +6661,8 @@ MonoBehaviour:
   - {x: 24.25, y: 24.2}
   boardMarkStartId: 74
   arucoMarkHandler: {fileID: 547918435}
-  scale: 0.5714286
+  scale: 1.2
+  camera: {fileID: 1414906869}
 --- !u!1 &1541480154
 GameObject:
   m_ObjectHideFlags: 0
