@@ -140,6 +140,7 @@ namespace Assets.Scripts
                 {
                     path.Add(currentField.PortalField);
                     FindFieldsToHighlightRecursive(path, steps, fiuuFieldsHighlighted);
+                    path.Remove(currentField.PortalField);
                 }
             }
         }

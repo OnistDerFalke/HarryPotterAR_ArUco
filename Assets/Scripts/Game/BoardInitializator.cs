@@ -446,7 +446,7 @@ namespace Assets.Scripts
                 "Esy i floresy", new List<Action>() { Action.GET_TWO_BOOKS }));
             // Bank Gringotta
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Circle(new Vector2(8.9f, 20.7f), 2.2f), 106,
-                "Bank Gringotta", new List<Action>() { Action.CAN_MAKE_MISSION }, 
+                "Bank Gringotta", new List<Action>() { Action.CAN_MAKE_MISSION, Action.CAN_TELEPORT }, 
                 isMissionField: true, missionNumbers: new List<int>() { 24 } ));
             // Zaklęcie na ulicy śmiertelnego Nokturnu obok +3PŻ
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Circle(new Vector2(12.2f, 13.1f), 1.3f), 107,
@@ -503,12 +503,12 @@ namespace Assets.Scripts
             // Bank Gringotta
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Quadrangle(
                 new Vector2(9.1f, 8.3f), new Vector2(16.0f, 8.3f), new Vector2(16.0f, 1.4f), new Vector2(9.1f, 1.4f)), 122,
-                "Bank Gringotta", new List<Action>() { Action.CAN_MAKE_MISSION, Action.CAN_GET_THING }, 
+                "Bank Gringotta", new List<Action>() { Action.CAN_MAKE_MISSION, Action.CAN_GET_THING, Action.CAN_TELEPORT }, 
                 isMissionField: true, isFiuuField: true, missionNumbers: new List<int>() { 24 } ));
             // Ministerstwo Magii
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Quadrangle(
                 new Vector2(1.1f, 8.3f), new Vector2(8.0f, 8.3f), new Vector2(8.0f, 1.4f), new Vector2(1.1f, 1.4f)), 123,
-                "Ministerstwo Magii", new List<Action>() { Action.CAN_MAKE_MISSION, Action.CAN_GET_THING }, 
+                "Ministerstwo Magii", new List<Action>() { Action.CAN_MAKE_MISSION, Action.CAN_GET_THING, Action.CAN_TELEPORT }, 
                 isMissionField: true, isFiuuField: true, missionNumbers: new List<int>() { 22 } ));
             // Grimmauld Place 12
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Quadrangle(
@@ -521,7 +521,7 @@ namespace Assets.Scripts
             // Sala przepowiedni
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Quadrangle(
                 new Vector2(1.1f, 16.3f), new Vector2(8.0f, 16.3f), new Vector2(8.0f, 9.4f), new Vector2(1.1f, 9.4f)), 126,
-                "Sala przepowiedni", new List<Action>() { Action.CAN_MAKE_MISSION, Action.CAN_GET_THING }, 
+                "Sala przepowiedni", new List<Action>() { Action.CAN_MAKE_MISSION, Action.CAN_GET_THING, Action.CAN_TELEPORT }, 
                 isMissionField: true, isFiuuField: true, missionNumbers: new List<int>() { 19, 20 } ));
             // Forest of dean
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Quadrangle(

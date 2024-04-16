@@ -67,7 +67,7 @@ namespace Assets.Scripts
             string actionText = "";
             for (var i = 0; i < actions.Count; i++)
             {
-                actionText += ActionText.GetActionText(actions[i], missionNumbers);
+                actionText += ActionText.GetActionText(actions[i], missionNumbers, portalField.Name);
                 if (i < actions.Count - 1) 
                     actionText += "\n\n";
             }
@@ -81,7 +81,7 @@ namespace Assets.Scripts
             string actionText = "";
             for (var i = 0; i < actions.Count; i++)
             {
-                actionText += ActionText.GetActionShortText(actions[i], missionNumbers);
+                actionText += ActionText.GetActionShortText(actions[i], missionNumbers, portalField.Name);
                 if (i < actions.Count - 1)
                     actionText += "\n";
             }
@@ -102,7 +102,7 @@ namespace Assets.Scripts
 
         public void Highlight()
         {
-            if (!isHighlighted)
+            if (!isHighlighted && index != GameManager.GetMyPlayer().LastFieldId)
             {
                 RequestBroker.requests.Add(new HighlightFieldRequest(this));
                 isHighlighted = true;

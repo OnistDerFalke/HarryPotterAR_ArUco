@@ -38,7 +38,7 @@ namespace Assets.Scripts
 
     public static class ActionText
     {
-        public static string GetActionText(Action action, List<int> missionNumbers)
+        public static string GetActionText(Action action, List<int> missionNumbers, string portalName = "")
         {
             SpecialPower power = GameManager.GetMyPlayer().SpecialPower;
 
@@ -108,13 +108,13 @@ namespace Assets.Scripts
                 case Action.CAN_START_QUIDDITCH:
                     return "Mo¿esz wyzwaæ dowolnego gracza do meczu Quidditcha.";
                 case Action.CAN_TELEPORT:
-                    return "Z tego pola mo¿esz siê teleportowaæ (za darmo) na odpowiednio po³¹czone z nim pole.";
+                    return $"Z tego pola mo¿esz siê teleportowaæ (za darmo) na po³¹czone z nim pole: {portalName}.";
             }
 
             return "";
         }
 
-        public static string GetActionShortText(Action action, List<int> missionNumbers)
+        public static string GetActionShortText(Action action, List<int> missionNumbers, string portalName = "")
         {
             SpecialPower power = GameManager.GetMyPlayer().SpecialPower;
 
@@ -181,7 +181,7 @@ namespace Assets.Scripts
                 case Action.CAN_START_QUIDDITCH:
                     return "Mo¿esz wyzwaæ dowolnego gracza do meczu Quidditcha.";
                 case Action.CAN_TELEPORT:
-                    return "Z tego pola mo¿esz siê teleportowaæ (za darmo) na odpowiednio po³¹czone z nim pole.";
+                    return $"Z tego pola mo¿esz siê teleportowaæ (za darmo) na po³¹czone z nim pole: {portalName}.";
             }
 
             return "";

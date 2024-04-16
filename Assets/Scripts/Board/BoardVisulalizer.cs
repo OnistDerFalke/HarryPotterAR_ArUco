@@ -128,6 +128,8 @@ namespace Assets.Scripts
         {
             if (f.IsFiuuField)
                 return Instantiate(fiuuHighlightPrefab, transform);
+            if (f.IsTower)
+                return Instantiate(highlightPrefab, transform);
             if (f.IsMissionField)
                 return Instantiate(missionHighlightPrefab, transform);
             return Instantiate(highlightPrefab, transform);
