@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Scripts;
@@ -72,7 +72,7 @@ namespace Assets.Scripts
                     actionText += "\n\n";
             }
             if (actionText == "") 
-                actionText = "Pole nie posiada ¿adnych akcji.";
+                actionText = "Pole nie posiada Å¼adnych akcji.";
             return actionText;
         }
 
@@ -86,7 +86,7 @@ namespace Assets.Scripts
                     actionText += "\n";
             }
             if (actionText == "")
-                actionText = "Pole nie posiada ¿adnych akcji.";
+                actionText = "Pole nie posiada Å¼adnych akcji.";
             return actionText;
         }
 

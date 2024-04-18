@@ -202,7 +202,7 @@ namespace Scripts
                 }
                 else if (addLivePowerShow)
                 {
-                    simpleSpecialPowerInfoText.text = "Dobierz 1 PŹ, jeśli masz taką możliwość";
+                    simpleSpecialPowerInfoText.text = "Dobierz 1 PŻ, jeśli masz taką możliwość";
                     complexSpecialPowerInfoText.text = "";
                 }
 

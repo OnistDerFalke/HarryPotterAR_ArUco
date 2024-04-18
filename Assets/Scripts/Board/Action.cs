@@ -1,37 +1,37 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts
 {
     public enum Action
     {
-        //Obowi¹zkowe akcje
+        //ObowiÄ…zkowe akcje
         COMMON_ROOM_CHOICE,             //jedna dowolna karta lub wymiana jednego przedmiotu
         FIGHT_FIELD,                    //wszystkie pola z pojedynkiem
-        GET_ONE_BOOK,                   //dzia³ ksi¹g zakazanych, wszystkie pola z ksi¹¿k¹
+        GET_ONE_BOOK,                   //dziaÅ‚ ksiÄ…g zakazanych, wszystkie pola z ksiÄ…Å¼kÄ…
         GET_ONE_ELIXIR,                 //wszystkie pola z eliksirem
         GET_ONE_EVENT,                  //wszystkie pola z wydarzeniem
         GET_ONE_EXERCISE,               //wszystkie pola ze sprawowaniem
-        GET_ONE_SPELL,                  //klasy: "zaklêcia i uroki", "transmutacja", "obrona przed czarn¹ magi¹", wszystkie pola z zaklêciem
+        GET_ONE_SPELL,                  //klasy: "zaklÄ™cia i uroki", "transmutacja", "obrona przed czarnÄ… magiÄ…", wszystkie pola z zaklÄ™ciem
         GET_ONE_SPELL_AND_ONE_ELIXIR,   //chatka Hagrida        
         GET_TWO_BOOKS,                  //Esy i floresy
         GET_TWO_ELIXIRS,                //klasy: "eliksiry", "zielarstwo", "opieka nad magicznymi stworzeniami", gabinet Snape'a, biblioteka
-        GET_TWO_SPELLS,                 //gabinet Dumbledore'a, Sklep z kot³ami Madame Potage
-        GET_QUIDDITCH_CARD,             //Markowy sprzêt do Quidditcha
+        GET_TWO_SPELLS,                 //gabinet Dumbledore'a, Sklep z kotÅ‚ami Madame Potage
+        GET_QUIDDITCH_CARD,             //Markowy sprzÄ™t do Quidditcha
 
-        //Warunkowe i nieobowi¹zkowe 
-        ADD_TWO_LIVES,                  //dziurawy kocio³ 
+        //Warunkowe i nieobowiÄ…zkowe 
+        ADD_TWO_LIVES,                  //dziurawy kocioÅ‚ 
         ADD_THREE_LIVES,                //kuchnia 
-        ADD_FOUR_LIVES,                 //pola +4¿ (ko³o zielarstwa, ko³o jeziora) 
-        ADD_FIVE_LIVES,                 //pola +5¿ (ko³o jeziora)
-        ADD_SIX_LIVES,                  //skrzyd³o szpitalne
-        CAN_MAKE_MISSION,               //wszystkie pola z misj¹
+        ADD_FOUR_LIVES,                 //pola +4Å¼ (koÅ‚o zielarstwa, koÅ‚o jeziora) 
+        ADD_FIVE_LIVES,                 //pola +5Å¼ (koÅ‚o jeziora)
+        ADD_SIX_LIVES,                  //skrzydÅ‚o szpitalne
+        CAN_MAKE_MISSION,               //wszystkie pola z misjÄ…
         CAN_PASS_EXAMS,                 //klasy
-        CAN_USE_FIUU,                   //wie¿a zamkowa
+        CAN_USE_FIUU,                   //wieÅ¼a zamkowa
         CAN_USE_PORTKEY,                //boisko do quidditcha
 
-        //Mo¿liwe, ale nieobowi¹zkowe akcje
-        CAN_GET_THING,                  //wszystkie pola z gwiazdk¹
+        //MoÅ¼liwe, ale nieobowiÄ…zkowe akcje
+        CAN_GET_THING,                  //wszystkie pola z gwiazdkÄ…
         CAN_START_QUIDDITCH,            //boisko do Quidditch
         CAN_TELEPORT                    //wszystkie pola portalowe
     }
@@ -45,70 +45,70 @@ namespace Assets.Scripts
             switch (action)
             {
                 case Action.COMMON_ROOM_CHOICE:
-                    return "WeŸ jedn¹ dowoln¹ kartê lub zaproponuj wymianê przedmiotu pozosta³ym graczom.";
+                    return "WeÅº jednÄ… dowolnÄ… kartÄ™ lub zaproponuj wymianÄ™ przedmiotu pozostaÅ‚ym graczom.";
                 case Action.FIGHT_FIELD:
-                    return "Pobierz kartê z pojedynkiem i przeprowadŸ walkê.";
+                    return "Pobierz kartÄ™ z pojedynkiem i przeprowadÅº walkÄ™.";
                 case Action.GET_ONE_BOOK:
                     if (power == SpecialPower.GetOneMoreBook)
-                        return "WeŸ dwie karty ksiêgi.";
+                        return "WeÅº dwie karty ksiÄ™gi.";
                     else
-                        return "WeŸ jedn¹ kartê ksiêgi.";
+                        return "WeÅº jednÄ… kartÄ™ ksiÄ™gi.";
                 case Action.GET_ONE_ELIXIR:
                     if (power == SpecialPower.GetOneMoreElixir)
-                        return "WeŸ dwie karty eliksiru.";
+                        return "WeÅº dwie karty eliksiru.";
                     else
-                        return "WeŸ jedn¹ kartê eliksiru.";
+                        return "WeÅº jednÄ… kartÄ™ eliksiru.";
                 case Action.GET_ONE_EVENT:
-                    return "WeŸ jedn¹ kartê wydarzenia.";
+                    return "WeÅº jednÄ… kartÄ™ wydarzenia.";
                 case Action.GET_ONE_EXERCISE:
-                    return "WeŸ jedn¹ kartê sprawowania.";
+                    return "WeÅº jednÄ… kartÄ™ sprawowania.";
                 case Action.GET_ONE_SPELL:
                     if (power == SpecialPower.GetOneMoreSpell)
-                        return "WeŸ dwie karty zaklêcia.";
+                        return "WeÅº dwie karty zaklÄ™cia.";
                     else
-                        return "WeŸ jedn¹ kartê zaklêcia.";
+                        return "WeÅº jednÄ… kartÄ™ zaklÄ™cia.";
                 case Action.GET_TWO_BOOKS:
-                    return "WeŸ dwie karty ksiêgi.";
+                    return "WeÅº dwie karty ksiÄ™gi.";
                 case Action.GET_TWO_ELIXIRS:
-                    return "WeŸ dwie karty eliksiru.";
+                    return "WeÅº dwie karty eliksiru.";
                 case Action.GET_TWO_SPELLS:
-                    return "WeŸ dwie karty zaklêcia.";
+                    return "WeÅº dwie karty zaklÄ™cia.";
                 case Action.GET_QUIDDITCH_CARD:
-                    return "WeŸ jedn¹ kartê quidditcha.";
+                    return "WeÅº jednÄ… kartÄ™ quidditcha.";
                 case Action.ADD_TWO_LIVES: 
-                    return "Jeœli masz miejsce, dobierz 2 ¿ycia.";
+                    return "JeÅ›li masz miejsce, dobierz 2 Å¼ycia.";
                 case Action.ADD_THREE_LIVES:
-                    return "Jeœli masz miejsce, dobierz 3 ¿ycia.";
+                    return "JeÅ›li masz miejsce, dobierz 3 Å¼ycia.";
                 case Action.ADD_FOUR_LIVES:
-                    return "Jeœli masz miejsce, dobierz 4 ¿ycia.";
+                    return "JeÅ›li masz miejsce, dobierz 4 Å¼ycia.";
                 case Action.ADD_FIVE_LIVES:
-                    return "Jeœli masz miejsce, dobierz 5 ¿yæ.";
+                    return "JeÅ›li masz miejsce, dobierz 5 Å¼yÄ‡.";
                 case Action.ADD_SIX_LIVES:
-                    return "Jeœli masz miejsce, dobierz 6 ¿yæ.";
+                    return "JeÅ›li masz miejsce, dobierz 6 Å¼yÄ‡.";
                 case Action.CAN_MAKE_MISSION:
-                    string result = "Je¿eli spe³niasz wszystkie warunki odpowiedniej misji (nr ";
+                    string result = "JeÅ¼eli speÅ‚niasz wszystkie warunki odpowiedniej misji (nr ";
                     for (int i = 0; i < missionNumbers.Count; i++)
                     {
                         result += $"{missionNumbers[i]}";
                         if (i < missionNumbers.Count - 1) result += ", ";
                     }
-                    result += "), mo¿esz j¹ wykonaæ.";
+                    result += "), moÅ¼esz jÄ… wykonaÄ‡.";
                     return result;
                 case Action.CAN_PASS_EXAMS:
-                    return "Mo¿esz zdaæ egzaminy, jeœli posiadasz karty ksiêgi powi¹zane z t¹ klas¹.";
+                    return "MoÅ¼esz zdaÄ‡ egzaminy, jeÅ›li posiadasz karty ksiÄ™gi powiÄ…zane z tÄ… klasÄ….";
                 case Action.CAN_USE_FIUU:
-                    return "Mo¿esz transportowaæ siê za pomoc¹ proszka fiuu na 1 z 7 pól na planszy 2 (z wyj¹tkiem \"Cmentarza w Little Hangleton\"). " +
-                        "Na koniec tury wróæ do miejsca, z którego siê przenios³eœ.";
+                    return "MoÅ¼esz transportowaÄ‡ siÄ™ za pomocÄ… proszka fiuu na 1 z 7 pÃ³l na planszy 2 (z wyjÄ…tkiem \"Cmentarza w Little Hangleton\"). " +
+                        "Na koniec tury wrÃ³Ä‡ do miejsca, z ktÃ³rego siÄ™ przeniosÅ‚eÅ›.";
                 case Action.CAN_USE_PORTKEY:
-                    return "Mo¿esz za pomoc¹ œwistoklika przenieœæ siê na pole \"Cmentarz w Little Hangleton\".";
+                    return "MoÅ¼esz za pomocÄ… Å›wistoklika przenieÅ›Ä‡ siÄ™ na pole \"Cmentarz w Little Hangleton\".";
                 case Action.CAN_GET_THING:
-                    return "Je¿eli na polu znajduje siê przedmiot, mo¿esz go podnieœæ. " +
-                        "Mo¿na posiadaæ maksymalnie 6 przedmiotów, a podczas jednego ruchu mo¿na podnieœæ tylko 2 przedmioty. " + 
-                        "Gracz ma mo¿liwoœæ wymiany przedmiotu.";
+                    return "JeÅ¼eli na polu znajduje siÄ™ przedmiot, moÅ¼esz go podnieÅ›Ä‡. " +
+                        "MoÅ¼na posiadaÄ‡ maksymalnie 6 przedmiotÃ³w, a podczas jednego ruchu moÅ¼na podnieÅ›Ä‡ tylko 2 przedmioty. " + 
+                        "Gracz ma moÅ¼liwoÅ›Ä‡ wymiany przedmiotu.";
                 case Action.CAN_START_QUIDDITCH:
-                    return "Mo¿esz wyzwaæ dowolnego gracza do meczu Quidditcha.";
+                    return "MoÅ¼esz wyzwaÄ‡ dowolnego gracza do meczu Quidditcha.";
                 case Action.CAN_TELEPORT:
-                    return $"Z tego pola mo¿esz siê teleportowaæ (za darmo) na po³¹czone z nim pole: {portalName}.";
+                    return $"Z tego pola moÅ¼esz siÄ™ teleportowaÄ‡ (za darmo) na poÅ‚Ä…czone z nim pole: {portalName}.";
             }
 
             return "";
@@ -121,67 +121,67 @@ namespace Assets.Scripts
             switch (action)
             {
                 case Action.COMMON_ROOM_CHOICE:
-                    return "WeŸ jedn¹ dowoln¹ kartê lub zaproponuj wymianê przedmiotu pozosta³ym graczom.";
+                    return "WeÅº jednÄ… dowolnÄ… kartÄ™ lub zaproponuj wymianÄ™ przedmiotu pozostaÅ‚ym graczom.";
                 case Action.FIGHT_FIELD:
-                    return "Pobierz kartê z pojedynkiem i przeprowadŸ walkê.";
+                    return "Pobierz kartÄ™ z pojedynkiem i przeprowadÅº walkÄ™.";
                 case Action.GET_ONE_BOOK:
                     if (power == SpecialPower.GetOneMoreBook)
-                        return "WeŸ dwie karty ksiêgi.";
+                        return "WeÅº dwie karty ksiÄ™gi.";
                     else
-                        return "WeŸ jedn¹ kartê ksiêgi.";
+                        return "WeÅº jednÄ… kartÄ™ ksiÄ™gi.";
                 case Action.GET_ONE_ELIXIR:
                     if (power == SpecialPower.GetOneMoreElixir)
-                        return "WeŸ dwie karty eliksiru.";
+                        return "WeÅº dwie karty eliksiru.";
                     else
-                        return "WeŸ jedn¹ kartê eliksiru.";
+                        return "WeÅº jednÄ… kartÄ™ eliksiru.";
                 case Action.GET_ONE_EVENT:
-                    return "WeŸ jedn¹ kartê wydarzenia.";
+                    return "WeÅº jednÄ… kartÄ™ wydarzenia.";
                 case Action.GET_ONE_EXERCISE:
-                    return "WeŸ jedn¹ kartê sprawowania.";
+                    return "WeÅº jednÄ… kartÄ™ sprawowania.";
                 case Action.GET_ONE_SPELL:
                     if (power == SpecialPower.GetOneMoreSpell)
-                        return "WeŸ dwie karty zaklêcia.";
+                        return "WeÅº dwie karty zaklÄ™cia.";
                     else
-                        return "WeŸ jedn¹ kartê zaklêcia.";
+                        return "WeÅº jednÄ… kartÄ™ zaklÄ™cia.";
                 case Action.GET_TWO_BOOKS:
-                    return "WeŸ dwie karty ksiêgi.";
+                    return "WeÅº dwie karty ksiÄ™gi.";
                 case Action.GET_TWO_ELIXIRS:
-                    return "WeŸ dwie karty eliksiru.";
+                    return "WeÅº dwie karty eliksiru.";
                 case Action.GET_TWO_SPELLS:
-                    return "WeŸ dwie karty zaklêcia.";
+                    return "WeÅº dwie karty zaklÄ™cia.";
                 case Action.GET_QUIDDITCH_CARD:
-                    return "WeŸ jedn¹ kartê quidditcha.";
+                    return "WeÅº jednÄ… kartÄ™ quidditcha.";
                 case Action.ADD_TWO_LIVES:
-                    return "Jeœli masz miejsce, dobierz 2 ¿ycia.";
+                    return "JeÅ›li masz miejsce, dobierz 2 Å¼ycia.";
                 case Action.ADD_THREE_LIVES:
-                    return "Jeœli masz miejsce, dobierz 3 ¿ycia.";
+                    return "JeÅ›li masz miejsce, dobierz 3 Å¼ycia.";
                 case Action.ADD_FOUR_LIVES:
-                    return "Jeœli masz miejsce, dobierz 4 ¿ycia.";
+                    return "JeÅ›li masz miejsce, dobierz 4 Å¼ycia.";
                 case Action.ADD_FIVE_LIVES:
-                    return "Jeœli masz miejsce, dobierz 5 ¿yæ.";
+                    return "JeÅ›li masz miejsce, dobierz 5 Å¼yÄ‡.";
                 case Action.ADD_SIX_LIVES:
-                    return "Jeœli masz miejsce, dobierz 6 ¿yæ.";
+                    return "JeÅ›li masz miejsce, dobierz 6 Å¼yÄ‡.";
                 case Action.CAN_MAKE_MISSION:
-                    string result = "Je¿eli spe³niasz wszystkie warunki odpowiedniej misji (nr ";
+                    string result = "JeÅ¼eli speÅ‚niasz wszystkie warunki odpowiedniej misji (nr ";
                     for (int i = 0; i < missionNumbers.Count; i++)
                     {
                         result += $"{missionNumbers[i]}";
                         if (i < missionNumbers.Count - 1) result += ", ";
                     }
-                    result += "), mo¿esz j¹ wykonaæ.";
+                    result += "), moÅ¼esz jÄ… wykonaÄ‡.";
                     return result;
                 case Action.CAN_PASS_EXAMS:
-                    return "Mo¿esz zdaæ egzaminy, jeœli posiadasz karty ksiêgi powi¹zane z t¹ klas¹.";
+                    return "MoÅ¼esz zdaÄ‡ egzaminy, jeÅ›li posiadasz karty ksiÄ™gi powiÄ…zane z tÄ… klasÄ….";
                 case Action.CAN_USE_FIUU:
-                    return "Mo¿esz transportowaæ siê za pomoc¹ proszka fiuu planszê 2.";
+                    return "MoÅ¼esz transportowaÄ‡ siÄ™ za pomocÄ… proszka fiuu planszÄ™ 2.";
                 case Action.CAN_USE_PORTKEY:
-                    return "Mo¿esz za pomoc¹ œwistoklika przenieœæ siê na pole \"Cmentarz w Little Hangleton\".";
+                    return "MoÅ¼esz za pomocÄ… Å›wistoklika przenieÅ›Ä‡ siÄ™ na pole \"Cmentarz w Little Hangleton\".";
                 case Action.CAN_GET_THING:
-                    return "Mo¿esz podnieœæ przedmiot, który znajduje siê na tym polu.";
+                    return "MoÅ¼esz podnieÅ›Ä‡ przedmiot, ktÃ³ry znajduje siÄ™ na tym polu.";
                 case Action.CAN_START_QUIDDITCH:
-                    return "Mo¿esz wyzwaæ dowolnego gracza do meczu Quidditcha.";
+                    return "MoÅ¼esz wyzwaÄ‡ dowolnego gracza do meczu Quidditcha.";
                 case Action.CAN_TELEPORT:
-                    return $"Z tego pola mo¿esz siê teleportowaæ (za darmo) na po³¹czone z nim pole: {portalName}.";
+                    return $"Z tego pola moÅ¼esz siÄ™ teleportowaÄ‡ (za darmo) na poÅ‚Ä…czone z nim pole: {portalName}.";
             }
 
             return "";
