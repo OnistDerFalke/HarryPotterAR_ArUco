@@ -2245,13 +2245,13 @@ MonoBehaviour:
   models:
   - {fileID: 1756962960}
   - {fileID: 1541480154}
-  - {fileID: 518800299}
-  - {fileID: 1323707971}
-  - {fileID: 1326396902}
   - {fileID: 98040723}
-  - {fileID: 843870151}
-  - {fileID: 679239105}
+  - {fileID: 1326396902}
+  - {fileID: 518800299}
   - {fileID: 1627913726}
+  - {fileID: 679239105}
+  - {fileID: 843870151}
+  - {fileID: 1323707971}
   - {fileID: 1859687885}
   - {fileID: 1626516219}
   - {fileID: 1515745058}
@@ -5249,7 +5249,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1266244379
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5259,7 +5259,7 @@ RectTransform:
   m_GameObject: {fileID: 1266244378}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1402568104}
