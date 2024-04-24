@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Scripts;
+using System;
 
 namespace Game
 {  
@@ -51,33 +52,6 @@ namespace Game
             return GameManager.BoardManager.GetFieldById(lastFieldId).InstructionParts;
         }
 
-        public static Character CharacterFromString(string s)
-        {
-            switch (s)
-            {
-                case "harr":
-                    return Character.Harry;
-                case "herm":
-                    return Character.Hermiona;
-                case "luna":
-                    return Character.Luna;
-                case "pete":
-                    return Character.Peter;
-                case "drac":
-                    return Character.Draco;
-                case "rono":
-                    return Character.Ron;
-                case "cedr":
-                    return Character.Cedrik;
-                case "nevi":
-                    return Character.Neville;
-                case "ginn":
-                    return Character.Ginny;
-                default:
-                    return Character.None;
-            }
-        }
-
         public static Character CharacterFromInt(int id)
         {
             switch (id)
@@ -87,19 +61,19 @@ namespace Game
                 case 1:
                     return Character.Hermiona;
                 case 2:
-                    return Character.Luna;
-                case 3:
-                    return Character.Peter;
-                case 4:
-                    return Character.Draco;
-                case 5:
                     return Character.Ron;
-                case 6:
-                    return Character.Cedrik;
-                case 7:
-                    return Character.Neville;
-                case 8:
+                case 3:
+                    return Character.Draco;
+                case 4:
+                    return Character.Luna;
+                case 5:
                     return Character.Ginny;
+                case 6:
+                    return Character.Neville;
+                case 7:
+                    return Character.Cedrik;
+                case 8:
+                    return Character.Peter;
                 default:
                     return Character.None;
             }

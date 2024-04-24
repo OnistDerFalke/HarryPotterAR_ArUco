@@ -67,7 +67,7 @@ namespace Assets.Scripts
             string actionText = "";
             for (var i = 0; i < actions.Count; i++)
             {
-                actionText += ActionText.GetActionText(actions[i], missionNumbers, portalField.Name);
+                actionText += ActionText.GetActionText(actions[i], missionNumbers, portalField != null ? portalField.Name : "");
                 if (i < actions.Count - 1) 
                     actionText += "\n\n";
             }
@@ -81,7 +81,7 @@ namespace Assets.Scripts
             string actionText = "";
             for (var i = 0; i < actions.Count; i++)
             {
-                actionText += ActionText.GetActionShortText(actions[i], missionNumbers, portalField.Name);
+                actionText += ActionText.GetActionShortText(actions[i], missionNumbers, portalField != null ? portalField.Name : "");
                 if (i < actions.Count - 1)
                     actionText += "\n";
             }

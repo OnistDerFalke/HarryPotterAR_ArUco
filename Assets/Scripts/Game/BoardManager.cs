@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Assets.Scripts
 {
     public class BoardManager
     {
-        [SerializeField] private List<Board> boards;
+        [SerializeField] private List<Board> boards = new();
         [SerializeField] private List<Field> allFields = new();
 
         public List<Board> Boards { get => boards; }
@@ -14,12 +15,17 @@ namespace Assets.Scripts
 
         public void Setup()
         {
-            this.boards = new List<Board>() {
-                new Board(0, 50.0f, 50.0f),
-                new Board(1, 25.0f, 25.0f),
-                new Board(2, 25.0f, 25.0f)
-            };
-            BoardInitializator.InitBoard();
+            if (this.boards.Count != 3)
+            {
+                this.boards = new List<Board>() {
+                    new Board(0, 50.0f, 50.0f),
+                    new Board(1, 25.0f, 25.0f),
+                    new Board(2, 25.0f, 25.0f)
+                };
+                BoardInitializator.InitBoard();
+            }
+
+            UnhighlightAllFields();
         }
 
         public void AddFields(List<Field> fields)

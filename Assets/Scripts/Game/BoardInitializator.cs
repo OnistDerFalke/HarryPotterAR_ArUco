@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -665,10 +666,10 @@ namespace Assets.Scripts
 
         private static void AddNeighborsToFieldOnThirdBoard()
         {
-            GameManager.BoardManager.GetFieldById(118).AddNeighbors(GameManager.BoardManager.GetFieldsByIds(new List<int>() { 100, 119, 120, 121 }));
-            GameManager.BoardManager.GetFieldById(119).AddNeighbors(GameManager.BoardManager.GetFieldsByIds(new List<int>() { 118, 120, 121 }));
+            GameManager.BoardManager.GetFieldById(118).AddNeighbors(GameManager.BoardManager.GetFieldsByIds(new List<int>() { 100, 119, 120 }));
+            GameManager.BoardManager.GetFieldById(119).AddNeighbors(GameManager.BoardManager.GetFieldsByIds(new List<int>() { 118, 120 }));
             GameManager.BoardManager.GetFieldById(120).AddNeighbors(GameManager.BoardManager.GetFieldsByIds(new List<int>() { 118, 119, 121 }));
-            GameManager.BoardManager.GetFieldById(121).AddNeighbors(GameManager.BoardManager.GetFieldsByIds(new List<int>() { 118, 119, 120 }));
+            GameManager.BoardManager.GetFieldById(121).AddNeighbors(GameManager.BoardManager.GetFieldsByIds(new List<int>() { 120 }));
         }
 
         private static void AddPortalFieldsToFieldOnFirstBoard()

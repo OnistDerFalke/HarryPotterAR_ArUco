@@ -18,14 +18,17 @@ namespace Assets.Scripts
 
         public static void Setup()
         {
-            BoardManager.Setup();
-            Players = new();
-            DebugLogs = new();
-            CurrentDiceThrownNumber = -1;
-            PlayerNumber = 0;
-            //TODO2: change to ArUco
-            CurrentTrackedObjects = new();
-            setup = true;
+            if (!setup)
+            {
+                BoardManager.Setup();
+                Players = new();
+                DebugLogs = new();
+                CurrentDiceThrownNumber = -1;
+                PlayerNumber = 0;
+                //TODO2: change to ArUco
+                CurrentTrackedObjects = new();
+                setup = true;
+            }
         }
 
         public static Player GetMyPlayer()

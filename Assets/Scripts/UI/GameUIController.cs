@@ -69,7 +69,7 @@ namespace Scripts
 
         void Start()
         {
-            TempSetup();
+            //TempSetup();
             currentFieldShow = true;
             actionInfoShow = false;
             fieldInfoShow = false;
@@ -233,6 +233,7 @@ namespace Scripts
 
         public void OnBackToMenuButtonClick()
         {
+            GameManager.setup = false;
             SceneManager.LoadScene("Scenes/Menu", LoadSceneMode.Single);
         }
 
