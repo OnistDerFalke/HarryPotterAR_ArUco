@@ -81,29 +81,7 @@ namespace Game
 
         private SpecialPower GetSpecialPower()
         {
-            switch (this.character)
-            {
-                case Character.Harry:
-                    return SpecialPower.GetOneMoreSpell;
-                case Character.Hermiona:
-                    return SpecialPower.GetOneMoreBook;
-                case Character.Luna:
-                    return SpecialPower.GetOneMoreBook;
-                case Character.Peter:
-                    return SpecialPower.AddTwoToMove;
-                case Character.Draco:
-                    return SpecialPower.GetOneMoreElixir;
-                case Character.Ron:
-                    return SpecialPower.AddThreeToMove;
-                case Character.Cedrik:
-                    return SpecialPower.GetAdditionalLive;
-                case Character.Neville:
-                    return SpecialPower.GetOneMoreElixir;
-                case Character.Ginny:
-                    return SpecialPower.AddTwoToMove;
-                default:
-                    return SpecialPower.None;
-            }
+            return CharacterSpecialPower.GetSpecialPower(this.character);
         }
     }
 }
