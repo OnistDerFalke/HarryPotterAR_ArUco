@@ -84,10 +84,11 @@ namespace Assets.Scripts
         {
             float angleStep = 360.0f / (float)numOfPoints;
             List<Vector3> vertexList = new List<Vector3>();
-            List<int> triangleList = new List<int>();
-            Quaternion quaternion = Quaternion.Euler(0.0f, 0.0f, angleStep);
+            List<int> triangleList = new List<int>(); 
+            
+            Quaternion quaternion = Quaternion.Euler(0.0f, 0.0f, -angleStep);
             vertexList.Add(new Vector3(0.0f, 0.0f, 0.0f));
-            vertexList.Add(new Vector3(0.0f, c.Radius * converter.Scale, 0.0f));
+            vertexList.Add(new Vector3(c.Radius * converter.Scale, 0.0f, 0.0f));
             vertexList.Add(quaternion * vertexList[1]);
 
             triangleList.Add(0);

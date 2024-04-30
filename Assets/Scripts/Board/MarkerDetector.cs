@@ -215,7 +215,10 @@
             //position, rotation and scale to model
             models[modelId].transform.localPosition = GetPosition(tvec, imagePoints, models[modelId].transform.localScale, true);
             models[modelId].transform.localRotation = GetRotation(rvec);
-            models[modelId].transform.localScale = GetScale(objPts, imagePoints);
+
+            var factor = (int)GameManager.GetMyPlayer().Character - 1 == modelId ? 2.1f : 1.3f;
+            factor = (int)Character.Luna - 1 == modelId ? 1.45f : factor;
+            models[modelId].transform.localScale = GetScale(objPts, imagePoints) * factor;
 
             TrackModel(modelId, models[modelId].transform.position);
         }
