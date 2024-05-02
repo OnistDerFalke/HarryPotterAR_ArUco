@@ -25,6 +25,7 @@
         //TODO: add other models to board markers
         [SerializeField] public GameObject[] models = new GameObject[90];       //9 characters, 81 to board
         public float basicMaxLength = 20f;
+        public float posThreshold = 50f;
         private int[] ids;
 
         //Canvas objects
@@ -48,73 +49,76 @@
         private Color32[] colors;
         private MeshRenderer mr;
 
+        private int counter;
+        private int resetValue = 6;
+
         private IEnumerator FeedARCamera()
         {
             while (true)
             {
                 yield return new WaitForEndOfFrame();
                
-                    texture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGBA32, false);
+                texture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGBA32, false);
 
-                    mr = cam.gameObject.GetComponentInChildren<MeshRenderer>();
+                mr = cam.gameObject.GetComponentInChildren<MeshRenderer>();
 
-                    if (mr == null)
-                    {
-                        Debug.Log("Renderer not found");
+                if (mr == null)
+                {
+                    Debug.Log("Renderer not found");
 
-                        continue;
-                    }
+                    continue;
+                }
 
 
-                    Destroy(texture);
-                    texture = (mr.material.mainTexture as Texture2D);
+                Destroy(texture);
+                texture = (mr.material.mainTexture as Texture2D);
                 //rawimage.texture = texture;
                 //rawimage.material.mainTexture = texture;
                 //rawimage.SetNativeSize();
 
 
-                    try
-                    {
-                        mat = new Mat();
-                        Unity.TextureConversionParams par = new Unity.TextureConversionParams();
-                        par.FlipVertically = true;
-                        //par.RotationAngle = 90;
-                        mat = Unity.TextureToMat(texture, par);
-                        //Cv2.Rotate(mat, mat, RotateFlags.Rotate90Clockwise);
-                    
-                        grayMat = new Mat();
-                        Cv2.CvtColor(mat, grayMat, ColorConversionCodes.BGR2GRAY);
+                try
+                {
+                    mat = new Mat();
+                    Unity.TextureConversionParams par = new Unity.TextureConversionParams();
+                    par.FlipVertically = true;
+                    //par.RotationAngle = 90;
+                    mat = Unity.TextureToMat(texture, par);
+                    //Cv2.Rotate(mat, mat, RotateFlags.Rotate90Clockwise);
+                
+                    grayMat = new Mat();
+                    Cv2.CvtColor(mat, grayMat, ColorConversionCodes.BGR2GRAY);
                     //Cv2.ImShow("window", grayMat);
 
                     CvAruco.DetectMarkers(grayMat, dictionary, out corners, out ids, detectorParameters, out rejectedImgPoints);
-                    
 
                     for (int id = 0; id < ids.Length; id++)
-                        DrawModel(id, ids[id]);  
+                        DrawModel(id, ids[id]);
 
                     for (int id = 0; id < models.Length; id++)
-                        if (!ids.Contains(id))
-                            UntrackModel(id);
+                        if (id < 9 || counter % resetValue == 0)
+                            if (!ids.Contains(id))
+                                UntrackModel(id);
+                }
+                catch (System.Exception e)
+                {
+                    log.text += e.StackTrace + '\n';
+                    log.text += e.Message + '\n';
+                }
 
-                    }
-                    catch (System.Exception e)
-                    {
-                        log.text += e.StackTrace + '\n';
-                        log.text += e.Message + '\n';
-                    }
                 grayMat.Dispose();
-                    mat.Dispose();
-               
+                mat.Dispose();
+                counter++;
             }
         }
 
 
         void Start()
         {
+            counter = 0;
 
             foreach (var model in models)
                 model.SetActive(false);
-
            
             Debug.Log("TEST: " + cam.gameObject.GetComponentInChildren<MeshRenderer>());
             StartCoroutine(FeedARCamera());
@@ -168,10 +172,7 @@
                 EventBroadcaster.InvokeOnMarkerDetected(id);
             }
             else
-            {
-                //TODO: zrobić to też w Vuforii - bo tak powinno być dokładniejsze wykrywanie pól
                 GameManager.CurrentTrackedObjects[id] = markerPos;
-            }
         }
 
         void DrawModel(int foundId, int modelId)
@@ -203,17 +204,13 @@
             Point2f[] imagePoints;
             double[,] jacobian;
 
-            //rvec[0] = -rvec[0];
-            //rvec[1] = rvec[1];
-            //rvec[2] = -rvec[2];
-
             Cv2.ProjectPoints(objPts, rvec, tvec, cameraMatrix, dist, out imagePoints, out jacobian);
 
             //Needs refreshing mat in update (need to uncomment it to have it working)
             //CvAruco.DrawAxis(mat, cameraMatrix, dist, rvec, tvec, marker_size / 2);
 
             //position, rotation and scale to model
-            models[modelId].transform.localPosition = GetPosition(tvec, imagePoints, models[modelId].transform.localScale, true);
+            models[modelId].transform.localPosition = GetPosition(imagePoints, models[modelId].transform.localPosition);
             models[modelId].transform.localRotation = GetRotation(rvec);
 
             var factor = (int)GameManager.GetMyPlayer().Character - 1 == modelId ? 2.1f : 1.3f;
@@ -242,20 +239,13 @@
             return Vector2.Distance(new Vector2(a.X, a.Y), new Vector2(b.X, b.Y));
         }
 
-        private Vector3 GetPosition(double[] tvec, Point2f[] imagePoints, Vector3 modelScale, bool debug = false)
+        private Vector3 GetPosition(Point2f[] imagePoints, Vector3 currentPos)
         {
             Vector3 localpos = Vector3.zero;
             Vector3[] corn = new Vector3[4];
 
             for (var i = 0; i < 4; i++)
             {
-                //if (debug)
-                //{
-                //    debugPoints[i].SetActive(true);
-                //    debugPoints[i].transform.localPosition = Point2fToVec3Scaled(imagePoints[i]);
-                //}
-
-                //corn[i] = Point2fToVec3Scaled(imagePoints[i]);
                 localpos += Point2fToVec3Scaled(imagePoints[i]);
             }
 
@@ -263,22 +253,19 @@
 #if !UNITY_EDITOR && UNITY_ANDROID
             localpos = new Vector3(localpos.y, -localpos.x, localpos.z);
 #endif
-            //Debug.Log($"X point: {localpos}");
+
+            if (Vector3.Distance(currentPos, localpos) <= posThreshold)
+                return currentPos;
+
             return localpos;
         }
 
         private Quaternion GetRotation(double[] rvec)
         {
             double[] flip = rvec;
-#if !UNITY_EDITOR && UNITY_ANDROID
             flip[0] = flip[0];
             flip[1] = -flip[1];
             flip[2] = flip[2];
-#else
-            flip[0] = flip[0];
-            flip[1] = -flip[1];
-            flip[2] = flip[2];
-#endif
             double[] rvec_m = flip;
 
             Mat rotmatrix = new Mat();

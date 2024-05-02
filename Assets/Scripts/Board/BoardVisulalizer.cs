@@ -6,7 +6,6 @@ namespace Assets.Scripts
 {
     public class BoardVisulalizer : MonoBehaviour
     {
-        //[SerializeField] private GameObject[] corners;
         [SerializeField] private CoordinatesConverter converter;
         [SerializeField] private BoardMono boardMono;
         [SerializeField] private Material fieldMaterial;
@@ -20,18 +19,6 @@ namespace Assets.Scripts
 
         private Quaternion referenceRotation = Quaternion.identity;
         private Vector3 referenceScale = new Vector3(10f, 10f, 10f);
-
-        //private void TrackCorners()
-        //{
-        //    corners[0].transform.position = converter.ConvertCoordinates(Vector2.zero);
-        //    corners[1].transform.position = converter.ConvertCoordinates(Vector2.right * boardMono.Board.Width);
-        //    corners[2].transform.position = converter.ConvertCoordinates(Vector2.up * boardMono.Board.Heigth);
-        //    corners[3].transform.position = converter.ConvertCoordinates(Vector2.one * boardMono.Board.Size);
-        //    corners[0].transform.rotation = referenceRotation;
-        //    corners[1].transform.rotation = referenceRotation;
-        //    corners[2].transform.rotation = referenceRotation;
-        //    corners[3].transform.rotation = referenceRotation;
-        //}
 
         private void TrackHighlights()
         {
@@ -186,10 +173,6 @@ namespace Assets.Scripts
             {
                 highlight.Item2.SetActive(false);
             }
-            //for (int i = 0; i < 4; i++)
-            //{
-            //    corners[i].SetActive(false);
-            //}
         }
 
         public void ShowVisuals()
@@ -198,17 +181,12 @@ namespace Assets.Scripts
             {
                 highlight.Item2.SetActive(true);
             }
-            //for (int i = 0; i < 4; i++)
-            //{
-            //    corners[i].SetActive(true);
-            //}
         }
 
         private void Update()
         {
             referenceRotation = converter.ReferenceRotation();
             referenceScale = converter.GetReferenceMarkerScale();
-            //TrackCorners();
             TrackHighlights();
         }
     }

@@ -107,7 +107,6 @@ public class BoardMono : MonoBehaviour
     private void PlacePlayers()
     {
         managedCharacters.Clear();
-        //TODO2: change to ArUco
         foreach (var marker in GameManager.CurrentTrackedObjects)
         {
             Character character = Player.CharacterFromInt(marker.Key);
@@ -115,17 +114,13 @@ public class BoardMono : MonoBehaviour
             {
                 managedCharacters.Add(character);
                 Vector3 characterPos = charactersHandler.FindModelById(marker.Key).transform.position;
-                //Vector3 offset = charactersHandler.transform.position - marker.Value;
 
-                //Field f = GetOccupiedField(characterPos + offset);
                 Field f = GetOccupiedField(characterPos);
                 Player player = GameManager.Players.Find((e) => e.Character == character);
                 if (f != null && player != null)
                 {
                     if (!player.IsDuringMove && player.LastFieldId != f.Index)
-                    {
                         player.LastFieldId = f.Index;
-                    }
                 }
             }
         }
@@ -134,8 +129,6 @@ public class BoardMono : MonoBehaviour
     void Update()
     {
         if (isTracked)
-        {
             PlacePlayers();
-        }
     }
 }

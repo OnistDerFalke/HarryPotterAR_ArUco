@@ -79,14 +79,6 @@ namespace Scripts
             UpdateContent();
         }
 
-        //TODO: to delete
-        private void TempSetup()
-        {
-            GameManager.Setup();
-            GameManager.PlayerNumber = 1;
-            GameManager.Players.Add(new Player(0, Character.Harry));
-        }
-
         void Update()
         {
             UpdateContent();

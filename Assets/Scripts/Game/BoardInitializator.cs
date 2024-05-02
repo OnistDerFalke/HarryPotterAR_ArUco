@@ -376,7 +376,7 @@ namespace Assets.Scripts
                 "Biblioteka", new List<Action>() { Action.GET_TWO_ELIXIRS, Action.CAN_USE_FIUU }, isTower: true));
             // Dział ksiąg zakazanych
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Quadrangle(
-                new Vector2(18.9f, 46.3f), new Vector2(21.45f, 46.3f), new Vector2(21.4f, 44.5f), new Vector2(43.9f, 44.4f)), 88,
+                new Vector2(18.9f, 46.3f), new Vector2(21.45f, 46.3f), new Vector2(21.4f, 44.5f), new Vector2(18.9f, 44.4f)), 88,
                 "Dział ksiąg zakazanych", new List<Action>() { Action.GET_ONE_BOOK }));
             // Eliksir obok biblioteki
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Quadrangle(

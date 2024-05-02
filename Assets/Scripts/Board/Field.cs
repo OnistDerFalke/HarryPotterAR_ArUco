@@ -113,7 +113,7 @@ namespace Assets.Scripts
         {
             if (isHighlighted)
             {
-                //RequestBroker.requests.Add(new UnhighlightFieldRequest(this));
+                RequestBroker.requests.Add(new UnhighlightFieldRequest(this));
                 isHighlighted = false;
             }
         }

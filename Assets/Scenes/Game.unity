@@ -1649,7 +1649,7 @@ MonoBehaviour:
   boardMarkStartId: 9
   arucoMarkHandler: {fileID: 547918435}
   scale: 1.2
-  camera: {fileID: 1414906869}
+  cam: {fileID: 1414906869}
 --- !u!1 &501482050
 GameObject:
   m_ObjectHideFlags: 0
@@ -2251,6 +2251,7 @@ MonoBehaviour:
   rawTransform: {fileID: 547918431}
   canvasScaler: {fileID: 1233504297}
   canvas: {fileID: 1233504298}
+  freq: 1
 --- !u!1 &554669085
 GameObject:
   m_ObjectHideFlags: 0
@@ -2884,7 +2885,7 @@ MonoBehaviour:
   boardMarkStartId: 58
   arucoMarkHandler: {fileID: 547918435}
   scale: 1.2
-  camera: {fileID: 1414906869}
+  cam: {fileID: 1414906869}
 --- !u!1 &716907215
 GameObject:
   m_ObjectHideFlags: 0
@@ -6863,7 +6864,7 @@ MonoBehaviour:
   boardMarkStartId: 74
   arucoMarkHandler: {fileID: 547918435}
   scale: 1.2
-  camera: {fileID: 1414906869}
+  cam: {fileID: 1414906869}
 --- !u!1001 &1531143885
 PrefabInstance:
   m_ObjectHideFlags: 0
