@@ -8,10 +8,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/OpenCV+Unity/Demo/Marker_Detector/MarkerDetectorScene.unity
     guid: 1d83579c4bfab024a80d40e6207c2158
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Menu.unity
     guid: 9773017fbb9fb924b8c4fe2a5123fd34
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Game.unity
     guid: 551a9d0cb3233514aa042aec79fc12f2
+  - enabled: 1
+    path: Assets/Scenes/Test.unity
+    guid: 39708abd03038e84cb78737a3a6baeb5
   m_configObjects: {}
