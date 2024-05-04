@@ -176,7 +176,7 @@ namespace Scripts
 
         public void OnStartGameButtonClick()
         {
-            SceneManager.LoadScene("Scenes/Game", LoadSceneMode.Single);
+            SceneManager.LoadScene("Scenes/Test", LoadSceneMode.Single);
         }
 
         public void OnNextCharacterButtonClick()
