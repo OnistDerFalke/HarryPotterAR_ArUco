@@ -27,6 +27,10 @@
         public float basicMaxLength = 20f;
         public float posThreshold = 50f;
         private int[] ids;
+        private TrendEstimator[] trendEstimator;
+
+        bool ff;
+        private Vector3[] rotMem;
 
         //Canvas objects
         public RawImage rawimage;
@@ -116,7 +120,10 @@
         void Start()
         {
             counter = 0;
-
+            trendEstimator = new TrendEstimator[100];
+            rotMem = new Vector3[100];
+            for(var i=0; i<trendEstimator.Length; i++)
+                trendEstimator[i] = new TrendEstimator();
             foreach (var model in models)
                 model.SetActive(false);
            
@@ -207,17 +214,59 @@
             Cv2.ProjectPoints(objPts, rvec, tvec, cameraMatrix, dist, out imagePoints, out jacobian);
 
             //Needs refreshing mat in update (need to uncomment it to have it working)
-            //CvAruco.DrawAxis(mat, cameraMatrix, dist, rvec, tvec, marker_size / 2);
+            //Mat debugMat = new Mat();
+            //mat.CopyTo(debugMat);
+            //CvAruco.DrawAxis(debugMat, cameraMatrix, dist, rvec, tvec, marker_size / 2);
+            //Cv2.ImShow("Debug", debugMat);
 
             //position, rotation and scale to model
-            models[modelId].transform.localPosition = GetPosition(imagePoints, models[modelId].transform.localPosition);
-            models[modelId].transform.localRotation = GetRotation(rvec);
+            //Debug.Log(GetRotation(rvec));
+
+            var rotVal = GetRotation(rvec);
+            var posVal = GetPosition(imagePoints, models[modelId].transform.localPosition);
+
+            //if(GetRotation(rvec).eulerAngles-rotMem[modelId]>0.1f)
+            models[modelId].transform.localPosition = trendEstimator[modelId].UpdatePosition(posVal);
+            models[modelId].transform.localRotation = rotVal;//trendEstimator[modelId].UpdateRotation(rotVal);
 
             var factor = (int)GameManager.GetMyPlayer().Character - 1 == modelId ? 2.1f : 1.3f;
             factor = (int)Character.Luna - 1 == modelId && GameManager.GetMyPlayer().Character != Character.Luna ? 1.45f : factor;
             models[modelId].transform.localScale = GetScale(objPts, imagePoints) * factor;
 
             TrackModel(modelId, models[modelId].transform.position);
+        }
+
+        private Quaternion ControlRotationDeviation(int id, Quaternion q)
+        {
+            //TODO: Not working yet
+            Vector3 devLim = new Vector3(10f, 10f, 10f);
+            var qEuler = q.eulerAngles;
+            if (qEuler.x < 0) qEuler.x += 360;
+            if (qEuler.y < 0) qEuler.y += 360;
+            if (qEuler.z < 0) qEuler.z += 360;
+
+            Vector3 rdiff = Vector3.zero;
+            var diff1 = qEuler - rotMem[id];
+            var diff2 = new Vector3(360f, 360f, 360f) - diff1;
+            rdiff.x = Mathf.Min(Mathf.Abs(diff1.x), Mathf.Abs(diff2.x));
+            rdiff.y = Mathf.Min(Mathf.Abs(diff1.y), Mathf.Abs(diff2.y));
+            rdiff.z = Mathf.Min(Mathf.Abs(diff1.z), Mathf.Abs(diff2.z));
+            Debug.Log("1: " + diff1);
+            Debug.Log("2: " + diff2);
+            Debug.Log("R: " + rdiff);
+
+            if (ff)
+            {
+                if (Mathf.Abs(rdiff.x) > devLim.x || Mathf.Abs(rdiff.y) > devLim.y || Mathf.Abs(rdiff.z) > devLim.z)
+                {
+                    qEuler = rotMem[id];
+                }
+                else rotMem[id] = qEuler;
+            }
+            else rotMem[id] = qEuler;
+
+            ff = true;
+            return Quaternion.Euler(qEuler); 
         }
 
         private Vector3 GetScale(Point3f[] objPts, Point2f[] imgPts)
