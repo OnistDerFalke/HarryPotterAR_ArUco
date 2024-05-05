@@ -36,14 +36,14 @@ namespace Game
         {
             if (lastFieldId >= 0)
                 return GameManager.BoardManager.GetFieldById(lastFieldId).Name;
-            return "Zczytaj pozycję gracza";
+            return "Sczytaj pozycję gracza";
         }
 
         public string GetCurrentFieldActions()
         {
             if (lastFieldId >= 0)
                 return GameManager.BoardManager.GetFieldById(lastFieldId).GetActionsInfo();
-            return "Zczytaj pozycję gracza poprzez nakierowanie kamery telefonu na znacznik gracza. " +
+            return "Sczytaj pozycję gracza poprzez nakierowanie kamery telefonu na znacznik gracza. " +
                     "Zrób to tak, aby w obrębie ekranu był widoczny przynajmniej jeden znacznik planszy";
         }
 

@@ -97,7 +97,7 @@ namespace Scripts
             {
                 diceThrowButton.interactable = false;
                 diceThrowButtonText.color = new Color(0.345f, 0.212f, 0.208f);
-                diceThrowButtonText.text = "Zczytaj pozycję gracza";
+                diceThrowButtonText.text = "Sczytaj pozycję gracza";
             }
             else
             {
