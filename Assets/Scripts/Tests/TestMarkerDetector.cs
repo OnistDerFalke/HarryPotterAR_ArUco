@@ -7,6 +7,8 @@ namespace OpenCvSharp.Demo
     using Assets.Scripts;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Security.Cryptography;
+    using System;
 
     public class TestMarkerDetector : MonoBehaviour
     {
@@ -29,13 +31,19 @@ namespace OpenCvSharp.Demo
 
         [SerializeField] public RawImage RawImage;
 
+        private Vector2 markerBoardPos = new Vector2(14, 10.5f);
+        private Vector2 pointBoardPos = new Vector2(18.5f, 15.5f);
+        private Vector2 markerRealPos;
+        private Vector2 pointRealPos;
+
+
         private IEnumerator FeedARCamera()
         {
             while (true)
             {
                 yield return new WaitForEndOfFrame();
 
-                texture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGBA32, false);
+                texture = new Texture2D(Screen.width, Screen.height);
 
                 mr = cam.gameObject.GetComponentInChildren<MeshRenderer>();
 
@@ -48,31 +56,35 @@ namespace OpenCvSharp.Demo
                 Destroy(texture);
                 texture = (mr.material.mainTexture as Texture2D);
 
-                float scale = canvas.GetComponent<RectTransform>().rect.height / texture.height;
-                RawImage.rectTransform.sizeDelta = new Vector2(texture.width * scale, texture.height * scale);
+                RawImage.rectTransform.sizeDelta = new Vector2(canvas.GetComponent<RectTransform>().rect.width, canvas.GetComponent<RectTransform>().rect.height);
 
                 try
                 {
                     mat = new Mat();
-                    Unity.TextureConversionParams par = new Unity.TextureConversionParams();
-                    par.FlipVertically = true;
-                    mat = Unity.TextureToMat(texture, par);
+                    mat = Unity.TextureToMat(texture);
+                    Cv2.Rotate(mat, mat, RotateFlags.Rotate90Clockwise);
+                    Cv2.Flip(mat, mat, FlipMode.Y);
+
+                    grayMat = new Mat();
+                    Cv2.CvtColor(mat, grayMat, ColorConversionCodes.BGR2GRAY);
 
                     if (TestManager.DetectingStarted)
                     {
-                        grayMat = new Mat();
-                        Cv2.CvtColor(mat, grayMat, ColorConversionCodes.BGR2GRAY);
-
                         CvAruco.DetectMarkers(grayMat, dictionary, out corners, out ids, detectorParameters, out rejectedImgPoints);
 
                         for(int i = 0; i < ids.Length; i++)
+                        {
                             TestManager.UpdatePositions(ids[i], ConvertToList(corners[i]));
+                            //SetPositions(corners[i]);
+                        }
                         TestManager.UpdateDetected(ids);
 
-                        CvAruco.DrawDetectedMarkers(mat, corners, ids);
+                        //CvAruco.DrawDetectedMarkers(mat, corners, ids);
+                        CvAruco.DrawDetectedMarkers(grayMat, corners, ids);
                     }
 
-                    outputTexture = Unity.MatToTexture(mat);
+                    //Cv2.CvtColor(mat, mat, ColorConversionCodes.BGR2RGBA);
+                    outputTexture = Unity.MatToTexture(grayMat);
                     RawImage.texture = outputTexture;
                     RawImage.material.mainTexture = outputTexture;
                 }
@@ -94,6 +106,25 @@ namespace OpenCvSharp.Demo
             foreach (var pt in pts)
                 list.Add(new Vector2(pt.X, pt.Y));
             return list;
+        }
+
+        private void SetPositions(Point2f[] corners)
+        {
+            Vector2 point = Vector2.zero;
+            foreach(var corner in corners)
+                point += new Vector2(corner.X, corner.Y);
+            point /= corners.Length;
+            markerRealPos = point;
+
+            // TODO: odpowiednie rogi znaleŸæ i odj¹æ wspó³rzêdne (jeœli to jest od lewego górnego w prawo)
+            var edge = corners[2] - corners[1];
+            float alpha = Mathf.Atan2(edge.Y, edge.X);
+
+            var dist = pointBoardPos - markerBoardPos;
+            float beta = Mathf.Atan2(dist.y, dist.x);
+
+            float len = (float)Math.Sqrt(dist.x * dist.x + dist.y * dist.y);
+            pointRealPos = new Vector2(Mathf.Cos(alpha + beta) * len, Mathf.Sin(alpha + beta) * len);
         }
 
 
