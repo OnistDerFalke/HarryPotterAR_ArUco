@@ -5,6 +5,8 @@ using OpenCvSharp.Demo;
 using UnityEngine.UIElements;
 using System.Runtime.InteropServices;
 using static UnityEngine.GraphicsBuffer;
+using System.Linq;
+using UnityEngine.Timeline;
 
 namespace Assets.Scripts
 {
@@ -41,8 +43,15 @@ namespace Assets.Scripts
             if (!IsTrackingBoard())
                 return Vector3.zero;
 
-            Vector3 result = Vector3.zero;
+            Dictionary<int, float> distanceFromMarkers = new Dictionary<int, float>();
             foreach (var refMarkerId in board.CurrentTrackedBoardMarks)
+                distanceFromMarkers[refMarkerId] = Vector2.Distance(boardMarks[refMarkerId], boardCoordinates);
+
+            int count = board.CurrentTrackedBoardMarks.Count > 4 ? 4 : board.CurrentTrackedBoardMarks.Count;
+            var closestMarkerIds = distanceFromMarkers.OrderBy(pair => pair.Value).Take(count).Select(pair => pair.Key).ToList();
+
+            Vector3 result = Vector3.zero;
+            foreach (var refMarkerId in closestMarkerIds)
             {
                 GameObject refMarker = arucoMarkHandler.FindModelById(refMarkerId);
 
@@ -60,14 +69,14 @@ namespace Assets.Scripts
                 result = result + temp + closer;
             }
 
-            result = result / board.CurrentTrackedBoardMarks.Count;
+            result /= count;
 
             //Debug.Log("Pozycja: " + result);
 
             return result;
         }
 
-        public Vector3 GetReferenceMarkerScale()
+        public Vector3 GetClosestMarkerScale(Vector2 boardCoordinates)
         {
             if (!IsTrackingBoard())
                 return Vector3.one;
@@ -79,14 +88,18 @@ namespace Assets.Scripts
 #endif
 
             Vector3 result = Vector3.zero;
+            float minDistance = float.MaxValue;
             foreach (var refMarkerId in board.CurrentTrackedBoardMarks)
             {
-                GameObject refMarker = arucoMarkHandler.FindModelById(refMarkerId);
-                result += refMarker.transform.localScale;
+                var dist = Vector2.Distance(boardMarks[refMarkerId], boardCoordinates);
+                if (dist < minDistance)
+                {
+                    minDistance = dist;
+                    GameObject refMarker = arucoMarkHandler.FindModelById(refMarkerId);
+                    result = refMarker.transform.localScale;
+                }
             }
-            result /= board.CurrentTrackedBoardMarks.Count;
 
-            //Debug.Log("Field scale: " + referenceMarker.marker.transform.localScale * s);
             return result * s;
         }
 
@@ -104,18 +117,30 @@ namespace Assets.Scripts
             if (!IsTrackingBoard())
                 return Quaternion.identity;
 
-            Quaternion avgRot = Quaternion.identity;
-            foreach (var refMarkerId in board.CurrentTrackedBoardMarks)
+            Dictionary<int, float> maxDifferences = new();
+
+            foreach (var markerId in board.CurrentTrackedBoardMarks)
             {
-                GameObject refMarker = arucoMarkHandler.FindModelById(refMarkerId);
-                avgRot *= refMarker.transform.localRotation;
+                GameObject marker = arucoMarkHandler.FindModelById(markerId);
+                float maxDiff = float.MinValue;
+                foreach (var markerId2 in board.CurrentTrackedBoardMarks)
+                {
+                    GameObject marker2 = arucoMarkHandler.FindModelById(markerId2);
+                    float diff = CalculateQuaternionDiff(marker.transform.localRotation, marker2.transform.localRotation);
+                    if (markerId != markerId2 && diff > maxDiff)
+                        maxDiff = diff;
+                }
+                maxDifferences[markerId] = maxDiff;
             }
-            avgRot.Normalize();
-            var rot = Quaternion.Slerp(Quaternion.identity, avgRot, 1.0f / board.CurrentTrackedBoardMarks.Count).eulerAngles;
 
+            var bestMarkerId = maxDifferences.OrderBy(pair => pair.Value).First().Key;
+            GameObject bestMarker = arucoMarkHandler.FindModelById(bestMarkerId);
+
+            var rot = bestMarker.transform.localRotation.eulerAngles;
             rot.z = -rot.z;
+            rot.y += 180;
 
-            //Debug.Log("Rotacja: " + rot);
+            Debug.Log("Rotacja: " + rot);
             return Quaternion.Euler(rot);
         }
 
@@ -162,7 +187,7 @@ namespace Assets.Scripts
         private void Awake()
         {
 #if !UNITY_EDITOR && UNITY_ANDROID
-            scale = 0.75f;
+            scale = 1f / 1.75f;
 #endif
             boardMarks = new Dictionary<int, Vector2>();
             boardMarkIds = new List<int>();
@@ -178,10 +203,14 @@ namespace Assets.Scripts
 
         private float GetConversionScale(Vector3 markerScale)
         {
-            if (IsTrackingBoard())
-                return markerScale.x * 100f * scale;
-            else
-                return scale;
+            return markerScale.x * 100f * scale;
+        }
+
+        private float CalculateQuaternionDiff(Quaternion q1, Quaternion q2)
+        {
+            var dotProduct = Quaternion.Dot(q1, q2);
+            var angleDifference = (float)Math.Acos(2 * Math.Pow(dotProduct, 2) - 1);
+            return angleDifference;
         }
 
         private void Update()

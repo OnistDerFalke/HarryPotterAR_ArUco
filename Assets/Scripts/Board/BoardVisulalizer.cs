@@ -18,7 +18,6 @@ namespace Assets.Scripts
         private List<(Field, GameObject)> fieldHighlights = new();
 
         private Quaternion referenceRotation = Quaternion.identity;
-        private Vector3 referenceScale = new Vector3(10f, 10f, 10f);
 
         private void TrackHighlights()
         {
@@ -28,7 +27,7 @@ namespace Assets.Scripts
 
                 highlight.g.transform.rotation = referenceRotation;
 
-                highlight.g.transform.localScale = referenceScale;
+                highlight.g.transform.localScale = converter.GetClosestMarkerScale(highlight.f.Figure.CenterPosition);
             }
         }
 
@@ -186,7 +185,6 @@ namespace Assets.Scripts
         private void Update()
         {
             referenceRotation = converter.ReferenceRotation();
-            referenceScale = converter.GetReferenceMarkerScale();
             TrackHighlights();
         }
     }

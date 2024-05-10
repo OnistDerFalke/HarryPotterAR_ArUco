@@ -69,7 +69,7 @@ namespace Scripts
 
         void Start()
         {
-            //TempSetup();
+            TempSetup();
             currentFieldShow = true;
             actionInfoShow = false;
             fieldInfoShow = false;
@@ -77,6 +77,14 @@ namespace Scripts
             specialPowerUsed = false;
             baseInstruction = new();
             UpdateContent();
+        }
+
+        //TODO: to delete
+        private void TempSetup()
+        {
+            GameManager.Setup();
+            GameManager.PlayerNumber = 1;
+            GameManager.Players.Add(new Player(0, Character.Harry));
         }
 
         void Update()

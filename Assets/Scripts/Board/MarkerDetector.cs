@@ -10,6 +10,7 @@
     using Vuforia;
     using Image = Vuforia.Image;
     using System.Collections;
+    using UnityEngine.Networking.Types;
 
     public class MarkerDetector : MonoBehaviour
     {
@@ -24,8 +25,9 @@
         //3D models
         //TODO: add other models to board markers
         [SerializeField] public GameObject[] models = new GameObject[90];       //9 characters, 81 to board
+        [SerializeField] public GameObject pointGO;
         public float basicMaxLength = 20f;
-        public float posThreshold = 50f;
+        public float posThreshold = 20f;
         private int[] ids;
         private TrendEstimator[] trendEstimator;
 
@@ -55,6 +57,12 @@
 
         private int counter;
         private int resetValue = 6;
+
+        //private Vector2 markerBoardPos = new Vector2(14, 10.5f);
+        //private Vector2 pointBoardPos = new Vector2(21.5f, 10.5f);
+        //private Vector2 markerRealPos = Vector2.zero;
+        //private Vector2 pointRealPos = Vector2.zero;
+        //private float markerSize = 2f;
 
         private IEnumerator FeedARCamera()
         {
@@ -95,6 +103,9 @@
                     //Cv2.ImShow("window", grayMat);
 
                     CvAruco.DetectMarkers(grayMat, dictionary, out corners, out ids, detectorParameters, out rejectedImgPoints);
+
+                    //if (ids.Length != 0)
+                    //    SetPositions(corners[0]);
 
                     for (int id = 0; id < ids.Length; id++)
                         DrawModel(id, ids[id]);
@@ -150,6 +161,86 @@
             dictionary = CvAruco.GetPredefinedDictionary(PredefinedDictionaryName.Dict6X6_250);
 
         }
+
+
+//        private void SetPositions(Point2f[] corners)
+//        {
+//            Vector2 point = Vector2.zero;
+//            foreach (var corner in corners)
+//                point += new Vector2(corner.X, corner.Y);
+//            point /= corners.Length;
+//            markerRealPos = point;
+
+//            var pointRelevantPosBoard = pointBoardPos - (markerBoardPos - new Vector2(markerSize / 2f, markerSize / 2f));
+
+//            var leftBotToRightUpBoard = new Vector2(markerSize, markerSize);
+//            var leftBotToRightUpReal = new Vector2(corners[1].X - corners[3].X, corners[1].Y - corners[3].Y);
+//            var scale = leftBotToRightUpReal / leftBotToRightUpBoard;
+//            Debug.Log("Przekątna board: " + leftBotToRightUpBoard + "\tReal: " + leftBotToRightUpReal + "\tScale: " + scale);
+
+//            var leftBotToCenterBoard = new Vector2(markerSize / 2f, markerSize / 2f);
+//            var leftBotToCenterReal = new Vector2(markerRealPos.x - corners[3].X, markerRealPos.y - corners[3].Y);
+//            var scale2 = leftBotToCenterReal / leftBotToCenterBoard;
+//            Debug.Log("Pół przekątnej board: " + leftBotToCenterBoard + "\tReal: " + leftBotToCenterReal + "\tScale: " + scale2);
+
+//            var scaleFinal = (pointRelevantPosBoard - leftBotToCenterBoard) * (scale - scale2) / (leftBotToRightUpBoard - leftBotToCenterBoard) + scale2;
+//            Debug.Log("Scale: " + scale + "\tScale2: " + scale2 + "\tScale final: " + scaleFinal);
+
+//            var offset = pointRelevantPosBoard * scaleFinal;
+//            pointRealPos = new Vector2(corners[3].X, corners[3].Y) + new Vector2(offset.y, offset.x);
+//            Debug.Log("Wyznaczona pozycja 2d punktu: " + pointRealPos);
+
+
+
+
+//            var rvec = new double[] { 0, 0, 0 };
+//            var tvec = new double[] { 0, 0, 0 };
+
+//            var cameraMatrix = new double[3, 3]
+//            {
+//                { 1.6794270741269229e+03, 0.0f, 9.5502638499315810e+02 },
+//                { 0.0f, 1.6771700842601067e+03, 5.5015085362115587e+02 },
+//                { 0.0f, 0.0f, 1.0f }
+//            };
+
+//            var dist = new double[] { 1.9683061388899192e-01, -7.3624850611674697e-01,
+//                1.4290920850579334e-04, 7.8329305994069088e-04, 5.4742631511243833e-01 };
+
+//            float marker_size = 0.03f;
+
+//            var objPts = new Point3f[]
+//            {
+//                new Point3f(-marker_size / 2, marker_size / 2, 0),
+//                new Point3f(marker_size / 2, marker_size / 2, 0),
+//                new Point3f(marker_size / 2, -marker_size / 2, 0),
+//                new Point3f(-marker_size / 2, -marker_size / 2, 0)
+//            };
+
+//            Cv2.SolvePnP(objPts, corners, cameraMatrix, dist, out rvec, out tvec);
+//            Point2f[] imagePoints;
+//            double[,] jacobian;
+
+//            Cv2.ProjectPoints(objPts, rvec, tvec, cameraMatrix, dist, out imagePoints, out jacobian);
+
+//            var rotVal = GetRotation(rvec);
+//            var posVal = Point2fToVec3Scaled(new Point2f(pointRealPos.x, pointRealPos.y));
+//#if !UNITY_EDITOR && UNITY_ANDROID
+//            posVal = new Vector3(posVal.y, -posVal.x, posVal.z);
+//#endif
+//            Debug.Log(posVal);
+
+//            pointGO.transform.localRotation = rotVal;
+
+//            //var factor = (int)GameManager.GetMyPlayer().Character - 1 == modelId ? 2.1f : 1.3f;
+//            //factor = (int)Character.Luna - 1 == modelId && GameManager.GetMyPlayer().Character != Character.Luna ? 1.45f : factor;
+//            var s = GetScale(objPts, imagePoints);
+//            pointGO.transform.localScale = s;
+//            Debug.Log("Skala: " + pointGO.transform.localScale);
+//            //pointGO.transform.localPosition = new Vector3(posVal.x, posVal.y, s.z / 2f);
+//            pointGO.transform.localPosition = posVal;
+//            pointGO.SetActive(true);
+//        }
+
 
         public GameObject FindModelById(int id)
         {
