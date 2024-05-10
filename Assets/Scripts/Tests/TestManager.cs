@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Game;
 using UnityEditor;
 using UnityEngine;
 
@@ -16,6 +15,7 @@ namespace Assets.Scripts
         public static float Time;
         public static float MaxTime = 30f;
         public static string FilePath;
+        public static string Logs;
 
         public static void Setup()
         {
@@ -24,15 +24,16 @@ namespace Assets.Scripts
             CornersPositions = new();
             Indexes = new();
             Time = 0;
-            FilePath = Application.persistentDataPath + "/arucoData.txt";
-            Debug.Log(FilePath);
+            //FilePath = Application.persistentDataPath + "/arucoData.txt";
+            //Debug.Log(FilePath);
+            //Logs += "Œcie¿ka: " + FilePath + "\n";
         }
 
         public static void UpdatePositions(int id, List<Vector2> positions)
         {
             CornersPositions[id] = positions;
 
-            SaveToFile($"{Time}: Pozycje rogów znacznika {id} to [{positions[0]}; {positions[1]}; {positions[2]}; {positions[3]}]");
+            //SaveToFile($"{Time}: Pozycje rogów znacznika {id} to [{positions[0]}; {positions[1]}; {positions[2]}; {positions[3]}]");
         }
 
         public static void UpdateDetected(int[] ids)
@@ -44,7 +45,7 @@ namespace Assets.Scripts
                 if (!Indexes.Contains(id))
                 {
                     Debug.Log("Wykryto znacznik " + id);
-                    SaveToFile($"{Time}: Wykryto znacznik {id}");
+                    //SaveToFile($"{Time}: Wykryto znacznik {id}");
                     Indexes.Add(id);
                 }   
             }
@@ -55,7 +56,7 @@ namespace Assets.Scripts
                 if (!ids.Any(i => i == id))
                 {
                     Debug.Log("Zgubiono znacznik " + id);
-                    SaveToFile($"{Time}: Zgubiono znacznik {id}");
+                    //SaveToFile($"{Time}: Zgubiono znacznik {id}");
                     Indexes.RemoveAt(i);
                 }
             }

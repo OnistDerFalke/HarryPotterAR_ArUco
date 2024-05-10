@@ -33,30 +33,38 @@ namespace OpenCvSharp.Demo
 
         private Vector2 markerBoardPos = new Vector2(14, 10.5f);
         private Vector2 pointBoardPos = new Vector2(18.5f, 15.5f);
-        private Vector2 markerRealPos;
-        private Vector2 pointRealPos;
+        private Vector2 markerRealPos = Vector2.zero;
+        private Vector2 pointRealPos = Vector2.zero;
 
 
         private IEnumerator FeedARCamera()
         {
             while (true)
             {
+                
                 yield return new WaitForEndOfFrame();
 
-                texture = new Texture2D(Screen.width, Screen.height);
-
-                mr = cam.gameObject.GetComponentInChildren<MeshRenderer>();
-
-                if (mr == null)
+                try
                 {
-                    Debug.Log("Renderer not found");
-                    continue;
+                    texture = new Texture2D(Screen.width, Screen.height);
+
+                    mr = cam.gameObject.GetComponentInChildren<MeshRenderer>();
+
+                    if (mr == null)
+                    {
+                        Debug.Log("Renderer not found");
+                        continue;
+                    }
+
+                    Destroy(texture);
+                    texture = (mr.material.mainTexture as Texture2D);
+
+                    RawImage.rectTransform.sizeDelta = new Vector2(canvas.GetComponent<RectTransform>().rect.width, canvas.GetComponent<RectTransform>().rect.height);
                 }
-
-                Destroy(texture);
-                texture = (mr.material.mainTexture as Texture2D);
-
-                RawImage.rectTransform.sizeDelta = new Vector2(canvas.GetComponent<RectTransform>().rect.width, canvas.GetComponent<RectTransform>().rect.height);
+                catch (System.Exception e)
+                {
+                    TestManager.Logs += e.StackTrace + "\n" + e.Message + "\n";
+                }
 
                 try
                 {
@@ -79,18 +87,26 @@ namespace OpenCvSharp.Demo
                         }
                         TestManager.UpdateDetected(ids);
 
-                        //CvAruco.DrawDetectedMarkers(mat, corners, ids);
-                        CvAruco.DrawDetectedMarkers(grayMat, corners, ids);
+                        var size = 5;
+                        //if (pointRealPos != Vector2.zero)
+                        //    Cv2.Rectangle(mat, new OpenCvSharp.Rect((int)pointRealPos.x, (int)pointRealPos.y, size, size), new Scalar(255f, 0, 0));
+
+                        CvAruco.DrawDetectedMarkers(mat, corners, ids);
+                        //CvAruco.DrawDetectedMarkers(grayMat, corners, ids);
                     }
 
-                    //Cv2.CvtColor(mat, mat, ColorConversionCodes.BGR2RGBA);
-                    outputTexture = Unity.MatToTexture(grayMat);
+                    //Cv2.ImShow("test", mat);
+                    //Cv2.CvtColor(mat, mat, ColorConversionCodes.RGB2RGBA);
+                    //Cv2.ImShow("test2", mat);
+                    outputTexture = Unity.MatToTexture(mat);
+                    //outputTexture = Unity.MatToTexture(grayMat);
                     RawImage.texture = outputTexture;
                     RawImage.material.mainTexture = outputTexture;
                 }
                 catch (System.Exception e)
                 {
                     Debug.Log(e.StackTrace + "\n" + e.Message);
+                    TestManager.Logs += e.StackTrace + "\n" + e.Message + "\n";
                 }
 
                 if (grayMat != null)
