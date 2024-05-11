@@ -103,14 +103,6 @@ namespace Assets.Scripts
             return result * s;
         }
 
-        public Vector3 ConvertCoordinates(Vector2 boardCoordinates, int referenceMarkerId)
-        {
-            GameObject marker = arucoMarkHandler.FindModelById(referenceMarkerId);
-
-            return marker.transform.position +
-                    (boardCoordinates.x - boardMarks[referenceMarkerId].x) * marker.transform.right.normalized * scale +
-                    (boardCoordinates.y - boardMarks[referenceMarkerId].y) * marker.transform.forward.normalized * scale;
-        }
 
         public Quaternion ReferenceRotation()
         {
@@ -149,9 +141,18 @@ namespace Assets.Scripts
             if (!IsTrackingBoard())
                 return -Vector2.one;
 
-            //TODO: poprawić, żeby działało
-            Vector2 boardPos = Vector2.zero;
+            Dictionary<int, float> distanceFromMarkers = new Dictionary<int, float>();
             foreach (var refMarkerId in board.CurrentTrackedBoardMarks)
+            {
+                GameObject refMarker = arucoMarkHandler.FindModelById(refMarkerId);
+                distanceFromMarkers[refMarkerId] = Vector3.Distance(refMarker.transform.position, worldPos);
+            }
+
+            int count = board.CurrentTrackedBoardMarks.Count > 4 ? 4 : board.CurrentTrackedBoardMarks.Count;
+            var closestMarkerIds = distanceFromMarkers.OrderBy(pair => pair.Value).Take(count).Select(pair => pair.Key).ToList();
+
+            Vector2 boardPos = Vector2.zero;
+            foreach (var refMarkerId in closestMarkerIds)
             {
                 GameObject refMarker = arucoMarkHandler.FindModelById(refMarkerId);
                 Vector3 referencePosition = refMarker.transform.position;
@@ -179,7 +180,7 @@ namespace Assets.Scripts
                 boardPos = boardPos + boardMarks[refMarkerId] - x_offset + y_offset;
             }
 
-            boardPos /= board.CurrentTrackedBoardMarks.Count;
+            boardPos /= count;
 
             return boardPos;
         }

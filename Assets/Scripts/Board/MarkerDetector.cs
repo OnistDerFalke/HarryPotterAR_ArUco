@@ -25,7 +25,7 @@
         //3D models
         //TODO: add other models to board markers
         [SerializeField] public GameObject[] models = new GameObject[90];       //9 characters, 81 to board
-        [SerializeField] public GameObject pointGO;
+        //[SerializeField] public GameObject pointGO;
         public float basicMaxLength = 20f;
         public float posThreshold = 20f;
         private int[] ids;

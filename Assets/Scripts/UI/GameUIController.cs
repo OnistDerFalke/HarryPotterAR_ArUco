@@ -69,7 +69,7 @@ namespace Scripts
 
         void Start()
         {
-            TempSetup();
+            //TempSetup();
             currentFieldShow = true;
             actionInfoShow = false;
             fieldInfoShow = false;
@@ -79,7 +79,7 @@ namespace Scripts
             UpdateContent();
         }
 
-        //TODO: to delete
+        //TODO: delete
         private void TempSetup()
         {
             GameManager.Setup();
