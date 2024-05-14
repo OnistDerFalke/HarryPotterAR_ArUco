@@ -1,3 +1,4 @@
+using OpenCvSharp.Demo;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,15 +20,29 @@ namespace Assets.Scripts
 
         private Quaternion referenceRotation = Quaternion.identity;
 
+        private TrendEstimator[] trendEstimator;
+
         private void TrackHighlights()
         {
-            foreach ((Field f, GameObject g) highlight in fieldHighlights)
+            //foreach ((Field f, GameObject g) highlight in fieldHighlights)
+            //{
+            //    highlight.g.transform.position = converter.ConvertCoordinates(highlight.f.Figure.CenterPosition);
+
+            //    highlight.g.transform.rotation = referenceRotation;
+
+            //    highlight.g.transform.localScale = converter.GetClosestMarkerScale(highlight.f.Figure.CenterPosition);
+            //}
+
+            for (int i = 0; i < fieldHighlights.Count; i++)
             {
-                highlight.g.transform.position = converter.ConvertCoordinates(highlight.f.Figure.CenterPosition);
+                (Field f, GameObject g) highlight = fieldHighlights[i];
+
+                highlight.g.transform.position = trendEstimator[i].UpdatePosition(converter.ConvertCoordinates(highlight.f.Figure.CenterPosition));
 
                 highlight.g.transform.rotation = referenceRotation;
 
                 highlight.g.transform.localScale = converter.GetClosestMarkerScale(highlight.f.Figure.CenterPosition);
+
             }
         }
 
@@ -186,6 +201,13 @@ namespace Assets.Scripts
         {
             referenceRotation = converter.ReferenceRotation();
             TrackHighlights();
+        }
+
+        private void Start()
+        {
+            trendEstimator = new TrendEstimator[100];
+            for (var i = 0; i < trendEstimator.Length; i++)
+                trendEstimator[i] = new TrendEstimator(0.9f, 0.1f);
         }
     }
 }
