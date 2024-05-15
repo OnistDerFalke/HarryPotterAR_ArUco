@@ -206,7 +206,7 @@ namespace Assets.Scripts
                 "Pole z wydarzeniem", new List<Action>() { Action.GET_ONE_EVENT }));
             // Gwizdka obok wydarzenia w części z nauką Eliksirów
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Quadrangle(
-                new Vector2(35.9f, 26.85f), new Vector2(38.5f, 26.85f), new Vector2(38.5f, 24.4f), new Vector2(25.9f, 24.4f)), 45,
+                new Vector2(35.9f, 26.85f), new Vector2(38.5f, 26.85f), new Vector2(38.5f, 24.4f), new Vector2(35.9f, 24.4f)), 45,
                 "Pole z gwiazdką", new List<Action>() { Action.CAN_GET_THING }));
             // Sprawowanie w części z nauką Eliksirów
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Quadrangle(
