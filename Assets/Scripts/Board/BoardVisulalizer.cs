@@ -20,7 +20,8 @@ namespace Assets.Scripts
 
         private Quaternion referenceRotation = Quaternion.identity;
 
-        private TrendEstimator[] trendEstimator;
+        private TrendEstimator[] trendEstimatorPos;
+        private TrendEstimator[] trendEstimatorRot;
 
         private void TrackHighlights()
         {
@@ -37,9 +38,9 @@ namespace Assets.Scripts
             {
                 (Field f, GameObject g) highlight = fieldHighlights[i];
 
-                highlight.g.transform.position = trendEstimator[i].UpdatePosition(converter.ConvertCoordinates(highlight.f.Figure.CenterPosition));
+                highlight.g.transform.position = trendEstimatorPos[i].UpdatePosition(converter.ConvertCoordinates(highlight.f.Figure.CenterPosition));
 
-                highlight.g.transform.rotation = referenceRotation;
+                highlight.g.transform.rotation = referenceRotation; //trendEstimatorRot[i].UpdateRotation(referenceRotation);
 
                 highlight.g.transform.localScale = converter.GetClosestMarkerScale(highlight.f.Figure.CenterPosition);
 
@@ -205,9 +206,13 @@ namespace Assets.Scripts
 
         private void Start()
         {
-            trendEstimator = new TrendEstimator[100];
-            for (var i = 0; i < trendEstimator.Length; i++)
-                trendEstimator[i] = new TrendEstimator(0.9f, 0.1f);
+            trendEstimatorPos = new TrendEstimator[100];
+            for (var i = 0; i < trendEstimatorPos.Length; i++)
+                trendEstimatorPos[i] = new TrendEstimator(0.9f, 0.1f);
+
+            trendEstimatorRot = new TrendEstimator[100];
+            for (var i = 0; i < trendEstimatorRot.Length; i++)
+                trendEstimatorRot[i] = new TrendEstimator(0.4f, 0.6f);
         }
     }
 }

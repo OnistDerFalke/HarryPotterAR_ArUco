@@ -30,6 +30,7 @@
         public float posThreshold = 20f;
         private int[] ids;
         private TrendEstimator[] trendEstimator;
+        private TrendEstimator[] trendEstimatorRot;
 
         bool ff;
         private Vector3[] rotMem;
@@ -132,9 +133,12 @@
         {
             counter = 0;
             trendEstimator = new TrendEstimator[100];
+            trendEstimatorRot = new TrendEstimator[100];
             rotMem = new Vector3[100];
             for(var i=0; i<trendEstimator.Length; i++)
                 trendEstimator[i] = new TrendEstimator();
+            for (var i = 0; i < trendEstimatorRot.Length; i++)
+                trendEstimatorRot[i] = new TrendEstimator(0.3f, 0.7f);
             foreach (var model in models)
                 model.SetActive(false);
            
@@ -313,12 +317,15 @@
             //position, rotation and scale to model
             //Debug.Log(GetRotation(rvec));
 
-            var rotVal = GetRotation(rvec);
+            var rotVal = GetRotation(rvec, models[modelId].transform.localRotation);
             var posVal = GetPosition(imagePoints, models[modelId].transform.localPosition);
 
             //if(GetRotation(rvec).eulerAngles-rotMem[modelId]>0.1f)
             models[modelId].transform.localPosition = trendEstimator[modelId].UpdatePosition(posVal);
-            models[modelId].transform.localRotation = rotVal;//trendEstimator[modelId].UpdateRotation(rotVal);
+            //models[modelId].transform.localRotation = rotVal;
+            if (modelId >= 0 && modelId <= 8)
+                models[modelId].transform.localRotation = trendEstimatorRot[modelId].UpdateRotation(rotVal);
+            else models[modelId].transform.localRotation = rotVal;
 
             var factor = (int)GameManager.GetMyPlayer().Character - 1 == modelId ? 2.1f : 1.3f;
             factor = (int)Character.Luna - 1 == modelId && GameManager.GetMyPlayer().Character != Character.Luna ? 1.45f : factor;
@@ -400,7 +407,7 @@
             return localpos;
         }
 
-        private Quaternion GetRotation(double[] rvec)
+        private Quaternion GetRotation(double[] rvec, Quaternion oldRot)
         {
             double[] flip = rvec;
             flip[0] = flip[0];
@@ -437,7 +444,39 @@
             rotVec.z = worldrot.eulerAngles.z - 90;
             worldrot = Quaternion.Euler(rotVec);
 #endif
-            return worldrot;
+
+            Vector3 tmpRot = worldrot.eulerAngles;
+
+            var limitRot = 15f;
+            //if (tmpRot.x > limitRot)
+            //    tmpRot.x = tmpRot.x - 360f;
+            //if (tmpRot.y > limitRot)
+            //    tmpRot.y = tmpRot.y - 360f;
+            //if (tmpRot.z > limitRot)
+            //    tmpRot.z = tmpRot.z - 360f;
+
+            var diff = tmpRot - oldRot.eulerAngles;
+            var t = Vector3.Lerp(oldRot.eulerAngles, tmpRot, limitRot / (tmpRot - oldRot.eulerAngles).magnitude);
+            //if (Mathf.Abs(diff.x) > limitRot)
+            //    tmpRot.x = t.x;
+            if (Mathf.Abs(diff.y) > limitRot)
+                tmpRot.y = t.y;
+            //if (Mathf.Abs(diff.z) > limitRot)
+            //    tmpRot.z = t.z;
+            //Debug.Log($"Old rotation: {oldRot.eulerAngles}");
+            //oldRot.y += +0.2f * diffY
+            return Quaternion.Euler(tmpRot);
+           
+
+            //if (tmpRot.x > limitRot || tmpRot.y > limitRot || tmpRot.z > limitRot)
+            //{
+            //    Debug.Log($"Old rotation: {oldRot.eulerAngles}");
+            //    return oldRot;
+            //}
+
+            //Debug.Log($"Rotation: {tmpRot}");
+            //return Quaternion.Euler(tmpRot);
+            //return Quaternion.Euler(tmpRot);
         }
 
         Vector3 Point2fToVec3Scaled(Point2f point)
