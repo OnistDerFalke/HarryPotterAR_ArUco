@@ -24,7 +24,8 @@
 
         //3D models
         //TODO: add other models to board markers
-        [SerializeField] public GameObject[] models = new GameObject[90];       //9 characters, 81 to board
+        [SerializeField] public GameObject[] models = new GameObject[90];//9 characters, 81 to board
+        [SerializeField] public GameObject[] marks = new GameObject[9];
         //[SerializeField] public GameObject pointGO;
         public float basicMaxLength = 20f;
         public float posThreshold = 20f;
@@ -141,7 +142,9 @@
                 trendEstimatorRot[i] = new TrendEstimator(0.3f, 0.7f);
             foreach (var model in models)
                 model.SetActive(false);
-           
+
+            marks[GameManager.ChosenIndex].SetActive(true);
+
             Debug.Log("TEST: " + cam.gameObject.GetComponentInChildren<MeshRenderer>());
             StartCoroutine(FeedARCamera());
         }

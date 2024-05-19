@@ -10,6 +10,7 @@ namespace Assets.Scripts
         public static BoardManager BoardManager = new();
         public static int CurrentDiceThrownNumber;
         public static int PlayerNumber;
+        public static int ChosenIndex;
         public static List<Player> Players;
         public static List<string> DebugLogs;
         //TODO2: change to ArUco

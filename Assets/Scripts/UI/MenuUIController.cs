@@ -176,6 +176,7 @@ namespace Scripts
 
         public void OnStartGameButtonClick()
         {
+            GameManager.ChosenIndex = chosenCharacterIndex - 1;
             SceneManager.LoadScene("Scenes/Game", LoadSceneMode.Single);
         }
 
