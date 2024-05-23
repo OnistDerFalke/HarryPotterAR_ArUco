@@ -143,7 +143,8 @@
             foreach (var model in models)
                 model.SetActive(false);
 
-            marks[GameManager.ChosenIndex].SetActive(true);
+            for (var i = 0; i < marks.Count(); i++)
+                marks[i].SetActive(GameManager.ChosenIndex == i);
 
             Debug.Log("TEST: " + cam.gameObject.GetComponentInChildren<MeshRenderer>());
             StartCoroutine(FeedARCamera());

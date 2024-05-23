@@ -392,7 +392,7 @@ namespace Assets.Scripts
                 "Pole z gwiazdką", new List<Action>() { Action.CAN_GET_THING }));
 
             // Zakazany las
-            GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Circle(new Vector2(15.6f, 10.1f), 1.5f), 92,
+            GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Circle(new Vector2(15.6f, 39.9f), 1.5f), 92,
                 "Zakazany las", new List<Action>() { Action.CAN_MAKE_MISSION }, 
                 isMissionField: true, missionNumbers: new List<int>() { 4, 27 } ));
             // Boisko do quidditcha
@@ -411,7 +411,7 @@ namespace Assets.Scripts
                 "Smocza Arena", new List<Action>() { Action.CAN_MAKE_MISSION }, 
                 isMissionField: true, missionNumbers: new List<int>() { 11 } ));
             // Sprawowanie obok opieki nad magicznymi stworzeniami
-            GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Circle(new Vector2(34.7f, 35.8f), 1.1f), 97,
+            GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Circle(new Vector2(9.7f, 35.8f), 1.1f), 97,
                 "Pole ze sprawowaniem", new List<Action>() { Action.GET_ONE_EXERCISE }));
             // Opieka nad magicznymi stworzeniami
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Circle(new Vector2(6.7f, 37.3f), 1.6f), 98,
