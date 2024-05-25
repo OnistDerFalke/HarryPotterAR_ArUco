@@ -1,6 +1,7 @@
 using OpenCvSharp.Demo;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -44,6 +45,7 @@ namespace Assets.Scripts
 
                 highlight.g.transform.localScale = converter.GetClosestMarkerScale(highlight.f.Figure.CenterPosition);
 
+                AdjustParticleEffectSize(highlight.f, highlight.g.transform.GetChild(0).GetComponent<Transform>());
             }
         }
 
@@ -73,12 +75,13 @@ namespace Assets.Scripts
                 Vector2.Distance(q.leftUpper, q.rightUpper),
                 Vector2.Distance(q.rightUpper, q.rightBottom),
                 Vector2.Distance(q.leftBottom, q.rightBottom));
-                ps.localScale = Vector3.one * shortestSide * particleRadiusFactor;
+                ps.localScale = shortestSide * particleRadiusFactor * converter.GetClosestMarkerScale(field.Figure.CenterPosition);
             }
             else if (field.Figure is Circle)
             {
                 Circle c = field.Figure as Circle;
-                ps.localScale = Vector3.one * c.Radius * 2 * particleRadiusFactor;
+                ps.localScale = 2 * c.Radius * particleRadiusFactor * converter.GetClosestMarkerScale(field.Figure.CenterPosition);
+                Debug.Log(ps.localScale);
             }
         }
 

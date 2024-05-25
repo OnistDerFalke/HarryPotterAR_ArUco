@@ -492,7 +492,7 @@ namespace Assets.Scripts
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Circle(new Vector2(23.0f, 3.5f), 1.3f), 118,
                 "Miodowe Królestwo", new List<Action>() { Action.CAN_TELEPORT }));
             // Sklep Zonka
-            GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Circle(new Vector2(3.8f, 18.7f), 1.3f), 119,
+            GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Circle(new Vector2(18.7f, 3.8f), 1.3f), 119,
                 "Sklep Zonka", new List<Action>() { Action.CAN_GET_THING }));
             // Wrzeszcząca Chata
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Circle(new Vector2(21.3f, 6.6f), 1.4f), 120,

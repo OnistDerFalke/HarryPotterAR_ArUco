@@ -132,7 +132,7 @@ namespace Assets.Scripts
             rot.z = -rot.z;
             rot.y += 180;
 
-            Debug.Log("Rotacja: " + rot);
+            //Debug.Log("Rotacja: " + rot);
             return Quaternion.Euler(rot);
         }
 

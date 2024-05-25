@@ -3499,7 +3499,7 @@ MonoBehaviour:
   converter: {fileID: 498170097}
   boardMono: {fileID: 1436855299}
   fieldMaterial: {fileID: 2100000, guid: f09ab2e61d5cebb4498336cf33a6fafe, type: 2}
-  particleRadiusFactor: 0
+  particleRadiusFactor: 0.2
   highlightPrefab: {fileID: 2130003449761862625, guid: f6add496441afcf46bb299fc68ee4686, type: 3}
   fiuuHighlightPrefab: {fileID: 2130003449761862625, guid: bae80fa403c1e8343bddb72f2be94fdb, type: 3}
   missionHighlightPrefab: {fileID: 2130003449761862625, guid: a9598920bc3bf3e4f851ff596c02edb9, type: 3}
@@ -6673,7 +6673,7 @@ MonoBehaviour:
   converter: {fileID: 1520332391}
   boardMono: {fileID: 1238487156}
   fieldMaterial: {fileID: 2100000, guid: f09ab2e61d5cebb4498336cf33a6fafe, type: 2}
-  particleRadiusFactor: 0
+  particleRadiusFactor: 0.2
   highlightPrefab: {fileID: 2130003449761862625, guid: f6add496441afcf46bb299fc68ee4686, type: 3}
   fiuuHighlightPrefab: {fileID: 2130003449761862625, guid: bae80fa403c1e8343bddb72f2be94fdb, type: 3}
   missionHighlightPrefab: {fileID: 2130003449761862625, guid: a9598920bc3bf3e4f851ff596c02edb9, type: 3}
@@ -8535,7 +8535,7 @@ MonoBehaviour:
   converter: {fileID: 710563759}
   boardMono: {fileID: 1227193032}
   fieldMaterial: {fileID: 2100000, guid: f09ab2e61d5cebb4498336cf33a6fafe, type: 2}
-  particleRadiusFactor: 0
+  particleRadiusFactor: 0.2
   highlightPrefab: {fileID: 2130003449761862625, guid: f6add496441afcf46bb299fc68ee4686, type: 3}
   fiuuHighlightPrefab: {fileID: 2130003449761862625, guid: bae80fa403c1e8343bddb72f2be94fdb, type: 3}
   missionHighlightPrefab: {fileID: 2130003449761862625, guid: a9598920bc3bf3e4f851ff596c02edb9, type: 3}
