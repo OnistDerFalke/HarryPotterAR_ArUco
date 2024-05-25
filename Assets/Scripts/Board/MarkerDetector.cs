@@ -331,9 +331,10 @@
                 models[modelId].transform.localRotation = trendEstimatorRot[modelId].UpdateRotation(rotVal);
             else models[modelId].transform.localRotation = rotVal;
 
-            var factor = (int)GameManager.GetMyPlayer().Character - 1 == modelId ? 2.1f : 1.3f;
-            factor = (int)Character.Luna - 1 == modelId && GameManager.GetMyPlayer().Character != Character.Luna ? 1.45f : factor;
-            models[modelId].transform.localScale = GetScale(objPts, imagePoints) * factor;
+            //var factor = (int)GameManager.GetMyPlayer().Character - 1 == modelId ? 2.1f : 1.3f;
+            //factor = (int)Character.Luna - 1 == modelId && GameManager.GetMyPlayer().Character != Character.Luna ? 1.45f : factor;
+            //models[modelId].transform.localScale = GetScale(objPts, imagePoints) * factor;
+            models[modelId].transform.localScale = GetScale(objPts, imagePoints);
 
             TrackModel(modelId, models[modelId].transform.position);
         }
