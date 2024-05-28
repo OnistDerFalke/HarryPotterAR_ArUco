@@ -175,7 +175,7 @@ namespace Assets.Scripts
                 "Pole ze sprawowaniem", new List<Action>() { Action.GET_ONE_EXERCISE, Action.CAN_MAKE_MISSION }, missionNumbers: new List<int>() { 18 }));
             // Pojedynek obok sprawowania pod wielką salą
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Quadrangle(
-                new Vector2(30.1f, 5.6f), new Vector2(32.2f, 6.3f), new Vector2(33.95f, 4.3f), new Vector2(30.55f, 3.6f)), 36,
+                new Vector2(30.1f, 5.6f), new Vector2(32.2f, 6.3f), new Vector2(33.1f, 4.3f), new Vector2(30.55f, 3.6f)), 36,
                 "Pole z pojedynkiem", new List<Action>() { Action.FIGHT_FIELD, Action.CAN_MAKE_MISSION }, missionNumbers: new List<int>() { 18 }));
             // Most nad wielką salą do części z nauką Eliksirów
             GameManager.BoardManager.Boards[boardId].Fields.Add(new Field(boardId, new Quadrangle(

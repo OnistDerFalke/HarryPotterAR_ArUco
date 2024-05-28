@@ -188,7 +188,8 @@ namespace Assets.Scripts
         private void Awake()
         {
 #if !UNITY_EDITOR && UNITY_ANDROID
-            scale = 1f / 1.75f;
+            //scale = 1f / 1.75f;
+            scale = 1f / 1.5f;
 #endif
             boardMarks = new Dictionary<int, Vector2>();
             boardMarkIds = new List<int>();

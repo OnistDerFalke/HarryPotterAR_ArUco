@@ -325,7 +325,18 @@
             var posVal = GetPosition(imagePoints, models[modelId].transform.localPosition);
 
             //if(GetRotation(rvec).eulerAngles-rotMem[modelId]>0.1f)
-            models[modelId].transform.localPosition = trendEstimator[modelId].UpdatePosition(posVal);
+
+            var maxDistDiff = 3f;
+            if (Vector3.Distance(posVal, models[modelId].transform.localPosition) < maxDistDiff)
+            {
+                models[modelId].transform.localPosition = trendEstimator[modelId].UpdatePosition(posVal);
+            }
+            else
+            {
+                trendEstimator[modelId] = new TrendEstimator();
+                models[modelId].transform.localPosition = trendEstimator[modelId].UpdatePosition(posVal);
+            }
+
             //models[modelId].transform.localRotation = rotVal;
             if (modelId >= 0 && modelId <= 8)
                 models[modelId].transform.localRotation = trendEstimatorRot[modelId].UpdateRotation(rotVal);

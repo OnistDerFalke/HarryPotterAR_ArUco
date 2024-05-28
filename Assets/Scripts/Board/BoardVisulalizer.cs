@@ -11,7 +11,7 @@ namespace Assets.Scripts
         [SerializeField] private CoordinatesConverter converter;
         [SerializeField] private BoardMono boardMono;
         [SerializeField] private Material fieldMaterial;
-        [SerializeField] private float particleRadiusFactor;
+        [SerializeField] private float particleRadiusFactor = 0.1f;
 
         public GameObject highlightPrefab;
         public GameObject fiuuHighlightPrefab;
