@@ -1,19 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using Assets.Scripts;
-using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Scripts
 {
     public class TestSceneManager : MonoBehaviour
     {
-        [SerializeField] private Button mainButton;
-        [SerializeField] private Text mainButtonText;
-        [SerializeField] private Text detectingStatus;
-        [SerializeField] private TextMeshProUGUI logs;
+        [SerializeField] private Button MainButton;
+        [SerializeField] private Text Status;
+        [SerializeField] private InputField FileNameInput;
+        //[SerializeField] private TextMeshProUGUI logs;
 
 
 
@@ -24,30 +21,31 @@ namespace Scripts
 
         void Update()
         {
-            try
+            Status.text = $"Obecnie wykrytych: {TestManager.CurrentTrackedObjects.Count}";
+            MainButton.GetComponentInChildren<Text>().text = TestManager.DetectingStarted ? $"Zatrzymaj wykrywanie\nCzas wykrywania: {Math.Round(TestManager.Time, 3)}" : "Rozpocznij wykrywanie";
+            if (TestManager.DetectingStarted)
+                TestManager.Time += Time.deltaTime;
+            if (TestManager.Time >= TestManager.MaxTime && TestManager.DetectingStarted)
             {
-                detectingStatus.text = TestManager.Detected ? "Wykryto" : "Nie wykryto";
-                mainButtonText.text = TestManager.DetectingStarted ? $"Zatrzymaj wykrywanie\nCzas wykrywania: {TestManager.Time}" : "Rozpocznij wykrywanie";
-                if (TestManager.DetectingStarted)
-                    TestManager.Time += Time.deltaTime;
-                if (TestManager.Time >= TestManager.MaxTime && TestManager.DetectingStarted)
-                {
-                    TestManager.DetectingStarted = false;
-                    TestManager.Time = 0;
-                }
+                TestManager.DetectingStarted = false;
+                TestManager.Time = 0;
+                FileNameInput.text = "";
             }
-            catch(System.Exception e)
-            {
-                TestManager.Logs += e.StackTrace + "\n" + e.Message + "\n";
-            }
-            logs.text = TestManager.Logs;
+
+            FileNameInput.interactable = !TestManager.DetectingStarted;
+            MainButton.interactable = FileNameInput.text != "" || TestManager.DetectingStarted;
         }
 
-        public void OnStartDetectingClick()
+        public void OnMainButtonClick()
         {
             TestManager.DetectingStarted = !TestManager.DetectingStarted;
             if (!TestManager.DetectingStarted)
+            {
                 TestManager.Time = 0;
+                FileNameInput.text = "";
+            }
+            else
+                TestManager.SetFilePath(FileNameInput.text);
         }
     }
 }

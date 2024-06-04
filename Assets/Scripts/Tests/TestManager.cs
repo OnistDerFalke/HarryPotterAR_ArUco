@@ -1,63 +1,67 @@
+using OpenCvSharp;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Security;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Assets.Scripts
 {
     public static class TestManager
     {
-        public static bool Detected;
-        public static List<int> Indexes;
-        public static Dictionary<int, List<Vector2>> CornersPositions;
+        public static Dictionary<int, List<Vector2>> CurrentTrackedObjects;
         public static bool DetectingStarted;
         public static float Time;
         public static float MaxTime = 30f;
-        public static string FilePath;
         public static string Logs;
+        public static string FolderName = "positions";
+        private static string FilePath;
 
         public static void Setup()
         {
-            Detected = false;
             DetectingStarted = false;
-            CornersPositions = new();
-            Indexes = new();
+            CurrentTrackedObjects = new();
             Time = 0;
-            FilePath = Application.persistentDataPath + "/arucoData.txt";
-            Debug.Log(FilePath);
-            Logs += "Œcie¿ka: " + FilePath + "\n";
+            FilePath = Application.persistentDataPath + $"/{FolderName}";
+            if (!Directory.Exists(FilePath))
+                Directory.CreateDirectory(FilePath);
+        }
+
+        public static void SetFilePath(string fileName)
+        {
+            FilePath = Application.persistentDataPath + $"/{FolderName}/{fileName}.txt";
             File.Create(FilePath);
         }
 
-        public static void UpdatePositions(int id, List<Vector2> positions)
+        public static void UpdateDetected(Dictionary<int, List<Vector2>> markers)
         {
-            CornersPositions[id] = positions;
+            var i = 0;
 
-            SaveToFile($"{Time}: Pozycje rogów znacznika {id} to [{positions[0]}; {positions[1]}; {positions[2]}; {positions[3]}]");
-        }
-
-        public static void UpdateDetected(int[] ids)
-        {
-            Detected = ids.Length > 0;
-
-            foreach(var id in ids)
+            foreach(var m in markers)
             {
-                if (!Indexes.Contains(id))
+                if (!CurrentTrackedObjects.ContainsKey(m.Key))
                 {
-                    Debug.Log("Wykryto znacznik " + id);
-                    SaveToFile($"{Time}: Wykryto znacznik {id}");
-                    Indexes.Add(id);
-                }   
+                    CurrentTrackedObjects.Add(m.Key, m.Value);
+                    SaveToFile($"{Time}: Wykryto znacznik {m.Key} \t Obecnie wykrytych: {CurrentTrackedObjects.Count()}");
+                    Debug.Log("Wykryto znacznik " + m.Key + $" \t Obecnie wykrytych: {CurrentTrackedObjects.Count()}");
+                }
+                else if (DifferentPosition(m.Value, CurrentTrackedObjects[m.Key]))
+                {
+                    CurrentTrackedObjects[m.Key] = m.Value;
+                    SaveToFile($"{Time}: Nowe pozycje rogów znacznika {m.Key} to [{m.Value[0]}; {m.Value[1]}; {m.Value[2]}; {m.Value[3]}]");
+                }
+                i++;
             }
 
-            for (int i = Indexes.Count - 1; i >= 0; i--)
+            for (i = CurrentTrackedObjects.Count - 1; i >= 0; i--)
             {
-                var id = Indexes[i];
-                if (!ids.Any(i => i == id))
+                var id = CurrentTrackedObjects.Keys.ElementAt(i);
+                if (!markers.Any(i => i.Key == id))
                 {
-                    Debug.Log("Zgubiono znacznik " + id);
-                    SaveToFile($"{Time}: Zgubiono znacznik {id}");
-                    Indexes.RemoveAt(i);
+                    CurrentTrackedObjects.Remove(id);
+                    SaveToFile($"{Time}: Zgubiono znacznik {id} \t Obecnie wykrytych: {CurrentTrackedObjects.Count()}");
+                    Debug.Log("Zgubiono znacznik " + id + $" \t Obecnie wykrytych: {CurrentTrackedObjects.Count()}");
                 }
             }
         }
@@ -65,6 +69,15 @@ namespace Assets.Scripts
         private static void SaveToFile(string data)
         {
             File.AppendAllText(FilePath, data + "\n");
+        }
+
+        private static bool DifferentPosition(List<Vector2> corners1, List<Vector2> corners2)
+        {
+            for (int i = 0; i < 4; i++)
+                if (corners1[i].x != corners2[i].x || corners1[i].y != corners2[i].y)
+                    return true;
+
+            return false;
         }
     }
 }

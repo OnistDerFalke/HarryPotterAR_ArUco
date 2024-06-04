@@ -1,19 +1,19 @@
 namespace OpenCvSharp.Demo
 {
     using UnityEngine;
-    using UnityEngine.UI;
     using Aruco;
     using OpenCvSharp;
     using Assets.Scripts;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Security.Cryptography;
-    using System;
-    using System.Net.WebSockets;
-    using System.Drawing;
+    using System.Linq;
 
     public class TestMarkerDetector : MonoBehaviour
     {
+        [SerializeField] public GameObject[] models = new GameObject[90];//9 characters, 81 to board
+        public float basicMaxLength = 35f;
+        public float posThreshold = 20f;
+
         public Camera cam;
         private int[] ids;
         public Canvas canvas;
@@ -21,7 +21,7 @@ namespace OpenCvSharp.Demo
         //OpenCV textures and mats
         private Texture2D texture;
         private Mat mat;
-        private Mat temp;
+        //private Mat temp;
         private Mat grayMat;
 
         //ArUco stuff
@@ -30,15 +30,9 @@ namespace OpenCvSharp.Demo
         private Point2f[][] corners;
         private Point2f[][] rejectedImgPoints;
         private MeshRenderer mr;
-        private Texture2D outputTexture;
+        //private Texture2D outputTexture;
 
-        [SerializeField] public RawImage RawImage;
-
-        private Vector2 markerBoardPos = new Vector2(14, 10.5f);
-        private Vector2 pointBoardPos = new Vector2(18.5f, 15.5f);
-        private Vector2 markerRealPos = Vector2.zero;
-        private Vector2 pointRealPos = Vector2.zero;
-        private float markerSize = 2f;
+        //[SerializeField] public RawImage RawImage;
 
 
         private IEnumerator FeedARCamera()
@@ -50,7 +44,8 @@ namespace OpenCvSharp.Demo
 
                 try
                 {
-                    texture = new Texture2D(Screen.width, Screen.height);
+                    //texture = new Texture2D(Screen.width, Screen.height);
+                    texture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGBA32, false);
 
                     mr = cam.gameObject.GetComponentInChildren<MeshRenderer>();
 
@@ -63,7 +58,7 @@ namespace OpenCvSharp.Demo
                     Destroy(texture);
                     texture = (mr.material.mainTexture as Texture2D);
 
-                    RawImage.rectTransform.sizeDelta = new Vector2(canvas.GetComponent<RectTransform>().rect.width, canvas.GetComponent<RectTransform>().rect.height);
+                    //RawImage.rectTransform.sizeDelta = new Vector2(canvas.GetComponent<RectTransform>().rect.width, canvas.GetComponent<RectTransform>().rect.height);
                 }
                 catch (System.Exception e)
                 {
@@ -74,7 +69,7 @@ namespace OpenCvSharp.Demo
                 {
                     mat = new Mat();
                     mat = Unity.TextureToMat(texture);
-                    Cv2.Rotate(mat, mat, RotateFlags.Rotate90Clockwise);
+                    //Cv2.Rotate(mat, mat, RotateFlags.Rotate90Clockwise);
                     Cv2.Flip(mat, mat, FlipMode.Y);
 
                     grayMat = new Mat();
@@ -84,44 +79,41 @@ namespace OpenCvSharp.Demo
                     {
                         CvAruco.DetectMarkers(grayMat, dictionary, out corners, out ids, detectorParameters, out rejectedImgPoints);
 
-                        for(int i = 0; i < ids.Length; i++)
+                        Dictionary<int, List<Vector2>> dict = new();
+                        for (int i = 0; i < ids.Length; i++)
                         {
-                            TestManager.UpdatePositions(ids[i], ConvertToList(corners[i]));
-                            SetPositions(corners[i]);
+                            dict[ids[i]] = ConvertToList(corners[i]);
+                            DrawModel(ids[i], corners[i]);
                         }
-                        TestManager.UpdateDetected(ids);
+                        TestManager.UpdateDetected(dict);
 
-                        var size = 5;
-                        if (pointRealPos != Vector2.zero)
-                            Cv2.Rectangle(grayMat, new OpenCvSharp.Rect((int)pointRealPos.x, (int)pointRealPos.y, size, size), new Scalar(255f, 0, 0), thickness: size);
-                        CvAruco.DrawDetectedMarkers(grayMat, corners, ids);
+                        for (int i = 0; i < models.Count(); i++)
+                            if (!ids.Contains(i))
+                                models[i].SetActive(false);
+
+                        //CvAruco.DrawDetectedMarkers(grayMat, corners, ids);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < models.Count(); i++)
+                            models[i].SetActive(false);
                     }
 
-                    Destroy(outputTexture);
+                    //Destroy(outputTexture);
 
-                    //var canals = Cv2.Split(mat);
-                    //temp = new Mat();
-                    //Mat[] can = new Mat[4];
-                    //can[0] = canals[2];
-                    //can[1] = canals[1];
-                    //can[2] = canals[0];
-                    //can[3] = canals[0].SetTo(new Scalar(0, 0, 0));
-                    //Cv2.Merge(can, temp);
-                    //Cv2.CvtColor(temp, temp, ColorConversionCodes.RGB2RGBA);
-
-                    outputTexture = Unity.MatToTexture(grayMat);
-                    RawImage.texture = outputTexture;
-                    RawImage.material.mainTexture = outputTexture;
+                    //outputTexture = Unity.MatToTexture(grayMat);
+                    //RawImage.texture = outputTexture;
+                    //RawImage.material.mainTexture = outputTexture;
                 }
                 catch (System.Exception e)
                 {
                     Debug.Log(e.StackTrace + "\n" + e.Message);
-                    TestManager.Logs += e.StackTrace + "\n" + e.Message + "\n";
+                    //TestManager.Logs += e.StackTrace + "\n" + e.Message + "\n";
                 }
 
                 if (grayMat != null) grayMat.Dispose();
                 if (mat != null) mat.Dispose();
-                if (temp != null) temp.Dispose();
+                //if (temp != null) temp.Dispose();
             }
         }
 
@@ -133,156 +125,153 @@ namespace OpenCvSharp.Demo
             return list;
         }
 
-        private void SetPositions(Point2f[] corners)
+        void DrawModel(int modelId, Point2f[] corners)
         {
-            TestManager.Logs = "";
+            var rvec = new double[] { 0, 0, 0 };
+            var tvec = new double[] { 0, 0, 0 };
 
-            Vector2 point = Vector2.zero;
-            int i = 0;
-            foreach (var corner in corners)
+            var cameraMatrix = new double[3, 3]
             {
-                point += new Vector2(corner.X, corner.Y);
-                TestManager.Logs += $"{i} : {corner}\n";
-                i++;
-            }
-            point /= corners.Length;
-            markerRealPos = point;
+                { 1.6794270741269229e+03, 0.0f, 9.5502638499315810e+02 },
+                { 0.0f, 1.6771700842601067e+03, 5.5015085362115587e+02 },
+                { 0.0f, 0.0f, 1.0f }
+            };
 
-            var pointRelevantPosBoard = pointBoardPos - (markerBoardPos - new Vector2(markerSize / 2f, markerSize / 2f));
+            var dist = new double[] { 1.9683061388899192e-01, -7.3624850611674697e-01,
+                1.4290920850579334e-04, 7.8329305994069088e-04, 5.4742631511243833e-01 };
 
-            var leftBotToRightUpBoard = new Vector2(markerSize, markerSize);
-            var leftBotToRightUpReal = new Vector2(corners[1].X - corners[3].X, corners[1].Y - corners[3].Y);
-            var scale = leftBotToRightUpReal / leftBotToRightUpBoard;
+            float marker_size = 0.03f;
 
+            var objPts = new Point3f[]
+            {
+                new Point3f(-marker_size / 2, marker_size / 2, 0),
+                new Point3f(marker_size / 2, marker_size / 2, 0),
+                new Point3f(marker_size / 2, -marker_size / 2, 0),
+                new Point3f(-marker_size / 2, -marker_size / 2, 0)
+            };
 
-            //var botBoard = new Vector2(markerSize, 0);
-            //var botReal = new Vector2(corners[2].X - corners[3].X, corners[2].Y - corners[3].Y);
-            //TestManager.Logs += "Bottom real: " + botReal + "\n";
-            //var botScale = botReal.magnitude / botBoard.magnitude;
-            //TestManager.Logs += "Bottom scale: " + botScale + "\n";
-            //var botProjBoard = ProjectVector(botBoard, pointRelevantPosBoard);
-            //TestManager.Logs += "BotProjBoard: " + botProjBoard + "\n";
-            //var botProjReal = botProjBoard * botScale;
-            //TestManager.Logs += "BotProjReal: " + botProjReal + "\n";
+            Cv2.SolvePnP(objPts, corners, cameraMatrix, dist, out rvec, out tvec);
+            Point2f[] imagePoints;
+            double[,] jacobian;
 
-            //var leftBoard = new Vector2(0, markerSize);
-            //var leftReal = new Vector2(corners[0].X - corners[3].X, corners[0].Y - corners[3].Y);
-            //TestManager.Logs += "Left real: " + leftReal + "\n";
-            //var leftScale = leftReal.magnitude / leftBoard.magnitude;
-            //TestManager.Logs += "Left scale: " + leftScale + "\n";
-            //var leftProjBoard = ProjectVector(leftBoard, pointRelevantPosBoard);
-            //TestManager.Logs += "LeftProjBoard: " + leftProjBoard + "\n";
-            //var leftProjReal = leftProjBoard * leftScale;
-            //TestManager.Logs += "LeftProjReal: " + leftProjReal + "\n";
+            Cv2.ProjectPoints(objPts, rvec, tvec, cameraMatrix, dist, out imagePoints, out jacobian);
 
-            //pointRealPos = new Vector2(corners[0].X, corners[0].Y) + botProjReal - leftProjReal;
-
-            pointRealPos = new Vector2(corners[0].X, corners[0].Y) + pointRelevantPosBoard * scale;
-            TestManager.Logs += "Point position: " + pointRealPos + "\n";
+            models[modelId].transform.localPosition = GetPosition(imagePoints, models[modelId].transform.localPosition);
+            models[modelId].transform.localRotation = GetRotation(rvec, models[modelId].transform.localRotation);
+            models[modelId].transform.localScale = GetScale(objPts, imagePoints);
+            models[modelId].SetActive(true);
         }
 
-        //private void SetPositions2(Point2f[] corners)
-        //{
-        //    TestManager.Logs = "";
-
-        //    Vector2 point = Vector2.zero;
-        //    int i = 0;
-        //    foreach (var corner in corners)
-        //    {
-        //        point += new Vector2(corner.X, corner.Y);
-        //        TestManager.Logs += $"{i} : {corner}\n";
-        //        i++;
-        //    }
-        //    point /= corners.Length;
-        //    markerRealPos = point;
-        //    TestManager.Logs += "Pozycja œrodkowa markera: " + markerRealPos + "\n";
-
-        //    var lineBottom = corners[2] - corners[3];
-        //    var scaleBottom = new Vector2(lineBottom.X, lineBottom.Y).magnitude / markerSize;
-
-        //    var lineUpper = corners[1] - corners[0];
-        //    var scaleUpper = new Vector2(lineUpper.X, lineUpper.Y).magnitude / markerSize;
-
-        //    var lineLeft = corners[0] - corners[3];
-        //    var scaleLeft = new Vector2(lineLeft.X, lineLeft.Y).magnitude / markerSize;
-
-        //    var lineRight = corners[1] - corners[2];
-        //    var scaleRight = new Vector2(lineRight.X, lineRight.Y).magnitude / markerSize;
-
-        //    var dist = pointBoardPos - markerBoardPos;
-        //    var distLeftBot = pointBoardPos - (markerBoardPos - new Vector2(markerSize/2f, markerSize/2f));
-
-        //    TestManager.Logs += "LineBottom: " + lineBottom + "   Scale: " + scaleBottom + "\n";
-        //    TestManager.Logs += "LineUpper: " + lineUpper + "   Scale: " + scaleUpper + "\n";
-        //    TestManager.Logs += "LineLeft: " + lineLeft + "   Scale: " + scaleLeft + "\n";
-        //    TestManager.Logs += "LineRight: " + lineRight + "   Scale: " + scaleRight + "\n";
-        //    TestManager.Logs += "Dist: " + distLeftBot + "\n";
-
-        //    var botProj = ProjectVector(lineBottom, distLeftBot);
-        //    var leftProj = ProjectVector(lineLeft, distLeftBot);
-        //    TestManager.Logs += "BottomProjection: " + botProj + "   Len: " + botProj.magnitude + "\n";
-        //    TestManager.Logs += "LeftProjection: " + leftProj + "   Len: " + leftProj.magnitude + "\n";
-
-        //    //var scaleBot = scaleBottom - (scaleBottom - scaleUpper) * (dist.y + markerSize / 2f) / markerSize;
-        //    var scaleBot = scaleBottom - (scaleBottom - scaleUpper) * leftProj.magnitude / markerSize;
-        //    TestManager.Logs += "Scale Bot: " + scaleBot + "\n";
-        //    //var scaleL = scaleLeft - (scaleLeft - scaleRight) * (dist.x + markerSize / 2f) / markerSize;
-        //    var scaleL = scaleLeft - (scaleLeft - scaleRight) * botProj.magnitude / markerSize;
-        //    TestManager.Logs += "Scale L: " + scaleL + "\n";
-
-        //    pointRealPos = markerRealPos + ProjectVector(lineBottom, dist) * scaleL - ProjectVector(lineLeft, dist) * scaleBot;
-        //    TestManager.Logs += "Point position: " + pointRealPos + "\n";
-        //}
-
-        /// <summary>
-        /// Project vec2 to vec1
-        /// </summary>
-        private Vector2 ProjectVector(Vector2 vec1, Vector2 vec2)
+        private Vector3 GetScale(Point3f[] objPts, Point2f[] imgPts)
         {
-            var projection = Vector2.zero;
+            var distance01 = GetDistance(imgPts[0], imgPts[1]);
+            var distance12 = GetDistance(imgPts[1], imgPts[2]);
+            var distance23 = GetDistance(imgPts[2], imgPts[3]);
+            var distance30 = GetDistance(imgPts[3], imgPts[0]);
+            var maxDistance = Mathf.Max(distance01, distance12, distance23, distance30);
 
-            float scalar = vec1.x * vec2.x + vec1.y * vec2.y;
-            float squaredLen = (float)(Math.Pow(vec1.x, 2) + Math.Pow(vec1.y, 2));
+            var s = maxDistance / basicMaxLength;
+            Vector3 scale = new Vector3(s, s, s);
 
-            projection.x = scalar / squaredLen * vec1.x;
-            projection.y = scalar / squaredLen * vec1.y;
-
-            return projection;
+            return scale;
         }
 
-        //private void SetPositions2(Point2f[] corners)
-        //{
-        //    Vector2 point = Vector2.zero;
-        //    int i = 0;
-        //    foreach(var corner in corners)
-        //    {
-        //        point += new Vector2(corner.X, corner.Y);
-        //        if (!save) TestManager.Logs += $"{i} : {corner}\n";
-        //        i++;
-        //    }
-        //    point /= corners.Length;
-        //    markerRealPos = point;
-        //    if (!save) TestManager.Logs += "Pozycja œrodkowa markera: " + markerRealPos + "\n";
+        private float GetDistance(Point2f a, Point2f b)
+        {
+            return Vector2.Distance(new Vector2(a.X, a.Y), new Vector2(b.X, b.Y));
+        }
 
-        //    var edge = new Point2f(corners[2].X - corners[3].X, corners[3].Y - corners[2].Y);
-        //    if (!save) TestManager.Logs += "Edge: " + edge + "\n";
-        //    float alpha = Mathf.Atan(edge.Y/edge.X);
-        //    if (!save) TestManager.Logs += "Obrót znacznika: " + alpha + "\n";
+        private Vector3 GetPosition(Point2f[] imagePoints, Vector3 currentPos)
+        {
+            Vector3 localpos = Vector3.zero;
+            Vector3[] corn = new Vector3[4];
 
-        //    var dist = pointBoardPos - markerBoardPos;
-        //    if (!save) TestManager.Logs += "Dist: " + dist + "\n";
-        //    float beta = Mathf.Atan2(dist.y, dist.x);
-        //    if (!save) TestManager.Logs += "k¹t miêdzy znacznikiem i markerem: " + beta + "\n";
+            for (var i = 0; i < 4; i++)
+            {
+                localpos += Point2fToVec3Scaled(imagePoints[i]);
+            }
 
-        //    float len = (float)Math.Sqrt(dist.x * dist.x + dist.y * dist.y);
-        //    if (!save) TestManager.Logs += "Len: " + len + "\n";
-        //    if (!save) TestManager.Logs += "Cos(a+b): " + Mathf.Cos(alpha + beta) + "\n";
-        //    pointRealPos = new Vector2(markerRealPos.x + Mathf.Cos(alpha + beta) * len, markerRealPos.y + Mathf.Sin(alpha + beta) * len);
-        //    if (!save) TestManager.Logs += "Pozycja punktu: " + pointRealPos + "\n";
+            localpos /= 4f;
 
-        //    save = true;
-        //}
+            localpos.x *= -1f;
+            localpos.y *= -1f;
 
+#if !UNITY_EDITOR && UNITY_ANDROID
+            localpos = new Vector3(localpos.y, -localpos.x, localpos.z);
+#endif
+
+            if (Vector3.Distance(currentPos, localpos) <= posThreshold)
+                return currentPos;
+
+            return localpos;
+        }
+
+        private Quaternion GetRotation(double[] rvec, Quaternion oldRot)
+        {
+            double[] flip = rvec;
+            flip[0] = flip[0];
+            flip[1] = -flip[1];
+            flip[2] = flip[2];
+            double[] rvec_m = flip;
+
+            Mat rotmatrix = new Mat();
+            MatOfDouble rvecMat = new MatOfDouble(1, 3);
+            rvecMat.Set<double>(0, 0, rvec_m[0]);
+            rvecMat.Set<double>(0, 1, rvec_m[1]);
+            rvecMat.Set<double>(0, 2, rvec_m[2]);
+            Cv2.Rodrigues(rvecMat, rotmatrix);
+
+            Vector3 forward;
+            forward.x = (float)rotmatrix.At<double>(2, 0);
+            forward.y = (float)rotmatrix.At<double>(2, 1);
+            forward.z = (float)rotmatrix.At<double>(2, 2);
+
+            Vector3 up;
+            up.x = (float)rotmatrix.At<double>(1, 0);
+            up.y = (float)rotmatrix.At<double>(1, 1);
+            up.z = (float)rotmatrix.At<double>(1, 2);
+
+            Quaternion rot = Quaternion.LookRotation(forward, up);
+            rot *= Quaternion.Euler(0, 0, 180);
+            Quaternion worldrot = cam.transform.rotation * rot;
+
+            Vector3 rotVec = worldrot.eulerAngles;
+            rotVec.x = -worldrot.eulerAngles.x;
+            rotVec.y = -worldrot.eulerAngles.y;
+            rotVec.z = worldrot.eulerAngles.z - 180f;
+            worldrot = Quaternion.Euler(rotVec);
+
+#if !UNITY_EDITOR && UNITY_ANDROID            
+            Vector3 rotVec2 = worldrot.eulerAngles;
+            rotVec2.x = worldrot.eulerAngles.y;
+            rotVec2.y = worldrot.eulerAngles.x;
+            rotVec2.z = worldrot.eulerAngles.z - 90;
+            worldrot = Quaternion.Euler(rotVec2);
+#endif
+
+            Vector3 tmpRot = worldrot.eulerAngles;
+            var limitRot = 15f;
+            var diff = tmpRot - oldRot.eulerAngles;
+            var t = Vector3.Lerp(oldRot.eulerAngles, tmpRot, limitRot / (tmpRot - oldRot.eulerAngles).magnitude);
+            if (Mathf.Abs(diff.y) > limitRot)
+                tmpRot.y = t.y;
+
+            return Quaternion.Euler(tmpRot);
+        }
+
+        Vector3 Point2fToVec3Scaled(Point2f point)
+        {
+            if (mr == null)
+            {
+                Debug.Log("Renderer not found");
+                return new Vector3(point.X, -point.Y, 0);
+            }
+            Vector2 mrsize = new Vector2(2 * mr.gameObject.transform.localScale.x, 2 * mr.gameObject.transform.localScale.z);
+            var xScaler = mrsize.x / mat.Size().Width;
+            var yScaler = mrsize.y / mat.Size().Height;
+
+            return new Vector3((point.X * xScaler - mrsize.x / 2), -(point.Y * yScaler - mrsize.y / 2), 0);
+        }
 
         void Start()
         {
