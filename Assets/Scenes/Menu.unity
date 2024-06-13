@@ -4248,16 +4248,16 @@ MonoBehaviour:
   nextCharacterButton: {fileID: 1691731922}
   previousCharacterButton: {fileID: 872720798}
   markerSprites:
-  - {fileID: 21300000, guid: 25b60e9af68d74c4b9613909f81c69bb, type: 3}
-  - {fileID: 21300000, guid: 478543db7d1a0d047b057f2b5cecfdb6, type: 3}
-  - {fileID: 21300000, guid: 71b143c65cdebfe49a8164387aa5d86d, type: 3}
-  - {fileID: 21300000, guid: 1d622b3f4bd5b3046872ab2faca26566, type: 3}
-  - {fileID: 21300000, guid: 4ab57c344e055cb4eaa0c14790c027f1, type: 3}
-  - {fileID: 21300000, guid: 5510aba611eb67546b789e4543aa5622, type: 3}
-  - {fileID: 21300000, guid: 5b665482a720169418a00055ec6be22a, type: 3}
-  - {fileID: 21300000, guid: 9b95ee289b3461a43b2d8a396bf5f05e, type: 3}
-  - {fileID: 21300000, guid: b6f0ff3167b068e4a9c36d2e605c2515, type: 3}
-  markerSpriteNotSet: {fileID: 21300000, guid: b9ba5794e3fd0b74e82b366c0dd6d65d, type: 3}
+  - {fileID: 21300000, guid: e09af876966b8ab4da7a7689e53b439d, type: 3}
+  - {fileID: 21300000, guid: d0760c8415edd2d46b2f9a1130ea0d3f, type: 3}
+  - {fileID: 21300000, guid: a5342fc557f7d684b8cf0f182c378839, type: 3}
+  - {fileID: 21300000, guid: d7976b9baf50ff44f898317b9e1f9007, type: 3}
+  - {fileID: 21300000, guid: 6a4ec559752d9a04a8c33237b73b5f9e, type: 3}
+  - {fileID: 21300000, guid: 661e55a9789da074b8ca8d3e245ee8f0, type: 3}
+  - {fileID: 21300000, guid: 31a3779e8cdef2b4e83517b6b1a1e728, type: 3}
+  - {fileID: 21300000, guid: 3c159ef06205d3b4fa4f2c0f98ffe201, type: 3}
+  - {fileID: 21300000, guid: 974ae52e8dcecab4c97083c7da0ff5fe, type: 3}
+  markerSpriteNotSet: {fileID: 21300000, guid: 7a9c893f0ad296241b93e1a1f0710998, type: 3}
   characterName: {fileID: 150686090}
   specialPowerText: {fileID: 75092320}
   markerImage: {fileID: 2146386343}
@@ -4275,7 +4275,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1970195336}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -356, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4768,7 +4768,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 175, y: 175}
+  m_SizeDelta: {x: 160, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2146386343
 MonoBehaviour:
