@@ -4,7 +4,6 @@ using Assets.Scripts;
 using Game;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Scripts
@@ -146,7 +145,6 @@ namespace Scripts
             chosenCharacterIndex = 0;
 
             startGameButton.gameObject.SetActive(true);
-            //characterBox.SetActive(true);
             nextCharacterButton.gameObject.SetActive(true);
             previousCharacterButton.gameObject.SetActive(true);
 

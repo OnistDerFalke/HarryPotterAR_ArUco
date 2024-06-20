@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts;
 using Game;
@@ -14,8 +12,6 @@ public class PossibleMovesTest : MonoBehaviour
         GameManager.Setup();
         GameManager.PlayerNumber = 1;
         GameManager.Players.Add(new Player(0, Character.Harry));
-
-
 
         UpdatePosition(position);
         ThrowDice(diceNumber);

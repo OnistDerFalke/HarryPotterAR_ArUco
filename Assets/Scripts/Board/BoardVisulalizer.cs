@@ -1,7 +1,5 @@
 using OpenCvSharp.Demo;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -26,22 +24,13 @@ namespace Assets.Scripts
 
         private void TrackHighlights()
         {
-            //foreach ((Field f, GameObject g) highlight in fieldHighlights)
-            //{
-            //    highlight.g.transform.position = converter.ConvertCoordinates(highlight.f.Figure.CenterPosition);
-
-            //    highlight.g.transform.rotation = referenceRotation;
-
-            //    highlight.g.transform.localScale = converter.GetClosestMarkerScale(highlight.f.Figure.CenterPosition);
-            //}
-
             for (int i = 0; i < fieldHighlights.Count; i++)
             {
                 (Field f, GameObject g) highlight = fieldHighlights[i];
 
                 highlight.g.transform.position = trendEstimatorPos[i].UpdatePosition(converter.ConvertCoordinates(highlight.f.Figure.CenterPosition));
 
-                highlight.g.transform.rotation = referenceRotation; //trendEstimatorRot[i].UpdateRotation(referenceRotation);
+                highlight.g.transform.rotation = referenceRotation;
 
                 highlight.g.transform.localScale = converter.GetClosestMarkerScale(highlight.f.Figure.CenterPosition);
 

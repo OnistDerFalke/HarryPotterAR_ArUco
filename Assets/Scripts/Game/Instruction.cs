@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Scripts
 {
@@ -83,7 +81,7 @@ namespace Scripts
                 "5. Wszyscy gracze zaczynają na polu \"Start\".";
 
             instructions[InstructionInfo.PlayerMove] =
-                "Gracz, przed każdym rzutem kośćmi, powinien zczytać pozycję gracza, " +
+                "Gracz, przed każdym rzutem kośćmi, powinien sczytać pozycję gracza, " +
                 "a następnie wybrać jedno z podświetlonych pól planszy i przesunąć na nie znacznik. \n\n" + 
                 "Dodatkowo gracz powinien zatrzymać się na polu, na którym stoi inny gracz, " +
                 "gdy mija go w swoim ruchu (nie obowiązuje go wtedy akcja powiązana z danym polem).\n\n" + 

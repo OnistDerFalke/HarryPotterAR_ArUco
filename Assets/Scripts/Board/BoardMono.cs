@@ -1,7 +1,6 @@
 using Assets.Scripts;
 using Game;
 using OpenCvSharp.Demo;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +8,6 @@ public class BoardMono : MonoBehaviour
 {
     public CoordinatesConverter coordinatesConverter;
     public BoardVisulalizer boardVisualiser;
-    //TODO2: change to ArUco
     public MarkerDetector charactersHandler;
     public int id;
 
@@ -25,7 +23,7 @@ public class BoardMono : MonoBehaviour
     public Field GetOccupiedField(Vector3 pos)
     {
         Vector2 boardSpacePos = coordinatesConverter.WorldToBoard(pos);
-        //Debug.Log("Board Position: " + boardSpacePos);
+
         foreach (Field f in Board.Fields)
         {
             if (f.Figure.ContainsPosition(boardSpacePos))
@@ -42,9 +40,7 @@ public class BoardMono : MonoBehaviour
         if (coordinatesConverter.BoardMarkIds.Contains(id))
         {
             if (currentTrackedBoardMarks.Count == 0)
-            {
                 EventBroadcaster.InvokeOnBoardDetected(Board.Id);
-            }
             currentTrackedBoardMarks.Add(id);
         }
     }
@@ -55,9 +51,7 @@ public class BoardMono : MonoBehaviour
         {
             currentTrackedBoardMarks.Remove(id);
             if (currentTrackedBoardMarks.Count == 0)
-            {
                 EventBroadcaster.InvokeOnBoardLost(Board.Id);
-            }
         }
     }
 

@@ -13,7 +13,6 @@ namespace Assets.Scripts
         public static int ChosenIndex;
         public static List<Player> Players;
         public static List<string> DebugLogs;
-        //TODO2: change to ArUco
         public static Dictionary<int, Vector3> CurrentTrackedObjects;
         public static bool setup = false;
 
@@ -26,7 +25,6 @@ namespace Assets.Scripts
                 DebugLogs = new();
                 CurrentDiceThrownNumber = -1;
                 PlayerNumber = 0;
-                //TODO2: change to ArUco
                 CurrentTrackedObjects = new();
                 setup = true;
             }

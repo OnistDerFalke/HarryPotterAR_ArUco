@@ -69,7 +69,6 @@ namespace Scripts
 
         void Start()
         {
-            //TempSetup();
             currentFieldShow = true;
             actionInfoShow = false;
             fieldInfoShow = false;
@@ -77,14 +76,6 @@ namespace Scripts
             specialPowerUsed = false;
             baseInstruction = new();
             UpdateContent();
-        }
-
-        //TODO: delete
-        private void TempSetup()
-        {
-            GameManager.Setup();
-            GameManager.PlayerNumber = 1;
-            GameManager.Players.Add(new Player(0, Character.Harry));
         }
 
         void Update()
@@ -323,19 +314,21 @@ namespace Scripts
 
         private List<Instruction.InstructionInfo> GetDefaultInstruction()
         {
-            List<Instruction.InstructionInfo> instructionParts = new();
-            instructionParts.Add(Instruction.InstructionInfo.PlayerMove);
-            instructionParts.Add(Instruction.InstructionInfo.SpecialItems);
-            instructionParts.Add(Instruction.InstructionInfo.FightWithPlayer);
-            instructionParts.Add(Instruction.InstructionInfo.GameDuration);
-            instructionParts.Add(Instruction.InstructionInfo.MissionCompleting);
-            instructionParts.Add(Instruction.InstructionInfo.MissionFight);
-            instructionParts.Add(Instruction.InstructionInfo.FightOnFightField);
-            instructionParts.Add(Instruction.InstructionInfo.QuidditchPreparation);
-            instructionParts.Add(Instruction.InstructionInfo.QuidditchRound1);
-            instructionParts.Add(Instruction.InstructionInfo.QuidditchRound1_Actions1);
-            instructionParts.Add(Instruction.InstructionInfo.QuidditchRound1_Actions2);
-            instructionParts.Add(Instruction.InstructionInfo.QuidditchRound2);
+            List<Instruction.InstructionInfo> instructionParts = new()
+            {
+                Instruction.InstructionInfo.PlayerMove,
+                Instruction.InstructionInfo.SpecialItems,
+                Instruction.InstructionInfo.FightWithPlayer,
+                Instruction.InstructionInfo.GameDuration,
+                Instruction.InstructionInfo.MissionCompleting,
+                Instruction.InstructionInfo.MissionFight,
+                Instruction.InstructionInfo.FightOnFightField,
+                Instruction.InstructionInfo.QuidditchPreparation,
+                Instruction.InstructionInfo.QuidditchRound1,
+                Instruction.InstructionInfo.QuidditchRound1_Actions1,
+                Instruction.InstructionInfo.QuidditchRound1_Actions2,
+                Instruction.InstructionInfo.QuidditchRound2
+            };
             return instructionParts;
         }
 

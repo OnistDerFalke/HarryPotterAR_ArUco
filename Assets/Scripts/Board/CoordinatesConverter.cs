@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using OpenCvSharp.Demo;
-using UnityEngine.UIElements;
-using System.Runtime.InteropServices;
-using static UnityEngine.GraphicsBuffer;
 using System.Linq;
-using UnityEngine.Timeline;
 
 namespace Assets.Scripts
 {
@@ -71,8 +67,6 @@ namespace Assets.Scripts
 
             result /= count;
 
-            //Debug.Log("Pozycja: " + result);
-
             return result;
         }
 
@@ -132,7 +126,6 @@ namespace Assets.Scripts
             rot.z = -rot.z;
             rot.y += 180;
 
-            //Debug.Log("Rotacja: " + rot);
             return Quaternion.Euler(rot);
         }
 
@@ -188,7 +181,6 @@ namespace Assets.Scripts
         private void Awake()
         {
 #if !UNITY_EDITOR && UNITY_ANDROID
-            //scale = 1f / 1.75f;
             scale = 1f / 1.5f;
 #endif
             boardMarks = new Dictionary<int, Vector2>();
@@ -220,7 +212,6 @@ namespace Assets.Scripts
             if (imgPos == Vector3.zero)
             {
                 imgPos = cam.gameObject.GetComponentInChildren<MeshRenderer>().gameObject.transform.position;
-                Debug.Log("Obraz first: " + imgPos);
             }
         }
     }
