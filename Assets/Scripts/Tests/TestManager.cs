@@ -1,10 +1,7 @@
-using OpenCvSharp;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Security;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Assets.Scripts
 {
@@ -13,7 +10,8 @@ namespace Assets.Scripts
         public static Dictionary<int, List<Vector2>> CurrentTrackedObjects;
         public static bool DetectingStarted;
         public static float Time;
-        public static float MaxTime = 30f;
+        public static float MaxTime = 10f;
+        public static int FrameCount = 0;
         public static string Logs;
         public static string FolderName = "positions";
         private static string FilePath;
@@ -66,7 +64,7 @@ namespace Assets.Scripts
             }
         }
 
-        private static void SaveToFile(string data)
+        public static void SaveToFile(string data)
         {
             File.AppendAllText(FilePath, data + "\n");
         }

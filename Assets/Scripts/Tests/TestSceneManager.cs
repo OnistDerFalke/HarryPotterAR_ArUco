@@ -10,9 +10,6 @@ namespace Scripts
         [SerializeField] private Button MainButton;
         [SerializeField] private Text Status;
         [SerializeField] private InputField FileNameInput;
-        //[SerializeField] private TextMeshProUGUI logs;
-
-
 
         void Start()
         {
@@ -22,13 +19,17 @@ namespace Scripts
         void Update()
         {
             Status.text = $"Obecnie wykrytych: {TestManager.CurrentTrackedObjects.Count}";
-            MainButton.GetComponentInChildren<Text>().text = TestManager.DetectingStarted ? $"Zatrzymaj wykrywanie\nCzas wykrywania: {Math.Round(TestManager.Time, 3)}" : "Rozpocznij wykrywanie";
+            MainButton.GetComponentInChildren<Text>().text = TestManager.DetectingStarted ? 
+                $"Zatrzymaj wykrywanie\nCzas wykrywania: {Math.Round(TestManager.Time, 3)}" : "Rozpocznij wykrywanie";
             if (TestManager.DetectingStarted)
                 TestManager.Time += Time.deltaTime;
             if (TestManager.Time >= TestManager.MaxTime && TestManager.DetectingStarted)
             {
                 TestManager.DetectingStarted = false;
+                TestManager.CurrentTrackedObjects = new();
+                TestManager.SaveToFile($"Liczba klatek: {TestManager.FrameCount}");
                 TestManager.Time = 0;
+                TestManager.FrameCount = 0;
                 FileNameInput.text = "";
             }
 
@@ -42,6 +43,8 @@ namespace Scripts
             if (!TestManager.DetectingStarted)
             {
                 TestManager.Time = 0;
+                TestManager.CurrentTrackedObjects = new();
+                TestManager.FrameCount = 0;
                 FileNameInput.text = "";
             }
             else

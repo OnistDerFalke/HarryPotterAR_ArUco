@@ -10,7 +10,7 @@ namespace OpenCvSharp.Demo
 
     public class TestMarkerDetector : MonoBehaviour
     {
-        [SerializeField] public GameObject[] models = new GameObject[90];//9 characters, 81 to board
+        [SerializeField] public GameObject[] models = new GameObject[90];
         public float basicMaxLength = 35f;
         public float posThreshold = 20f;
 
@@ -21,7 +21,6 @@ namespace OpenCvSharp.Demo
         //OpenCV textures and mats
         private Texture2D texture;
         private Mat mat;
-        //private Mat temp;
         private Mat grayMat;
 
         //ArUco stuff
@@ -30,9 +29,6 @@ namespace OpenCvSharp.Demo
         private Point2f[][] corners;
         private Point2f[][] rejectedImgPoints;
         private MeshRenderer mr;
-        //private Texture2D outputTexture;
-
-        //[SerializeField] public RawImage RawImage;
 
 
         private IEnumerator FeedARCamera()
@@ -44,7 +40,6 @@ namespace OpenCvSharp.Demo
 
                 try
                 {
-                    //texture = new Texture2D(Screen.width, Screen.height);
                     texture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGBA32, false);
 
                     mr = cam.gameObject.GetComponentInChildren<MeshRenderer>();
@@ -57,8 +52,6 @@ namespace OpenCvSharp.Demo
 
                     Destroy(texture);
                     texture = (mr.material.mainTexture as Texture2D);
-
-                    //RawImage.rectTransform.sizeDelta = new Vector2(canvas.GetComponent<RectTransform>().rect.width, canvas.GetComponent<RectTransform>().rect.height);
                 }
                 catch (System.Exception e)
                 {
@@ -91,29 +84,21 @@ namespace OpenCvSharp.Demo
                             if (!ids.Contains(i))
                                 models[i].SetActive(false);
 
-                        //CvAruco.DrawDetectedMarkers(grayMat, corners, ids);
+                        TestManager.FrameCount++;
                     }
                     else
                     {
                         for (int i = 0; i < models.Count(); i++)
                             models[i].SetActive(false);
                     }
-
-                    //Destroy(outputTexture);
-
-                    //outputTexture = Unity.MatToTexture(grayMat);
-                    //RawImage.texture = outputTexture;
-                    //RawImage.material.mainTexture = outputTexture;
                 }
                 catch (System.Exception e)
                 {
                     Debug.Log(e.StackTrace + "\n" + e.Message);
-                    //TestManager.Logs += e.StackTrace + "\n" + e.Message + "\n";
                 }
 
                 if (grayMat != null) grayMat.Dispose();
                 if (mat != null) mat.Dispose();
-                //if (temp != null) temp.Dispose();
             }
         }
 
